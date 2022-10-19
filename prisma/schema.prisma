@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// RELATION IMPORTANT NOTE
+// The side of the relation which is annotated with the @relation attribute represents the side
+// that stores the foreign key in the underlying database. The "actual" field that 
+// represents the foreign key is required on that side of the relation as well, it's called 
+// relation scalar field, and is referenced inside @relation attribute
+
+// npx prisma migrate dev --name migration_name
+
+generator client {
+  provider = "prisma-client-js" // generate prisma client
+  // provider = "prisma-dbml-generator" // generate dbml shema for seeing relations
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id         Int      @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String   @unique
+  contact    String   @unique @default("")
+  password   String   @db.Text
+  salt       String   @db.Text
+  desable    Boolean  @default(true) // user account is desable
+  two_fa     Boolean  @default(true) // user subscribe to 2fa
+  is_deleted Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt // @default(now())
+
+  user_docs   users_docs[]
+  role_id     Int
+  role        role         @relation(fields: [role_id], references: [id])
+  two_fa_code two_fa_code?
+  companies   company[]
+  wallet      wallet?
+
+  @@map("Users")
+}
+
+model users_docs {
+  id         Int      @id @default(autoincrement())
+  name       String
+  path       String   @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt // @default(now())
+
+  user_id Int
+  user    users @relation(fields: [user_id], references: [id])
+
+  @@map("UsersDocs")
+}
+
+model role {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt // @default(now())
+
+  role_ permissions[]
+  users  users[]
+
+  @@map("Role")
+}
+
+model permissions {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt // @default(now())
+
+  permission_ role[]
+
+  @@map("Permissions")
+}
+
+model two_fa_code {
+  id         Int      @id @default(autoincrement())
+  value      String
+  created_at DateTime
+  updated_at DateTime @updatedAt // @default(now())
+
+  user_id Int   @unique
+  user    users @relation(fields: [user_id], references: [id])
+
+  @@map("TwoFACode")
+}
+
+model company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @db.Text
+  logo        String // lien ou chaine base64, si chaine base64 alors ajouter @db.Text ou n@db.Blob
+  country     String
+  city        String
+  phone       String
+  email       String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt // @default(now())
+
+  manager_id Int
+  manager    users   @relation(fields: [manager_id], references: [id])
+  offers     offer[]
+
+  @@map("Company")
+}
+
+model wallet {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt // @default(now())
+
+  user_id      Int           @unique
+  user         users         @relation(fields: [user_id], references: [id])
+  investments  investment[]
+  transactions transaction[]
+
+  @@map("Wallet")
+}
+
+model offer {
+  id                        Int      @id @default(autoincrement())
+  name                      String
+  description               String   @db.Text
+  image                     String //
+  total_investment_to_raise Float
+  price_per_unit            Float
+  number_of_unit            Float
+  maximum_amount            Float
+  minimum_amount            Float
+  investment_term           DateTime @db.Timestamp() // le temps mis pour le remboursement en Jours
+  distribution_frequency    Int // la frequence de remboursement en Jours
+  start_payment             DateTime @db.Date
+  expected_return           Float
+  status                    String
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt // @default(now())
+
+  company_id            Int
+  company               company                @relation(fields: [company_id], references: [id])
+  offer_docs            offer_docs[]
+  investment            investment[]
+  offer_repayment_plans offer_repayment_plan[]
+
+  @@map("Offer")
+}
+
+model offer_docs {
+  id         Int      @id @default(autoincrement())
+  name       String
+  path       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt // @default(now())
+
+  offer_id Int
+  offer    offer @relation(fields: [offer_id], references: [id])
+
+  @@map("OfferDocs")
+}
+
+model investment {
+  id         Int      @id @default(autoincrement())
+  amount     Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt // @default(now())
+
+  offer_id  Int
+  offer     offer?  @relation(fields: [offer_id], references: [id])
+  wallet_id Int
+  wallet    wallet? @relation(fields: [wallet_id], references: [id])
+
+  @@map("Investment")
+}
+
+model transaction {
+  id         Int      @id @default(autoincrement())
+  amount     Float    @default(0.0)
+  type       String
+  status     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt // @default(now())
+
+  wallet_id Int
+  wallet    wallet? @relation(fields: [wallet_id], references: [id])
+
+  @@map("Transactions")
+}
+
+model offer_repayment_plan {
+  id              Int      @id @default(autoincrement())
+  date            DateTime
+  expected_amount Float
+  received_amount Float
+  status          String
+  created_at      DateTime
+  updated_at      DateTime
+
+  offer_id Int
+  offer    offer? @relation(fields: [offer_id], references: [id])
+
+  @@map("OfferRepaymentPlans")
+}

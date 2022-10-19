@@ -1,0 +1,184 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Users {
+  id Int [pk, increment]
+  first_name String [not null]
+  last_name String [not null]
+  email String [unique, not null]
+  contact String [unique, not null, default: '']
+  password String [not null]
+  salt String [not null]
+  desable Boolean [not null, default: true]
+  two_fa Boolean [not null, default: true]
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  user_docs UsersDocs [not null]
+  role_id Int [not null]
+  role Role [not null]
+  two_fa_code TwoFACode
+  companies Company [not null]
+  wallet Wallet
+}
+
+Table UsersDocs {
+  id Int [pk, increment]
+  name String [not null]
+  path String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  user_id Int [not null]
+  user Users [not null]
+}
+
+Table Role {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  role_ Permissions [not null]
+  users Users [not null]
+}
+
+Table Permissions {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  permission_ Role [not null]
+}
+
+Table TwoFACode {
+  id Int [pk, increment]
+  value String [not null]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  user_id Int [unique, not null]
+  user Users [not null]
+}
+
+Table Company {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  logo String [not null]
+  country String [not null]
+  city String [not null]
+  phone String [not null]
+  email String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  manager_id Int [not null]
+  manager Users [not null]
+  offers Offer [not null]
+}
+
+Table Wallet {
+  id Int [pk, increment]
+  amount Float [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  user_id Int [unique, not null]
+  user Users [not null]
+  investments Investment [not null]
+  transactions Transactions [not null]
+}
+
+Table Offer {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  image String [not null]
+  total_investment_to_raise Float [not null]
+  price_per_unit Float [not null]
+  number_of_unit Float [not null]
+  maximum_amount Float [not null]
+  minimum_amount Float [not null]
+  investment_term DateTime [not null]
+  distribution_frequency Int [not null]
+  start_payment DateTime [not null]
+  expected_return Float [not null]
+  status String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  company_id Int [not null]
+  company Company [not null]
+  offer_docs OfferDocs [not null]
+  investment Investment [not null]
+  offer_repayment_plans OfferRepaymentPlans [not null]
+}
+
+Table OfferDocs {
+  id Int [pk, increment]
+  name String [not null]
+  path String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  offer_id Int [not null]
+  offer Offer [not null]
+}
+
+Table Investment {
+  id Int [pk, increment]
+  amount Float [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  offer_id Int [not null]
+  offer Offer
+  wallet_id Int [not null]
+  wallet Wallet
+}
+
+Table Transactions {
+  id Int [pk, increment]
+  amount Float [not null, default: 0]
+  type String [not null]
+  status String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  wallet_id Int [not null]
+  wallet Wallet
+}
+
+Table OfferRepaymentPlans {
+  id Int [pk, increment]
+  date DateTime [not null]
+  expected_amount Float [not null]
+  received_amount Float [not null]
+  status String [not null]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  offer_id Int [not null]
+  offer Offer
+}
+
+Table permissionsTorole {
+  role_Id Int [ref: > Permissions.id]
+  permission_Id Int [ref: > Role.id]
+}
+
+Ref: Users.role_id > Role.id
+
+Ref: UsersDocs.user_id > Users.id
+
+Ref: TwoFACode.user_id - Users.id
+
+Ref: Company.manager_id > Users.id
+
+Ref: Wallet.user_id - Users.id
+
+Ref: Offer.company_id > Company.id
+
+Ref: OfferDocs.offer_id > Offer.id
+
+Ref: Investment.offer_id > Offer.id
+
+Ref: Investment.wallet_id > Wallet.id
+
+Ref: Transactions.wallet_id > Wallet.id
+
+Ref: OfferRepaymentPlans.offer_id > Offer.id
