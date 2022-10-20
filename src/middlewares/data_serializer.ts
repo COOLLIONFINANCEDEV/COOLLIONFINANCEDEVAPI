@@ -45,6 +45,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                             init_object_key(result, field);
                             result[field].push("This field is required!");
                         }
+                        // false = 0 | true = 1
                         break;
                     case 'min_length':
                         bool = min_length(body[field], constraint[1]);
@@ -85,8 +86,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         if (!bool) {
                             init_object_key(result, field);
                             result[field].push(`Must be an integer!`);
-                        } else
-                            body[field] = validator.toInt(body[field]);
+                        }
                         break;
                     case 'float':
                         bool = is_float(body[field]);
@@ -94,8 +94,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         if (!bool) {
                             init_object_key(result, field);
                             result[field].push(`Must be a float!`);
-                        } else
-                            body[field] = validator.toFloat(body[field]);
+                        }
                         break;
                     case 'boolean':
                         bool = is_boolean(body[field], { loose: options?.booleanUseStrict || false });
@@ -105,7 +104,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                             result[field].push(`Must be a boolean!`);
 
                         } else
-                            body[field] = validator.toBoolean(body[field]);
+                            body[field] = validator.toBoolean(String(body[field]));
                         break;
                     case 'optional': break;
                     default:
@@ -121,7 +120,22 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
     return { error: true, result: result };
 }
 
+
+
+
+
+
+
+
 function not_null(str: string | number | null | undefined) {
+    let bool = false;
+
+    if (typeof str === "string" || typeof str == "number" || typeof str == "boolean") {
+        bool = is_boolean(str);
+    }
+
+    if (bool) return true;
+
     return !(str == '' || str == ' ' || str == null || str == undefined);
 }
 
@@ -166,7 +180,12 @@ function is_float(str: string | number) {
 
 
 function is_boolean(str: string | number, option?: { loose: boolean }) {
-    return not_null(str) ? validator.isBoolean(String(str), option) : false;
+    try {
+        return validator.isBoolean(String(str), option);
+    }
+    catch (e) {
+        return false;
+    }
 }
 
 

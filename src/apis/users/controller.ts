@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import check_req_body from 'src/helpers/check_req_body';
 import error_404 from 'src/middlewares/error_404';
 import Service from 'src/apis/users/services';
-import serializer from 'src/middlewares/date_serializer';
+import serializer from 'src/middlewares/data_serializer';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
 import Hasher from 'src/helpers/hasher';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
