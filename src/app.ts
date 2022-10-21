@@ -14,5 +14,6 @@ app.use(express.urlencoded({ extended: true })); // parse requests of content-ty
 
 app.use(resolve_route(config.endpoints.baseUrl), router.userRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.companyRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.offerRoute);
 
 export default app;

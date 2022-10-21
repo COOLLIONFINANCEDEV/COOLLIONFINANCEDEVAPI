@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import check_req_body from 'src/helpers/check_req_body';
 import error_404 from 'src/middlewares/error_404';
-import Service from 'src/apis/company/services';
+import Service from 'src/apis/offer/services';
 import serializer from 'src/middlewares/data_serializer';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
 import Hasher from 'src/helpers/hasher';
@@ -13,22 +13,29 @@ import { paginationConfig } from 'src/config';
 
 const service = new Service();
 
-// Create and Save a new company
+// Create and Save a new offer
 export const create = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
 
     let data = req.body;
 
+   
     const result = serializer(data, {
         name: 'not_null',
-        email: 'not_null, email',
-        phone: 'number',
-        manager_id: 'integer, not_null',
-        description: 'optional',
-        logo: 'optional',
-        country: 'optional',
-        city: 'optional',
+        image: 'optional',
+        total_investment_to_raise: 'float',
+        price_per_unit: 'float',
+        number_of_unit: 'float',
+        maximum_amount: 'float',
+        minimum_amount: 'float',
+        investment_term: 'optional',
+        description: 'not_null',
+        distribution_frequency: 'optional',
+        start_payment: 'optional',
+        expected_return: 'optional',
+        status: 'optional',
+        company_id: 'integer, not_null',
     });
 
 
@@ -39,6 +46,9 @@ export const create = async (req: Request, res: Response) => {
 
     data = result.result;
    
+    data['investment_term'] = new Date(data['investment_term']);
+    data['start_payment'] = new Date(data['start_payment']);
+
 
     try {
         const insert = await service.create(data);
@@ -51,7 +61,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
-// Update and Save a new user
+// Update and Save a new offer
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -62,15 +72,20 @@ export const update = async (req: Request, res: Response) => {
 
     const result = serializer(data, {
         name: 'not_null',
-        email: 'not_null, email',
-        phone: 'number',
-        manager_id: 'integer, not_null',
-        description: 'optional',
-        logo: 'optional',
-        country: 'optional',
-        city: 'optional',
+        image: 'optional',
+        total_investment_to_raise: 'float',
+        price_per_unit: 'float',
+        number_of_unit: 'float',
+        maximum_amount: 'float',
+        minimum_amount: 'float',
+        investment_term: 'optional',
+        description: 'not_null',
+        distribution_frequency: 'optional',
+        start_payment: 'optional',
+        expected_return: 'optional',
+        status: 'optional',
+        company_id: 'not_null',
     });
-
 
 
     if (result.error) {
@@ -79,6 +94,10 @@ export const update = async (req: Request, res: Response) => {
     }
 
     data = result.result;
+
+
+    data['investment_term'] = new Date(data['investment_term']);
+    data['start_payment'] = new Date(data['start_payment']);
 
     try {
         const update = await service.update(Number(id), data);
@@ -91,7 +110,7 @@ export const update = async (req: Request, res: Response) => {
 }
 
 
-// get all companies from the database (with condition).
+// get all offers from the database (with condition).
 export const findAll = async (req: Request, res: Response) => {
     let page: string | number = String(req.params.page);
     let perPage: string | number = String( req.params.perPage);
@@ -99,32 +118,32 @@ export const findAll = async (req: Request, res: Response) => {
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
     
-    const companies = await service.get({page: page, perPage: perPage});
+    const offers = await service.get({page: page, perPage: perPage});
 
-    if (!error_404(companies, res)) return;
+    if (!error_404(offers, res)) return;
 
-    res.send(make_response(false, companies));
+    res.send(make_response(false, offers));
 };
 
 
-// Retrive company
+// Retrive offer
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const company = await service.retrive(Number(id));
+    const offer = await service.retrive(Number(id));
 
-    if (!error_404(company, res)) return;
+    if (!error_404(offer, res)) return;
 
-    res.send(make_response(false, company));
+    res.send(make_response(false, offer));
 };
 
 
-// Soft delete company
+// Soft delete offer
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const company = await service.deleteOne('company', Number(id));
-        res.send(make_response(false, company));
+        const offer = await service.deleteOne('offer', Number(id));
+        res.send(make_response(false, offer));
     } catch (e) {
         if (!error_404(e, res)) return;
         throw e;
@@ -132,9 +151,9 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 
-// Soft purge companies
+// Soft purge offer
 export const removeAll = async (req: Request, res: Response) => {
-    const user = await service.deleteAll("company");
+    const user = await service.deleteAll("offer");
 
     res.send(make_response(false, user));
 };
