@@ -82,6 +82,22 @@ export const endpoints = {
         "deleteByWallet": "transactions/delete/wallet/:id",
         "purge": "transactions/purge/",
     },
+    "company": {
+        "retrive": "companies/retrive/:id",
+        "list": "companies/list/:page?/:perPage?",
+        "create": "companies/create/",
+        "update": "companies/update/:id",
+        "delete": "companies/delete/:id",
+        "purge": "companies/purge/",
+    },
+    "offer": {
+        "retrive": "offers/retrive/:id",
+        "list": "offers/list/:page?/:perPage?",
+        "create": "offers/create/",
+        "update": "offers/update/:id",
+        "delete": "offers/delete/:id",
+        "purge": "offers/purge/",
+    },
 }
 
 export const paginationConfig = {

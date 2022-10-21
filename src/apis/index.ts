@@ -4,6 +4,8 @@ import roleRoute from 'apis/role';
 import permissionsRoute from 'apis/permissions';
 import walletRoute from 'apis/wallet';
 import transactionsRoute from 'src/apis/transaction';
+import companyRoute from 'apis/company';
+import offerRoute from 'apis/offer';
 
 const router = {
     userRoute: userRoute,
@@ -12,6 +14,8 @@ const router = {
     permissionsRoute: permissionsRoute,
     walletRoute: walletRoute,
     transactionsRoute: transactionsRoute,
-}
+    companyRoute: companyRoute,
+    offerRoute: offerRoute,
+};
 
 export default router;

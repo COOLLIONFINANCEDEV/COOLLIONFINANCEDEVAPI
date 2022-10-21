@@ -26,7 +26,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
         let constraint: string | string[];
 
         // console.log(constraints, constraints.includes("optional"), not_null(body[field]), body[field]);
-        console.log(field, not_null(body[field]));
+        // console.log(field, not_null(body[field]));
 
         // if (body[field] == undefined && !constraints.includes("optional")) {
         if (constraints.includes("optional") && !not_null(body[field], ["empty"])) {
@@ -107,6 +107,16 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
                         } else
                             body[field] = validator.toBoolean(String(body[field]));
+                        break;
+                    case 'date':
+                        bool = is_date(body[field]);
+
+                        if (!bool) {
+                            init_object_key(result, field);
+                            result[field].push(`Must be a date!`);
+
+                        } else
+                            body[field] = validator.toDate(String(body[field]));
                         break;
                     case 'optional': break;
                     default:
@@ -198,4 +208,7 @@ function is_boolean(str: string | number, option?: { loose: boolean }) {
 }
 
 
+function is_date(str: any): boolean {
+    return validator.isDate(String(str));
+}
 

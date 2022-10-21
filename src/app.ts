@@ -19,6 +19,8 @@ app.use(resolve_route(config.endpoints.baseUrl), router.roleRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.permissionsRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.walletRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.transactionsRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.companyRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.offerRoute);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
     error_404(false, res);

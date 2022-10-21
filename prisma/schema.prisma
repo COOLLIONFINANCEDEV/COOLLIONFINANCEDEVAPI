@@ -100,10 +100,10 @@ model two_fa_code {
 model company {
   id          Int      @id @default(autoincrement())
   name        String
-  description String   @db.Text
-  logo        String // lien ou chaine base64, si chaine base64 alors ajouter @db.Text ou n@db.Blob
-  country     String
-  city        String
+  description String   @default("") @db.Text
+  logo        String   @default("") // lien ou chaine base64, si chaine base64 alors ajouter @db.Text ou n@db.Blob
+  country     String   @default("")
+  city        String   @default("")
   phone       String
   email       String
   is_deleted  Boolean  @default(false)
@@ -114,6 +114,10 @@ model company {
   manager    users   @relation(fields: [manager_id], references: [id])
   offers     offer[]
 
+  @@unique([name, phone])
+  @@unique([name, email])
+  @@unique([name, city])
+  @@unique([name, country])
   @@map("company")
 }
 
@@ -136,7 +140,7 @@ model offer {
   id                        Int      @id @default(autoincrement())
   name                      String
   description               String   @db.Text
-  image                     String //
+  image                     String   @default("")
   total_investment_to_raise Float
   price_per_unit            Float
   number_of_unit            Float
@@ -145,8 +149,8 @@ model offer {
   investment_term           DateTime @db.Timestamp() // le temps mis pour le remboursement en Jours
   distribution_frequency    Int // la frequence de remboursement en Jours
   start_payment             DateTime @db.Date
-  expected_return           Float
-  status                    String
+  expected_return           Float    @default(0.0)
+  status                    String   @default("")
   is_deleted                Boolean  @default(false)
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt // @default(now())
