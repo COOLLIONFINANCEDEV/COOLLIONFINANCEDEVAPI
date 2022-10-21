@@ -13,5 +13,6 @@ app.use(express.json()); // parse requests of content-type - application/json
 app.use(express.urlencoded({ extended: true })); // parse requests of content-type - application/x-www-form-urlencoded
 
 app.use(resolve_route(config.endpoints.baseUrl), router.userRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.companyRoute);
 
 export default app;

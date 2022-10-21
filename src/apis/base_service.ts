@@ -1,6 +1,7 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 import { paginationConfig } from 'src/config';
 import serviceGetType from 'src/types/service_get_type';
+import validator from 'validator';
 
 const client = new PrismaClient();
 
@@ -13,20 +14,20 @@ class BaseService {
             // console.log(params.args);
 
 
-            // if (params.action == 'delete') {
-            //     // Delete queries
-            //     // Change action to an update
-            //     params.action = 'update'
-            //     params.args['data'] = { is_deleted: true }
-            // }
-            // if (params.action == 'deleteMany') {
-            //     // Delete many queries
-            //     params.action = 'updateMany'
-            //     if (params.args.data !== undefined)
-            //         params.args.data['is_deleted'] = true;
-            //     else
-            //         params.args['data'] = { is_deleted: true };
-            // }
+            if (params.action == 'delete') {
+                // Delete queries
+                // Change action to an update
+                params.action = 'update'
+                params.args['data'] = { is_deleted: true }
+            }
+            if (params.action == 'deleteMany') {
+                // Delete many queries
+                params.action = 'updateMany'
+                if (params.args.data !== undefined)
+                    params.args.data['is_deleted'] = true;
+                else
+                    params.args['data'] = { is_deleted: true };
+            }
             return next(params);
         });
     }
@@ -70,14 +71,14 @@ class BaseService {
         //     return await next(params);
         // });
 
-        const sql = `UPDATE ${entity.split('_').join("")} SET is_deleted = true WHERE is_deleted = false`;
+        const sql = `UPDATE ${entity} SET is_deleted = true WHERE is_deleted = false`;
 
         return { "count": await client.$executeRawUnsafe(sql) }
     }
 
 
     async deleteOne(entity: Prisma.ModelName, id: number, options?: { [x: string]: any }) {
-        const sql = `UPDATE ${entity.split('_').join("")} SET is_deleted = true WHERE id = ${id}`;
+        const sql = `UPDATE ${entity} SET is_deleted = true WHERE id = ${Number(validator.escape(String(id)))}`;
 
         return { "count": await client.$executeRawUnsafe(sql) }
     }
@@ -88,8 +89,7 @@ class BaseService {
         if (params.page == undefined) params.page = paginationConfig.defaultPage;
         if (params.perPage == undefined) params.perPage = paginationConfig.defaultPage;
 
-        const sql = `SELECT * FROM ${params.entity.split('_').join("")} LIMIT ${params.perPage}, ${(params.page - 1) * params.perPage}`;
-        // `SELECT * FROM  SET is_deleted = true WHERE id = ${id}`;
+        const sql = `SELECT * FROM ${params.entity} LIMIT ${params.perPage}, ${(params.page - 1) * params.perPage}`;
 
         return await client.$queryRawUnsafe(sql);
     }

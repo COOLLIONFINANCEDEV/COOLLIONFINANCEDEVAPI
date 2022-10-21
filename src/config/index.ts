@@ -39,6 +39,14 @@ export const endpoints = {
         "delete": "user-docs/delete/:id",
         "purge": "user-docs/purge/",
     },
+    "company": {
+        "retrive": "companies/retrive/:id",
+        "list": "companies/list/:page?/:perPage?",
+        "create": "companies/create/",
+        "update": "companies/update/:id",
+        "delete": "companies/delete/:id",
+        "purge": "companies/purge/",
+    },
 }
 
 export const paginationConfig = {
