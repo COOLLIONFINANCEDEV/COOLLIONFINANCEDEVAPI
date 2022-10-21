@@ -40,57 +40,61 @@ model users {
   companies   company[]
   wallet      wallet?
 
-  @@map("Users")
+  @@map("users")
 }
 
 model users_docs {
   id         Int      @id @default(autoincrement())
   name       String
   path       String   @db.Text
+  is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt // @default(now())
 
   user_id Int
   user    users @relation(fields: [user_id], references: [id])
 
-  @@map("UsersDocs")
+  @@map("users_docs")
 }
 
 model role {
   id          Int      @id @default(autoincrement())
-  name        String
+  name        String   @unique
   description String
+  is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt // @default(now())
 
   role_ permissions[]
-  users  users[]
+  users users[]
 
-  @@map("Role")
+  @@map("role")
 }
 
 model permissions {
   id          Int      @id @default(autoincrement())
-  name        String
+  name        String   @unique
   description String
+  is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt // @default(now())
 
   permission_ role[]
 
-  @@map("Permissions")
+  @@map("permissions")
 }
 
 model two_fa_code {
   id         Int      @id @default(autoincrement())
   value      String
+  is_deleted Boolean  @default(false)
   created_at DateTime
   updated_at DateTime @updatedAt // @default(now())
 
   user_id Int   @unique
   user    users @relation(fields: [user_id], references: [id])
 
-  @@map("TwoFACode")
+  @@map("two_fa_code")
 }
 
 model company {
@@ -102,6 +106,7 @@ model company {
   city        String
   phone       String
   email       String
+  is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt // @default(now())
 
@@ -109,12 +114,13 @@ model company {
   manager    users   @relation(fields: [manager_id], references: [id])
   offers     offer[]
 
-  @@map("Company")
+  @@map("company")
 }
 
 model wallet {
   id         Int      @id @default(autoincrement())
   amount     Float
+  is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt // @default(now())
 
@@ -123,7 +129,7 @@ model wallet {
   investments  investment[]
   transactions transaction[]
 
-  @@map("Wallet")
+  @@map("wallet")
 }
 
 model offer {
@@ -141,6 +147,7 @@ model offer {
   start_payment             DateTime @db.Date
   expected_return           Float
   status                    String
+  is_deleted                Boolean  @default(false)
   created_at                DateTime @default(now())
   updated_at                DateTime @updatedAt // @default(now())
 
@@ -150,25 +157,27 @@ model offer {
   investment            investment[]
   offer_repayment_plans offer_repayment_plan[]
 
-  @@map("Offer")
+  @@map("offer")
 }
 
 model offer_docs {
   id         Int      @id @default(autoincrement())
   name       String
   path       String
+  is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt // @default(now())
 
   offer_id Int
   offer    offer @relation(fields: [offer_id], references: [id])
 
-  @@map("OfferDocs")
+  @@map("offer_docs")
 }
 
 model investment {
   id         Int      @id @default(autoincrement())
   amount     Float
+  is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt // @default(now())
 
@@ -177,7 +186,7 @@ model investment {
   wallet_id Int
   wallet    wallet? @relation(fields: [wallet_id], references: [id])
 
-  @@map("Investment")
+  @@map("investment")
 }
 
 model transaction {
@@ -185,13 +194,14 @@ model transaction {
   amount     Float    @default(0.0)
   type       String
   status     String
+  is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt // @default(now())
 
   wallet_id Int
   wallet    wallet? @relation(fields: [wallet_id], references: [id])
 
-  @@map("Transactions")
+  @@map("transaction")
 }
 
 model offer_repayment_plan {
@@ -200,11 +210,12 @@ model offer_repayment_plan {
   expected_amount Float
   received_amount Float
   status          String
+  is_deleted      Boolean  @default(false)
   created_at      DateTime
   updated_at      DateTime
 
   offer_id Int
   offer    offer? @relation(fields: [offer_id], references: [id])
 
-  @@map("OfferRepaymentPlans")
+  @@map("offer_repayment_plan")
 }

@@ -31,13 +31,56 @@ export const endpoints = {
         "delete": "users/delete/:id",
         "purge": "users/purge/",
     },
+
     "userDocs": {
-        "retrive": "user-docs/retrive/:id",
-        "list": "user-docs/list/:page?/:perPage?",
-        "create": "user-docs/create/",
-        "update": "user-docs/update/:id",
-        "delete": "user-docs/delete/:id",
-        "purge": "user-docs/purge/",
+        "retrive": "users-docs/retrive/:id",
+        "retriveByUser": "users-docs/retrive/user/:id/:page?/:perPage?",
+        "list": "users-docs/list/:page?/:perPage?",
+        "create": "users-docs/create/",
+        "update": "users-docs/update/:id",
+        "delete": "users-docs/delete/:id",
+        "deleteByUser": "users-docs/delete/user/:id",
+        "purge": "users-docs/purge/",
+    },
+
+    "role": {
+        "retrive": "role/retrive/:id",
+        "list": "role/list/:page?/:perPage?",
+        "create": "role/create/",
+        "update": "role/update/:id",
+        "delete": "role/delete/:id",
+        "purge": "role/purge/",
+    },
+
+    "permissions": {
+        "retrive": "permissions/retrive/:id",
+        "list": "permissions/list/:page?/:perPage?",
+        "create": "permissions/create/",
+        "update": "permissions/update/:id",
+        "delete": "permissions/delete/:id",
+        "purge": "permissions/purge/",
+    },
+
+    "wallet": {
+        "retrive": "wallet/retrive/:id",
+        "retriveByUser": "wallet/retrive/user/:id",
+        "list": "wallet/list/:page?/:perPage?",
+        "create": "wallet/create/",
+        "update": "wallet/update/:id",
+        "delete": "wallet/delete/:id",
+        "deleteByUser": "wallet/delete/user/:id",
+        "purge": "wallet/purge/",
+    },
+
+    "transactions": {
+        "retrive": "transactions/retrive/:id",
+        "retriveByWallet": "transactions/retrive/wallet/:id",
+        "list": "transactions/list/:page?/:perPage?",
+        "create": "transactions/create/",
+        "update": "transactions/update/:id",
+        "delete": "transactions/delete/:id",
+        "deleteByWallet": "transactions/delete/wallet/:id",
+        "purge": "transactions/purge/",
     },
 }
 

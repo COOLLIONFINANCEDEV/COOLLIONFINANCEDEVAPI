@@ -1,26 +1,19 @@
 import { Request, Response } from 'express';
 
-import check_req_body from 'src/helpers/check_req_body';
-import error_404 from 'src/middlewares/error_404';
-import Service from 'src/apis/users/services';
-import serializer from 'src/middlewares/data_serializer';
-import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
-import Hasher from 'src/helpers/hasher';
-import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
-import make_response from 'src/helpers/make_response';
-import validator from 'validator';
+import Service from 'src/apis/users_docs/services';
 import { paginationConfig } from 'src/config';
+import check_req_body from 'src/helpers/check_req_body';
+import make_response from 'src/helpers/make_response';
+import serializer from 'src/middlewares/data_serializer';
+import error_404 from 'src/middlewares/error_404';
+import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
+import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
+import validator from 'validator';
 
 const service = new Service();
 
-// const { check_body } = require("../utils/check_body.js");
-// import Hasher from "helpers/hasher";
-// import Service from 'apis/users/service'
 
-// const Service = new UserServices(undefined, 'user');
-
-
-// Create and Save a new user
+// Create and Save a new user docs
 export const create = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
@@ -28,23 +21,15 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        first_name: 'not_null',
-        last_name: 'not_null',
-        email: 'not_null, email',
-        contact: 'number',
-        password: 'not_null, min_length=8, max_length=20',
-        two_fa: "not_null, boolean",
-        role_id: "not_null, integer",
+        name: 'not_null',
+        path: 'not_null',
+        user_id: "not_null, integer",
     });
 
     if (result.error) {
         res.send(result);
         return;
     }
-    const password = Hasher.hash(req.body.password)
-    data = result.result;
-    data["password"] = password.hash;
-    data["salt"] = password.salt;
 
     try {
         const insert = await service.create(data);
@@ -57,7 +42,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
-// Update and Save a new user
+// Update and Save a new user docs
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -67,15 +52,8 @@ export const update = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        first_name: 'not_null, optional',
-        last_name: 'not_null, optional',
-        email: 'not_null, email, optional',
-        contact: 'number, optional',
-        last_password: 'not_null, min_length=8, max_length=20, optional',
-        password: 'not_null, min_length=8, max_length=20, optional',
-        two_fa: 'not_null, boolean, optional',
-        role_id: 'not_null, integer, optional',
-        desable: 'not_null, boolean, optional',
+        name: 'not_null, optional',
+        path: 'not_null, optional',
         is_deleted: 'not_null, boolean, optional',
     });
 
@@ -90,6 +68,8 @@ export const update = async (req: Request, res: Response) => {
         const update = await service.update(Number(id), data);
         res.send(make_response(false, update));
     } catch (e) {
+        console.error(e);
+
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
         if (!error_404(e, res)) return;
         throw e;
@@ -97,7 +77,7 @@ export const update = async (req: Request, res: Response) => {
 }
 
 
-// get all user from the database (with condition).
+// get all user docs from the database (with condition).
 export const findAll = async (req: Request, res: Response) => {
     let page: string | number = String(req.params.page);
     let perPage: string | number = String(req.params.perPage);
@@ -112,8 +92,24 @@ export const findAll = async (req: Request, res: Response) => {
     res.send(make_response(false, users));
 };
 
+// Retrive user docs by user
+export const findByUser = async (req: Request, res: Response) => {
+    const id = req.params.id
+    let page: string | number = String(req.params.page);
+    let perPage: string | number = String(req.params.perPage);
 
-// Retrive user
+    page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
+    perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
+
+    const users = await service.getByUser(Number(id), { page: page, perPage: perPage });
+
+    if (!error_404(users, res)) return;
+
+    res.send(make_response(false, users));
+};
+
+
+// Retrive user docs
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
     const user = await service.retrive(Number(id));
@@ -124,13 +120,27 @@ export const findOne = async (req: Request, res: Response) => {
 };
 
 
-// Soft delete user
+// Soft delete user doc
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const user = await service.deleteOne('users', Number(id));
-        res.send(make_response(false, user));
+        const result = await service.deleteOne('users_docs', Number(id));
+        res.send(make_response(false, result));
+    } catch (e) {
+        if (!error_404(e, res)) return;
+        throw e;
+    }
+};
+
+
+// Soft delete user docs
+export const removeByUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const result = await service.deleteByUser(Number(id));
+        res.send(make_response(false, result));
     } catch (e) {
         if (!error_404(e, res)) return;
         throw e;
@@ -140,9 +150,9 @@ export const remove = async (req: Request, res: Response) => {
 
 // Soft purge users
 export const removeAll = async (req: Request, res: Response) => {
-    const user = await service.deleteAll("users");
+    const result = await service.deleteAll("users_docs");
 
-    res.send(make_response(false, user));
+    res.send(make_response(false, result));
 };
 
 

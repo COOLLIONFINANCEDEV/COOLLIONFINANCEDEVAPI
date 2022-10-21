@@ -1,9 +1,10 @@
 import cors from "cors";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 
 import * as config from 'config/index';
 import router from 'src/apis'
-import resolve_route from "./helpers/resolve_route";
+import resolve_route from "src/helpers/resolve_route";
+import error_404 from "./middlewares/error_404";
 
 const app: express.Application = express();
 
@@ -13,5 +14,17 @@ app.use(express.json()); // parse requests of content-type - application/json
 app.use(express.urlencoded({ extended: true })); // parse requests of content-type - application/x-www-form-urlencoded
 
 app.use(resolve_route(config.endpoints.baseUrl), router.userRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.usersDocsRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.roleRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.permissionsRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.walletRoute);
+app.use(resolve_route(config.endpoints.baseUrl), router.transactionsRoute);
+
+app.all("*", (req: Request, res: Response, next: NextFunction) => {
+    error_404(false, res);
+    console.log("Url not found");
+
+    next()
+});
 
 export default app;

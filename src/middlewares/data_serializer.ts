@@ -4,6 +4,7 @@ import validator from 'validator';
 import init_object_key from 'src/helpers/init_object_key';
 import each from 'src/helpers/each';
 
+
 export default function serializer(body: { [x: string]: any; } | any, fieldConstraints: { [x: string]: string; }, options?: serializerInterface) {
     let result: { [x: string]: any; } = {};
     let bool = false;
@@ -25,9 +26,10 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
         let constraint: string | string[];
 
         // console.log(constraints, constraints.includes("optional"), not_null(body[field]), body[field]);
+        console.log(field, not_null(body[field]));
 
         // if (body[field] == undefined && !constraints.includes("optional")) {
-        if (constraints.includes("optional") && !not_null(body[field])) {
+        if (constraints.includes("optional") && !not_null(body[field], ["empty"])) {
             // init_object_key(result, field);
             // result[field].push("This field is required!");
             // console.log('jumps', field);
@@ -122,21 +124,28 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
 
 
+type notNullType = [
+    "empty" | "null"
+]
 
 
 
 
-
-function not_null(str: string | number | null | undefined) {
+function not_null(str: string | number | null | undefined, ignore?: notNullType) {
     let bool = false;
 
     if (typeof str === "string" || typeof str == "number" || typeof str == "boolean") {
         bool = is_boolean(str);
+
     }
 
     if (bool) return true;
 
-    return !(str == '' || str == ' ' || str == null || str == undefined);
+    if ((str == '' || str == ' ') && !ignore?.includes("empty")) return false;
+
+    if ((str == null || str == undefined) && !ignore?.includes("null")) return false;
+
+    return true;
 }
 
 function min_length(str: string | any[], length: string | number) {

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import check_req_body from 'src/helpers/check_req_body';
 import error_404 from 'src/middlewares/error_404';
-import Service from 'src/apis/users/services';
+import Service from 'src/apis/role/services';
 import serializer from 'src/middlewares/data_serializer';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
 import Hasher from 'src/helpers/hasher';
@@ -15,12 +15,12 @@ const service = new Service();
 
 // const { check_body } = require("../utils/check_body.js");
 // import Hasher from "helpers/hasher";
-// import Service from 'apis/users/service'
+// import Service from 'apis/role/service'
 
-// const Service = new UserServices(undefined, 'user');
+// const Service = new UserServices(undefined, 'role');
 
 
-// Create and Save a new user
+// Create and Save a new role
 export const create = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
@@ -28,23 +28,14 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        first_name: 'not_null',
-        last_name: 'not_null',
-        email: 'not_null, email',
-        contact: 'number',
-        password: 'not_null, min_length=8, max_length=20',
-        two_fa: "not_null, boolean",
-        role_id: "not_null, integer",
+        name: 'not_null',
+        description: 'not_null',
     });
 
     if (result.error) {
         res.send(result);
         return;
     }
-    const password = Hasher.hash(req.body.password)
-    data = result.result;
-    data["password"] = password.hash;
-    data["salt"] = password.salt;
 
     try {
         const insert = await service.create(data);
@@ -57,7 +48,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
-// Update and Save a new user
+// Update and Save a new role
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -67,15 +58,8 @@ export const update = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        first_name: 'not_null, optional',
-        last_name: 'not_null, optional',
-        email: 'not_null, email, optional',
-        contact: 'number, optional',
-        last_password: 'not_null, min_length=8, max_length=20, optional',
-        password: 'not_null, min_length=8, max_length=20, optional',
-        two_fa: 'not_null, boolean, optional',
-        role_id: 'not_null, integer, optional',
-        desable: 'not_null, boolean, optional',
+        name: 'not_null, optional',
+        description: 'not_null, optional',
         is_deleted: 'not_null, boolean, optional',
     });
 
@@ -97,7 +81,7 @@ export const update = async (req: Request, res: Response) => {
 }
 
 
-// get all user from the database (with condition).
+// get all role from the database (with condition).
 export const findAll = async (req: Request, res: Response) => {
     let page: string | number = String(req.params.page);
     let perPage: string | number = String(req.params.perPage);
@@ -105,32 +89,32 @@ export const findAll = async (req: Request, res: Response) => {
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
 
-    const users = await service.get({ page: page, perPage: perPage });
+    const roles = await service.get({ page: page, perPage: perPage });
 
-    if (!error_404(users, res)) return;
+    if (!error_404(roles, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, roles));
 };
 
 
-// Retrive user
+// Retrive role
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await service.retrive(Number(id));
+    const role = await service.retrive(Number(id));
 
-    if (!error_404(user, res)) return;
+    if (!error_404(role, res)) return;
 
-    res.send(make_response(false, user));
+    res.send(make_response(false, role));
 };
 
 
-// Soft delete user
+// Soft delete role
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const user = await service.deleteOne('users', Number(id));
-        res.send(make_response(false, user));
+        const role = await service.deleteOne('role', Number(id));
+        res.send(make_response(false, role));
     } catch (e) {
         if (!error_404(e, res)) return;
         throw e;
@@ -138,17 +122,17 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 
-// Soft purge users
+// Soft purge role
 export const removeAll = async (req: Request, res: Response) => {
-    const user = await service.deleteAll("users");
+    const role = await service.deleteAll("role");
 
-    res.send(make_response(false, user));
+    res.send(make_response(false, role));
 };
 
 
 
 
-// // Delete all user
+// // Delete all role
 // exports.deleteAll = (req: Request, res: Response) => {
 //     Service.purge((err, data) => {
 //         if (err) {
@@ -161,7 +145,7 @@ export const removeAll = async (req: Request, res: Response) => {
 
 //             res.send({
 //                 message:
-//                     err.message || "Some error occurred while deleting the user."
+//                     err.message || "Some error occurred while deleting the role."
 //             });
 //         }
 //         else res.send(data);

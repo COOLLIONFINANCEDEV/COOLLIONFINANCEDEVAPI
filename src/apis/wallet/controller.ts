@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 
 import check_req_body from 'src/helpers/check_req_body';
 import error_404 from 'src/middlewares/error_404';
-import Service from 'src/apis/users/services';
+import Service from 'src/apis/wallet/services';
 import serializer from 'src/middlewares/data_serializer';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
-import Hasher from 'src/helpers/hasher';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
 import make_response from 'src/helpers/make_response';
 import validator from 'validator';
@@ -15,12 +14,12 @@ const service = new Service();
 
 // const { check_body } = require("../utils/check_body.js");
 // import Hasher from "helpers/hasher";
-// import Service from 'apis/users/service'
+// import Service from 'apis/wallet/service'
 
-// const Service = new UserServices(undefined, 'user');
+// const Service = new UserServices(undefined, 'wallet');
 
 
-// Create and Save a new user
+// Create and Save a new wallet
 export const create = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
@@ -28,23 +27,14 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        first_name: 'not_null',
-        last_name: 'not_null',
-        email: 'not_null, email',
-        contact: 'number',
-        password: 'not_null, min_length=8, max_length=20',
-        two_fa: "not_null, boolean",
-        role_id: "not_null, integer",
+        amount: 'not_null, float',
+        user_id: "not_null, integer",
     });
 
     if (result.error) {
         res.send(result);
         return;
     }
-    const password = Hasher.hash(req.body.password)
-    data = result.result;
-    data["password"] = password.hash;
-    data["salt"] = password.salt;
 
     try {
         const insert = await service.create(data);
@@ -57,7 +47,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
-// Update and Save a new user
+// Update and Save a new wallet
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -67,16 +57,9 @@ export const update = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        first_name: 'not_null, optional',
-        last_name: 'not_null, optional',
-        email: 'not_null, email, optional',
-        contact: 'number, optional',
-        last_password: 'not_null, min_length=8, max_length=20, optional',
-        password: 'not_null, min_length=8, max_length=20, optional',
-        two_fa: 'not_null, boolean, optional',
-        role_id: 'not_null, integer, optional',
-        desable: 'not_null, boolean, optional',
-        is_deleted: 'not_null, boolean, optional',
+        amount: 'not_null, float, optional',
+        user_id: "not_null, integer, optional",
+        is_deleted: "not_null, boolean, optional",
     });
 
     if (result.error) {
@@ -97,7 +80,7 @@ export const update = async (req: Request, res: Response) => {
 }
 
 
-// get all user from the database (with condition).
+// get all wallet from the database (with condition).
 export const findAll = async (req: Request, res: Response) => {
     let page: string | number = String(req.params.page);
     let perPage: string | number = String(req.params.perPage);
@@ -105,32 +88,43 @@ export const findAll = async (req: Request, res: Response) => {
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
 
-    const users = await service.get({ page: page, perPage: perPage });
+    const wallet = await service.get({ page: page, perPage: perPage });
 
-    if (!error_404(users, res)) return;
+    if (!error_404(wallet, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, wallet));
 };
 
 
-// Retrive user
+// Retrive wallet
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await service.retrive(Number(id));
+    const wallet = await service.retrive(Number(id));
 
-    if (!error_404(user, res)) return;
+    if (!error_404(wallet, res)) return;
 
-    res.send(make_response(false, user));
+    res.send(make_response(false, wallet));
 };
 
 
-// Soft delete user
+// Retrive wallet by user
+export const findByUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const wallet = await service.retriveByUser(Number(id));
+
+    if (!error_404(wallet, res)) return;
+
+    res.send(make_response(false, wallet));
+};
+
+
+// Soft delete wallet
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const user = await service.deleteOne('users', Number(id));
-        res.send(make_response(false, user));
+        const wallet = await service.deleteOne('wallet', Number(id));
+        res.send(make_response(false, wallet));
     } catch (e) {
         if (!error_404(e, res)) return;
         throw e;
@@ -138,17 +132,31 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 
-// Soft purge users
-export const removeAll = async (req: Request, res: Response) => {
-    const user = await service.deleteAll("users");
+// Soft delete wallet by user
+export const removeByUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-    res.send(make_response(false, user));
+    try {
+        const result = await service.deleteByUser(Number(id));
+        res.send(make_response(false, result));
+    } catch (e) {
+        if (!error_404(e, res)) return;
+        throw e;
+    }
+};
+
+
+// Soft purge wallet
+export const removeAll = async (req: Request, res: Response) => {
+    const wallet = await service.deleteAll("wallet");
+
+    res.send(make_response(false, wallet));
 };
 
 
 
 
-// // Delete all user
+// // Delete all wallet
 // exports.deleteAll = (req: Request, res: Response) => {
 //     Service.purge((err, data) => {
 //         if (err) {
@@ -161,7 +169,7 @@ export const removeAll = async (req: Request, res: Response) => {
 
 //             res.send({
 //                 message:
-//                     err.message || "Some error occurred while deleting the user."
+//                     err.message || "Some error occurred while deleting the wallet."
 //             });
 //         }
 //         else res.send(data);
