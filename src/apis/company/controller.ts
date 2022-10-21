@@ -101,22 +101,22 @@ export const findAll = async (req: Request, res: Response) => {
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
     
-    const users = await service.get({page: page, perPage: perPage});
+    const companies = await service.get({page: page, perPage: perPage});
 
-    if (!error_404(users, res)) return;
+    if (!error_404(companies, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, companies));
 };
 
 
-// Retrive user
+// Retrive company
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await service.retrive(Number(id));
+    const company = await service.retrive(Number(id));
 
-    if (!error_404(user, res)) return;
+    if (!error_404(company, res)) return;
 
-    res.send(make_response(false, user));
+    res.send(make_response(false, company));
 };
 
 
@@ -125,8 +125,8 @@ export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const user = await service.deleteOne('company', Number(id));
-        res.send(make_response(false, user));
+        const company = await service.deleteOne('company', Number(id));
+        res.send(make_response(false, company));
     } catch (e) {
         if (!error_404(e, res)) return;
         throw e;
