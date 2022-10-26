@@ -21,6 +21,13 @@ export const corsAllowOrigin = {
 };
 
 
+export const twilioConfig = {
+    SERVICE_ID: "VAe67e23df675d674c93422530206e04bd",
+    ACCOUNT_SID: "AC75abb9a086c1f5c4b395c62c1a566638",
+    AUTH_TOKEN: "a32fa61f7b6f7742540b7ddcdd507f38",
+}
+
+
 export const endpoints = {
     "baseUrl": "api",
     "users": {
@@ -97,6 +104,53 @@ export const endpoints = {
         "update": "offers/update/:id",
         "delete": "offers/delete/:id",
         "purge": "offers/purge/",
+    },
+
+    "offerDocs": {
+        "retrive": "offer-docs/retrive/:id",
+        "retriveByOffer": "offer-docs/retrive/offer/:id/:page?/:perPage?",
+        "list": "offer-docs/list/:page?/:perPage?",
+        "create": "offer-docs/create/",
+        "update": "offer-docs/update/:id",
+        "delete": "offer-docs/delete/:id",
+        "deleteByOffer": "offer-docs/delete/offer/:id",
+        "purge": "offer-docs/purge/",
+    },
+
+    "offerRepaymentPlan": {
+        "retrive": "offer-repayment-plan/retrive/:id",
+        "retriveByOffer": "offer-repayment-plan/retrive/offer/:id/:page?/:perPage?",
+        "list": "offer-repayment-plan/list/:page?/:perPage?",
+        "create": "offer-repayment-plan/create/",
+        "update": "offer-repayment-plan/update/:id",
+        "delete": "offer-repayment-plan/delete/:id",
+        "deleteByOffer": "offer-repayment-plan/delete/offer/:id",
+        "purge": "offer-repayment-plan/purge/",
+    },
+
+    "investment": {
+        "retrive": "investment/retrive/:id",
+        "retriveByOffer": "investment/retrive/offer/:id/:page?/:perPage?",
+        "retriveByWallet": "investment/retrive/wallet/:id/:page?/:perPage?",
+        "list": "investment/list/:page?/:perPage?",
+        "create": "investment/create/",
+        "update": "investment/update/:id",
+        "delete": "investment/delete/:id",
+        "deleteByOffer": "investment/delete/offer/:id",
+        "deleteByWallet": "investment/delete/wallet/:id",
+        "purge": "investment/purge/",
+    },
+
+    "twoFACode": {
+        "send": "two-fa/send",
+        "check": "two-fa/check",
+        // "validate": "two-fa/validate",
+    },
+
+    "auth": {
+        "login": 'oauth/login', // send auth code after login with credentials
+        "getAccessToken": "oauth/token/access-token", // get access token with code verifier
+        "refreshAccessToken": "oauth/token/refresh-token", // get new access token with refresh token
     },
 }
 

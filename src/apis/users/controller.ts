@@ -10,6 +10,7 @@ import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_
 import make_response from 'src/helpers/make_response';
 import validator from 'validator';
 import { paginationConfig } from 'src/config';
+import { getEventListeners } from 'events';
 
 const service = new Service();
 
@@ -48,7 +49,7 @@ export const create = async (req: Request, res: Response) => {
 
     try {
         const insert = await service.create(data);
-        res.status(201).send(make_response(false, insert));
+        res.send(make_response(false, insert));
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
         if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;
@@ -71,8 +72,8 @@ export const update = async (req: Request, res: Response) => {
         last_name: 'not_null, optional',
         email: 'not_null, email, optional',
         contact: 'number, optional',
-        last_password: 'not_null, min_length=8, max_length=20, optional',
-        password: 'not_null, min_length=8, max_length=20, optional',
+        // last_password: 'not_null, min_length=8, max_length=20, optional',
+        // password: 'not_null, min_length=8, max_length=20, optional',
         two_fa: 'not_null, boolean, optional',
         role_id: 'not_null, integer, optional',
         desable: 'not_null, boolean, optional',
@@ -146,25 +147,7 @@ export const removeAll = async (req: Request, res: Response) => {
 };
 
 
-
-
-// // Delete all user
-// exports.deleteAll = (req: Request, res: Response) => {
-//     Service.purge((err, data) => {
-//         if (err) {
-//             res.status(500);
-
-//             if (err.kind == 'not_found') {
-//                 res.status(404);
-//                 err.message = "Not Found!";
-//             }
-
-//             res.send({
-//                 message:
-//                     err.message || "Some error occurred while deleting the user."
-//             });
-//         }
-//         else res.send(data);
-//     });
-// };
+// export const changePassword = async (req: Request, res: Response) => {
+    
+// }
 

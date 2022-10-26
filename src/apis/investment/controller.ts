@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import Service from 'src/apis/users_docs/services';
+import Service from 'src/apis/investment/services';
 import { paginationConfig } from 'src/config';
 import check_req_body from 'src/helpers/check_req_body';
 import make_response from 'src/helpers/make_response';
@@ -13,7 +13,7 @@ import validator from 'validator';
 const service = new Service();
 
 
-// Create and Save a new user docs
+// Create and Save a new investment docs
 export const create = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
@@ -21,9 +21,9 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        name: 'not_null',
-        path: 'not_null',
-        user_id: "not_null, integer",
+        amount: 'not_null, float',
+        wallet_id: 'not_null, integer',
+        offer_id: "not_null, integer",
     });
 
     if (result.error) {
@@ -42,7 +42,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
-// Update and Save a new user docs
+// Update and Save a new investment docs
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -52,8 +52,9 @@ export const update = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        name: 'not_null, optional',
-        path: 'not_null, optional',
+        amount: 'not_null, float, optional',
+        wallet_id: 'not_null, integer, optional',
+        offer_id: "not_null, integer, optional",
         is_deleted: 'not_null, boolean, optional',
     });
 
@@ -77,25 +78,23 @@ export const update = async (req: Request, res: Response) => {
 }
 
 
-// get all user docs from the database (with condition).
+// get all investment docs from the database (with condition).
 export const findAll = async (req: Request, res: Response) => {
-    console.log(res.locals.auth);
-    
     let page: string | number = String(req.params.page);
     let perPage: string | number = String(req.params.perPage);
 
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
 
-    const users = await service.get({ page: page, perPage: perPage });
+    const offers = await service.get({ page: page, perPage: perPage });
 
-    if (!error_404(users, res)) return;
+    if (!error_404(offers, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, offers));
 };
 
-// Retrive user docs by user
-export const findByUser = async (req: Request, res: Response) => {
+// Retrive investment docs by offer
+export const findByOffer = async (req: Request, res: Response) => {
     const id = req.params.id
     let page: string | number = String(req.params.page);
     let perPage: string | number = String(req.params.perPage);
@@ -103,31 +102,47 @@ export const findByUser = async (req: Request, res: Response) => {
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
 
-    const users = await service.getByUser(Number(id), { page: page, perPage: perPage });
+    const offers = await service.getByOffer(Number(id), { page: page, perPage: perPage });
 
-    if (!error_404(users, res)) return;
+    if (!error_404(offers, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, offers));
+};
+
+// Retrive investment docs by wallet
+export const findByWallet = async (req: Request, res: Response) => {
+    const id = req.params.id
+    let page: string | number = String(req.params.page);
+    let perPage: string | number = String(req.params.perPage);
+
+    page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
+    perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
+
+    const offers = await service.getByWallet(Number(id), { page: page, perPage: perPage });
+
+    if (!error_404(offers, res)) return;
+
+    res.send(make_response(false, offers));
 };
 
 
-// Retrive user docs
+// Retrive investment docs
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await service.retrive(Number(id));
+    const investment = await service.retrive(Number(id));
 
-    if (!error_404(user, res)) return;
+    if (!error_404(investment, res)) return;
 
-    res.send(make_response(false, user));
+    res.send(make_response(false, investment));
 };
 
 
-// Soft delete user doc
+// Soft delete investment doc
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const result = await service.deleteOne('users_docs', Number(id));
+        const result = await service.deleteOne('investment', Number(id));
         res.send(make_response(false, result));
     } catch (e) {
         if (!error_404(e, res)) return;
@@ -136,12 +151,12 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 
-// Soft delete user docs
-export const removeByUser = async (req: Request, res: Response) => {
+// Soft delete investment docs
+export const removeByOffer = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const result = await service.deleteByUser(Number(id));
+        const result = await service.deleteByOffer(Number(id));
         res.send(make_response(false, result));
     } catch (e) {
         if (!error_404(e, res)) return;
@@ -150,9 +165,23 @@ export const removeByUser = async (req: Request, res: Response) => {
 };
 
 
-// Soft purge users
+// Soft delete investment docs
+export const removeByWallet = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const result = await service.deleteByWallet(Number(id));
+        res.send(make_response(false, result));
+    } catch (e) {
+        if (!error_404(e, res)) return;
+        throw e;
+    }
+};
+
+
+// Soft purge offers
 export const removeAll = async (req: Request, res: Response) => {
-    const result = await service.deleteAll("users_docs");
+    const result = await service.deleteAll("investment");
 
     res.send(make_response(false, result));
 };
@@ -160,7 +189,7 @@ export const removeAll = async (req: Request, res: Response) => {
 
 
 
-// // Delete all user
+// // Delete all investment
 // exports.deleteAll = (req: Request, res: Response) => {
 //     Service.purge((err, data) => {
 //         if (err) {
@@ -173,7 +202,7 @@ export const removeAll = async (req: Request, res: Response) => {
 
 //             res.send({
 //                 message:
-//                     err.message || "Some error occurred while deleting the user."
+//                     err.message || "Some error occurred while deleting the investment."
 //             });
 //         }
 //         else res.send(data);

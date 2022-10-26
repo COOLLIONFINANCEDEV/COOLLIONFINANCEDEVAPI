@@ -3,6 +3,7 @@ import validator from 'validator';
 
 import init_object_key from 'src/helpers/init_object_key';
 import each from 'src/helpers/each';
+import notNullType from 'src/types/not_null_type';
 
 
 export default function serializer(body: { [x: string]: any; } | any, fieldConstraints: { [x: string]: string; }, options?: serializerInterface) {
@@ -88,7 +89,8 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         if (!bool) {
                             init_object_key(result, field);
                             result[field].push(`Must be an integer!`);
-                        }
+                        } else
+                            body[field] = validator.toInt(String(body[field]));
                         break;
                     case 'float':
                         bool = is_float(body[field]);
@@ -96,7 +98,8 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         if (!bool) {
                             init_object_key(result, field);
                             result[field].push(`Must be a float!`);
-                        }
+                        } else
+                            body[field] = validator.toFloat(String(body[field]));
                         break;
                     case 'boolean':
                         bool = is_boolean(body[field], { loose: options?.booleanUseStrict || false });
@@ -118,9 +121,17 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         } else
                             body[field] = validator.toDate(String(body[field]));
                         break;
+                    case 'like':
+                        bool = is_like(body[field], constraint[1]);
+
+                        if (!bool) {
+                            init_object_key(result, field);
+                            result[field].push(`Valid value is: ${constraint[1].substring(1, constraint[1].length - 1).replaceAll('|', ',')} !`);
+                        } else
+                            body[field] = body[field].toString().trim();
                     case 'optional': break;
                     default:
-                        throw new Error(`${constraint[0]} is not a supported constraint!`);
+                        throw new Error(`[SERIALIZER][ERROR]: ${constraint[0]} is not a supported constraint!`);
                 }
             }
         }
@@ -134,11 +145,6 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
 
 
-type notNullType = [
-    "empty" | "null"
-]
-
-
 
 
 function not_null(str: string | number | null | undefined, ignore?: notNullType) {
@@ -146,7 +152,6 @@ function not_null(str: string | number | null | undefined, ignore?: notNullType)
 
     if (typeof str === "string" || typeof str == "number" || typeof str == "boolean") {
         bool = is_boolean(str);
-
     }
 
     if (bool) return true;
@@ -158,11 +163,14 @@ function not_null(str: string | number | null | undefined, ignore?: notNullType)
     return true;
 }
 
+
 function min_length(str: string | any[], length: string | number) {
     length = Number(length);
 
     if (!Number.isInteger(length))
-        throw new Error("length property of min_length must be an integer!");
+        throw new Error("[SERIALIZER][ERROR]: length property of min_length must be an integer!");
+    
+    if (str == undefined) return false;
 
     return str.length >= length;
 }
@@ -172,8 +180,10 @@ function max_length(str: string | any[], length: string | number) {
     length = Number(length);
 
     if (!Number.isInteger(length))
-        throw new Error("length property of max_length must be an integer!");
+        throw new Error("[SERIALIZER][ERROR]: length property of max_length must be an integer!");
 
+    if (str == undefined) return false;
+    
     return str.length <= length
 }
 
@@ -211,4 +221,27 @@ function is_boolean(str: string | number, option?: { loose: boolean }) {
 function is_date(str: any): boolean {
     return validator.isDate(String(str));
 }
+
+function is_like(str: string | number, likeOption: string, strict?: boolean): boolean {
+    const likeOptionLastIndex = likeOption.length - 1;
+
+    if (likeOption[0] !== "[" || likeOption[likeOptionLastIndex] !== "]")
+        throw new Error("[SERIALIZER][ERROR]: Syntaxe error, valid syntaxe for like constraint is: like=[opt1 | opt2 | ... | optN]");
+
+    const option = likeOption.substring(1, likeOptionLastIndex).split("|");
+
+    const bool: Array<boolean> = [];
+
+    option.forEach((liked) => {
+        if (strict) bool.push(str == liked.trim());
+        else bool.push(str.toString().trim() == liked.trim());
+    });
+
+    for (const valid of bool)
+        if (valid) return true;
+
+    return false;
+}
+
+
 

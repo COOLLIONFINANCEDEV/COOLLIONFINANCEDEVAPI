@@ -6,6 +6,11 @@ import walletRoute from 'apis/wallet';
 import transactionsRoute from 'src/apis/transaction';
 import companyRoute from 'apis/company';
 import offerRoute from 'apis/offer';
+import offerDocsRoute from 'apis/offer_docs';
+import offerRepaymentPlanRoute from 'apis/offer_repayment_plan';
+import investmentRoute from 'apis/investment';
+import twoFACodeRoute from 'apis/two_fa_code';
+import authRoute from 'apis/auth';
 
 const router = {
     userRoute: userRoute,
@@ -16,6 +21,11 @@ const router = {
     transactionsRoute: transactionsRoute,
     companyRoute: companyRoute,
     offerRoute: offerRoute,
+    offerDocsRoute: offerDocsRoute,
+    offerRepaymentPlanRoute: offerRepaymentPlanRoute,
+    investmentRoute: investmentRoute,
+    twoFACodeRoute: twoFACodeRoute,
+    authRoute: authRoute,
 };
 
 export default router;
