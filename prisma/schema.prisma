@@ -17,28 +17,29 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model users {
-  id         Int      @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  contact    String   @unique @default("")
-  password   String   @db.Text
-  salt       String   @db.Text
-  desable    Boolean  @default(true) // user account is desable
-  two_fa     Boolean  @default(false) // user subscribe to 2fa
-  is_deleted Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt // @default(now())
+  id               Int      @id @default(autoincrement())
+  first_name       String   @default("Undefined")
+  last_name        String   @default("Undefined")
+  email            String   @unique
+  contact          String   @unique @default("Undefined")
+  password         String   @db.Text
+  salt             String   @db.Text
+  contact_verified Boolean  @default(false)
+  desable          Boolean  @default(true) // user account is desable
+  two_fa           Boolean  @default(false) // user subscribe to 2fa
+  is_deleted       Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt // @default(now())
 
-  user_docs   users_docs[]
-  role_id     Int
-  role        role         @relation(fields: [role_id], references: [id])
-  two_fa_code two_fa_code?
-  companies   company[]
-  wallet      wallet?
+  user_docs users_docs[]
+  role_id   Int?
+  role      role?        @relation(fields: [role_id], references: [id])
+  companies company[]
+  wallet    wallet?
 
   @@map("users")
 }
@@ -82,18 +83,6 @@ model permissions {
   permission_ role[]
 
   @@map("permissions")
-}
-
-model two_fa_code {
-  id         Int      @id @default(autoincrement())
-  secret     String
-  created_at DateTime
-  updated_at DateTime @updatedAt // @default(now())
-
-  user_id Int   @unique
-  user    users @relation(fields: [user_id], references: [id])
-
-  @@map("two_fa_code")
 }
 
 model company {
@@ -222,4 +211,3 @@ model offer_repayment_plan {
 
   @@map("offer_repayment_plan")
 }
-

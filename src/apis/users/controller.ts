@@ -11,6 +11,8 @@ import make_response from 'src/helpers/make_response';
 import validator from 'validator';
 import { paginationConfig } from 'src/config';
 import { getEventListeners } from 'events';
+import { users } from '@prisma/client';
+import { error_invalid_to } from 'src/middlewares/error_twilio';
 
 const service = new Service();
 
@@ -21,41 +23,41 @@ const service = new Service();
 // const Service = new UserServices(undefined, 'user');
 
 
-// Create and Save a new user
-export const create = async (req: Request, res: Response) => {
-    // Validate request
-    if (!check_req_body(req, res)) return;
+// // Create and Save a new user
+// export const create = async (req: Request, res: Response) => {
+//     // Validate request
+//     if (!check_req_body(req, res)) return;
 
-    let data = req.body;
+//     let data = req.body;
 
-    const result = serializer(data, {
-        first_name: 'not_null',
-        last_name: 'not_null',
-        email: 'not_null, email',
-        contact: 'number',
-        password: 'not_null, min_length=8, max_length=20',
-        two_fa: "not_null, boolean",
-        role_id: "not_null, integer",
-    });
+//     const result = serializer(data, {
+//         first_name: 'not_null',
+//         last_name: 'not_null',
+//         email: 'not_null, email',
+//         contact: 'number',
+//         password: 'not_null, min_length=8, max_length=20',
+//         two_fa: "not_null, boolean",
+//         role_id: "not_null, integer",
+//     });
 
-    if (result.error) {
-        res.send(result);
-        return;
-    }
-    const password = Hasher.hash(req.body.password)
-    data = result.result;
-    data["password"] = password.hash;
-    data["salt"] = password.salt;
+//     if (result.error) {
+//         res.send(result);
+//         return;
+//     }
+//     const password = Hasher.hash(req.body.password)
+//     data = result.result;
+//     data["password"] = password.hash;
+//     data["salt"] = password.salt;
 
-    try {
-        const insert = await service.create(data);
-        res.send(make_response(false, insert));
-    } catch (e) {
-        if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
-        if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;
-        throw e;
-    }
-}
+//     try {
+//         const insert = await service.create(data);
+//         res.send(make_response(false, insert));
+//     } catch (e) {
+//         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
+//         if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;
+//         throw e;
+//     }
+// }
 
 
 // Update and Save a new user
@@ -72,8 +74,8 @@ export const update = async (req: Request, res: Response) => {
         last_name: 'not_null, optional',
         email: 'not_null, email, optional',
         contact: 'number, optional',
-        // last_password: 'not_null, min_length=8, max_length=20, optional',
-        // password: 'not_null, min_length=8, max_length=20, optional',
+        last_password: 'not_null, min_length=8, max_length=20, optional',
+        password: 'not_null, min_length=8, max_length=20, optional',
         two_fa: 'not_null, boolean, optional',
         role_id: 'not_null, integer, optional',
         desable: 'not_null, boolean, optional',
@@ -88,6 +90,28 @@ export const update = async (req: Request, res: Response) => {
     data = result.result;
 
     try {
+        if (data.password !== undefined) {
+            if (data.last_password == undefined) {
+                res.status(400).send(make_response(true, "Can not update password without last password"));
+                return;
+            }
+
+            const user = await service.retrive(Number(id));
+
+            if (!error_404(user, res)) return;
+
+            const valid = Hasher.validate_hash(data.last_password, String(user?.password), String(user?.salt));
+
+            if (!valid) {
+                res.send(make_response(true, "Incorrect password!"));
+                return;
+            }
+
+            const password = Hasher.hash(data.password)
+            data["password"] = password.hash;
+            data["salt"] = password.salt;
+            delete data["last_password"];
+        }
         const update = await service.update(Number(id), data);
         res.send(make_response(false, update));
     } catch (e) {
@@ -127,10 +151,10 @@ export const findOne = async (req: Request, res: Response) => {
 
 // Soft delete user
 export const remove = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = Number(req.params.id) || -1;
 
     try {
-        const user = await service.deleteOne('users', Number(id));
+        const user = await service.deleteOne('users', id);
         res.send(make_response(false, user));
     } catch (e) {
         if (!error_404(e, res)) return;
@@ -146,8 +170,4 @@ export const removeAll = async (req: Request, res: Response) => {
     res.send(make_response(false, user));
 };
 
-
-// export const changePassword = async (req: Request, res: Response) => {
-    
-// }
 

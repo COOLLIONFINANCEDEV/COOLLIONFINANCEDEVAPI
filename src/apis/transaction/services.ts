@@ -12,18 +12,28 @@ class Service extends BaseService {
         this.prisma = super.get_prisma_client();
     }
 
-    async retrive(id: number) {
-        return await this.prisma.transaction.findUnique({
-            where: { id: id },
+    async retrive(id: number, user_id: number) {
+        return await this.prisma.transaction.findFirst({
+            where: {
+                id: id,
+                wallet: {
+                    user_id: user_id
+                }
+            },
             include: {
                 wallet: true,
             }
         });
     }
 
-    async retriveByWallet(id: number) {
+    async retriveByWallet(id: number, user_id: number) {
         return await this.prisma.transaction.findFirst({
-            where: { wallet_id: id },
+            where: {
+                wallet: {
+                    id: id,
+                    user_id: user_id
+                }
+            },
             include: {
                 wallet: true,
             }
@@ -46,21 +56,39 @@ class Service extends BaseService {
     async create(data: transaction) {
         return await this.prisma.transaction.create({
             data: data,
-        }
-        )
+        });
     }
 
-    async update(id: number, data: transaction) {
-        return await this.prisma.transaction.update({
-            where: { id: Number(id) },
+    async update(id: number, user_id: number, data: transaction) {
+        return await this.prisma.transaction.updateMany({
+            where: {
+                id: Number(id),
+                wallet: {
+                    user_id: user_id
+                }
+            },
             data: data
-        })
+        });
     }
 
-    async deleteByWallet(id: number) {
+    async deleteByWallet(id: number, user_id: number) {
         return await this.prisma.transaction.deleteMany({
             where: {
-                wallet_id: id
+                wallet: {
+                    id: id,
+                    user_id: user_id
+                }
+            }
+        });
+    }
+
+    async remove(id: number, user_id: number) {
+        return await this.prisma.transaction.deleteMany({
+            where: {
+                id: id,
+                wallet: {
+                    user_id: user_id
+                }
             }
         });
     }

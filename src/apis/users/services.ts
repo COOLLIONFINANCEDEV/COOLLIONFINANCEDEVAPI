@@ -13,7 +13,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
-        return await this.prisma.users.findUnique({
+        return await this.prisma.users.findFirst({
             where: { id: id },
             include: {
                 role: {
@@ -23,6 +23,13 @@ class Service extends BaseService {
                 wallet: true,
                 companies: true,
             }
+        });
+    }
+
+    async getUser(whereClause: { [x: string]: any }) {
+        return await this.prisma.users.findFirst({
+            where: whereClause,
+            select: { id: true }
         });
     }
 
@@ -47,8 +54,7 @@ class Service extends BaseService {
     async create(data: users) {
         return await this.prisma.users.create({
             data: data,
-        }
-        )
+        })
     }
 
     async update(id: number, data: users) {

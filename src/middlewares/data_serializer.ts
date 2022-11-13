@@ -129,6 +129,16 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                             result[field].push(`Valid value is: ${constraint[1].substring(1, constraint[1].length - 1).replaceAll('|', ',')} !`);
                         } else
                             body[field] = body[field].toString().trim();
+                        break;
+                    case 'or':
+                        const orResult = or(body[field], constraint[1]);
+
+                        if (!orResult) {
+                            init_object_key(result, field);
+                            result[field].push(`Valid value type is: ${constraint[1].substring(1, constraint[1].length - 1).replaceAll('|', ',')} !`);
+                        } else
+                            body[field] = orResult;
+                        break;
                     case 'optional': break;
                     default:
                         throw new Error(`[SERIALIZER][ERROR]: ${constraint[0]} is not a supported constraint!`);
@@ -169,7 +179,7 @@ function min_length(str: string | any[], length: string | number) {
 
     if (!Number.isInteger(length))
         throw new Error("[SERIALIZER][ERROR]: length property of min_length must be an integer!");
-    
+
     if (str == undefined) return false;
 
     return str.length >= length;
@@ -183,7 +193,7 @@ function max_length(str: string | any[], length: string | number) {
         throw new Error("[SERIALIZER][ERROR]: length property of max_length must be an integer!");
 
     if (str == undefined) return false;
-    
+
     return str.length <= length
 }
 
@@ -222,11 +232,14 @@ function is_date(str: any): boolean {
     return validator.isDate(String(str));
 }
 
+
 function is_like(str: string | number, likeOption: string, strict?: boolean): boolean {
+    if (!not_null(str)) return false;
+
     const likeOptionLastIndex = likeOption.length - 1;
 
     if (likeOption[0] !== "[" || likeOption[likeOptionLastIndex] !== "]")
-        throw new Error("[SERIALIZER][ERROR]: Syntaxe error, valid syntaxe for like constraint is: like=[opt1 | opt2 | ... | optN]");
+        throw new Error("[SERIALIZER][ERROR]: Syntaxe error, valid syntaxe for `like` constraint is: like=[opt1 | opt2 | ... | optN]");
 
     const option = likeOption.substring(1, likeOptionLastIndex).split("|");
 
@@ -244,4 +257,80 @@ function is_like(str: string | number, likeOption: string, strict?: boolean): bo
 }
 
 
+function or(str: string, orOption: string): string | number | boolean {
+    if (!not_null(str)) return false;
+
+    const orOptionLastIndex = orOption.length - 1;
+
+    if (orOption[0] !== "[" || orOption[orOptionLastIndex] !== "]")
+        throw new Error("[SERIALIZER][ERROR]: Syntaxe error, valid syntaxe for `or` constraint is: or=[opt1 | opt2 | ... | optN]");
+
+    const option = orOption.substring(1, orOptionLastIndex).split("|");
+
+    const result: { bool: Array<boolean>, return: string | number | boolean } = { bool: [], return: str };
+
+    option.forEach((constraint) => {
+        // if (is_like(constraint, "[email | number | integer | float | date | boolean]"))
+        //     throw new Error(`[SERIALIZER][ERROR]: ${constraint} is not a supported constraint!`);
+
+        switch (constraint.trim()) {
+            case 'email':
+                result.bool.push(is_email(str));
+
+                if (result.bool) {
+                    result.return = str;
+                    return;
+                }
+
+                break;
+            case 'number':
+                result.bool.push(is_numeric(str));
+
+                if (result.bool) {
+                    result.return = str;
+                    return;
+                }
+                break;
+            case 'integer':
+                result.bool.push(is_integer(str));
+
+                if (result.bool) {
+                    result.return = validator.toInt(String(str));
+                    return;
+                }
+                break;
+            case 'float':
+                result.bool.push(is_float(str));
+
+                if (result.bool) {
+                    result.return = validator.toFloat(String(str));
+                    return;
+                }
+                break;
+            case 'boolean':
+                result.bool.push(is_boolean(str));
+
+                if (result.bool) {
+                    result.return = validator.toBoolean(String(str));
+                    return;
+                }
+                break;
+            case 'date':
+                result.bool.push(is_date(str));
+
+                if (result.bool) {
+                    result.return = String(validator.toDate(String(str)));
+                    return;
+                }
+                break;
+            default:
+                throw new Error(`[SERIALIZER][ERROR]: ${constraint} is not a supported constraint!`);
+        }
+    });
+
+    for (const valid of result.bool)
+        if (valid) return result.return;
+
+    return false;
+}
 

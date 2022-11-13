@@ -23,6 +23,7 @@ export const create = async (req: Request, res: Response) => {
 
     const result = serializer(data, {
         name: 'not_null',
+        description: 'not_null',
         image: 'optional, not_null',
         total_investment_to_raise: 'float',
         price_per_unit: 'float',
@@ -30,7 +31,6 @@ export const create = async (req: Request, res: Response) => {
         maximum_amount: 'float',
         minimum_amount: 'float',
         investment_term: 'date',
-        description: 'not_null',
         distribution_frequency: 'integer',
         start_payment: 'date',
         expected_return: 'optional',
@@ -40,7 +40,7 @@ export const create = async (req: Request, res: Response) => {
 
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -90,7 +90,7 @@ export const update = async (req: Request, res: Response) => {
 
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -101,7 +101,7 @@ export const update = async (req: Request, res: Response) => {
     // data['start_payment'] = new Date(data['start_payment']);
 
     try {
-        const update = await service.update(Number(id), data);
+        const update = await service.update(Number(id), res.locals.auth?.user_id, data);
         res.send(make_response(false, update));
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
@@ -130,7 +130,7 @@ export const findAll = async (req: Request, res: Response) => {
 // Retrive offer
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const offer = await service.retrive(Number(id));
+    const offer = await service.retrive(Number(id), res.locals.auth?.user_id);
 
     if (!error_404(offer, res)) return;
 
@@ -143,7 +143,7 @@ export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const offer = await service.deleteOne('offer', Number(id));
+        const offer = await service.remove(Number(id), res.locals.auth?.user_id);
         res.send(make_response(false, offer));
     } catch (e) {
         if (!error_404(e, res)) return;

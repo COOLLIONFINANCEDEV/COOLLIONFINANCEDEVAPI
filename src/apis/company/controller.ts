@@ -25,15 +25,15 @@ export const create = async (req: Request, res: Response) => {
         email: 'not_null, email',
         phone: 'number',
         manager_id: 'integer, not_null',
-        description: 'optional',
-        logo: 'optional',
-        country: 'optional',
-        city: 'optional',
+        description: 'not_null, optional',
+        logo: 'not_null, optional',
+        country: 'not_null, optional',
+        city: 'not_null, optional',
     });
 
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -61,21 +61,21 @@ export const update = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        name: 'not_null',
-        email: 'not_null, email',
-        phone: 'number',
-        manager_id: 'integer, not_null',
-        description: 'optional',
-        logo: 'optional',
-        country: 'optional',
-        city: 'optional',
+        name: 'not_null, optional',
+        email: 'not_null, email, optional',
+        phone: 'number, optional',
+        manager_id: 'integer, not_null, optional',
+        description: 'not_null, optional',
+        logo: 'not_null, optional',
+        country: 'not_null, optional',
+        city: 'not_null, optional',
         is_deleted: "boolean, optional",
     });
 
 
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -116,6 +116,23 @@ export const findOne = async (req: Request, res: Response) => {
     if (!error_404(company, res)) return;
 
     res.send(make_response(false, company));
+};
+
+
+// Retrive companies by manager
+export const findByUser = async (req: Request, res: Response) => {
+    const id = req.params.id
+    let page: string | number = String(req.params.page);
+    let perPage: string | number = String(req.params.perPage);
+
+    page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
+    perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
+
+    const companies = await service.getByUser(Number(id), { page: page, perPage: perPage });
+
+    if (!error_404(companies, res)) return;
+
+    res.send(make_response(false, companies));
 };
 
 

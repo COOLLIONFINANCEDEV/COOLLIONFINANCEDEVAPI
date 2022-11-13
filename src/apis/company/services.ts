@@ -13,12 +13,26 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
-        return await this.prisma.company.findUnique({
+        return await this.prisma.company.findFirst({
             where: { id: id },
             include: {
                 manager: true,
                 offers: true,
             }
+        });
+    }
+
+    async getByUser(id: number, params: serviceGetType) {
+        let page = params.page ? Number(params.page) : paginationConfig.defaultPage;
+        let perPage = params.perPage ? Number(params.perPage) : paginationConfig.defaultPerPage;
+
+        return await this.prisma.company.findMany({
+            where: { manager_id: id },
+            include: {
+                offers: true
+            },
+            skip: (page - 1) * perPage,
+            take: perPage,
         });
     }
 

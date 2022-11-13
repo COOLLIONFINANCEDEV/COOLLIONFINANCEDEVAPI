@@ -13,7 +13,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
-        return await this.prisma.wallet.findUnique({
+        return await this.prisma.wallet.findFirst({
             where: { id: id },
             include: {
                 user: true,

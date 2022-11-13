@@ -1,9 +1,11 @@
-import { Request, Response } from 'express';
+import assert from 'assert';
+import { NextFunction, Request, Response } from 'express';
 
 import Service from 'src/apis/users_docs/services';
 import { paginationConfig } from 'src/config';
 import check_req_body from 'src/helpers/check_req_body';
 import make_response from 'src/helpers/make_response';
+import { right_owner, right_user } from 'src/middlewares/authentication';
 import serializer from 'src/middlewares/data_serializer';
 import error_404 from 'src/middlewares/error_404';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
@@ -13,7 +15,7 @@ import validator from 'validator';
 const service = new Service();
 
 
-// Create and Save a new user docs
+// Create and Save a new docs
 export const create = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
@@ -27,7 +29,14 @@ export const create = async (req: Request, res: Response) => {
     });
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
+        return;
+    }
+
+    data = result.result;
+
+    if (data.user_id !== res.locals.auth?.id) {
+        res.status(401).send(make_response(true, "Unauthorized!"));
         return;
     }
 
@@ -42,7 +51,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
-// Update and Save a new user docs
+// Update and Save a new docs
 export const update = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -58,7 +67,7 @@ export const update = async (req: Request, res: Response) => {
     });
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -77,24 +86,24 @@ export const update = async (req: Request, res: Response) => {
 }
 
 
-// get all user docs from the database (with condition).
+// get all docs from the database (with condition).
 export const findAll = async (req: Request, res: Response) => {
     console.log(res.locals.auth);
-    
+
     let page: string | number = String(req.params.page);
     let perPage: string | number = String(req.params.perPage);
 
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
 
-    const users = await service.get({ page: page, perPage: perPage });
+    const docs = await service.get({ page: page, perPage: perPage });
 
-    if (!error_404(users, res)) return;
+    if (!error_404(docs, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, docs));
 };
 
-// Retrive user docs by user
+// Retrive docs by doc
 export const findByUser = async (req: Request, res: Response) => {
     const id = req.params.id
     let page: string | number = String(req.params.page);
@@ -103,26 +112,27 @@ export const findByUser = async (req: Request, res: Response) => {
     page = validator.isNumeric(page) ? Number(page) : paginationConfig.defaultPage;
     perPage = validator.isNumeric(perPage) ? Number(perPage) : paginationConfig.defaultPerPage;
 
-    const users = await service.getByUser(Number(id), { page: page, perPage: perPage });
+    const docs = await service.getByUser(Number(id), { page: page, perPage: perPage });
 
-    if (!error_404(users, res)) return;
+    if (!error_404(docs, res)) return;
 
-    res.send(make_response(false, users));
+    res.send(make_response(false, docs));
 };
 
 
-// Retrive user docs
+// Retrive doc
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await service.retrive(Number(id));
 
-    if (!error_404(user, res)) return;
+    const doc = await service.retrive(Number(id));
 
-    res.send(make_response(false, user));
+    if (!error_404(doc, res)) return;
+
+    res.send(make_response(false, doc));
 };
 
 
-// Soft delete user doc
+// Soft delete doc
 export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -136,8 +146,10 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 
-// Soft delete user docs
-export const removeByUser = async (req: Request, res: Response) => {
+// Soft delete docs by user
+export const removeByUser = async (req: Request, res: Response, next: NextFunction) => {
+    right_user(req, res, next);
+
     const { id } = req.params;
 
     try {
@@ -150,7 +162,7 @@ export const removeByUser = async (req: Request, res: Response) => {
 };
 
 
-// Soft purge users
+// Soft purge docs
 export const removeAll = async (req: Request, res: Response) => {
     const result = await service.deleteAll("users_docs");
 
@@ -160,7 +172,7 @@ export const removeAll = async (req: Request, res: Response) => {
 
 
 
-// // Delete all user
+// // Delete all doc
 // exports.deleteAll = (req: Request, res: Response) => {
 //     Service.purge((err, data) => {
 //         if (err) {
@@ -173,7 +185,7 @@ export const removeAll = async (req: Request, res: Response) => {
 
 //             res.send({
 //                 message:
-//                     err.message || "Some error occurred while deleting the user."
+//                     err.message || "Some error occurred while deleting the doc."
 //             });
 //         }
 //         else res.send(data);

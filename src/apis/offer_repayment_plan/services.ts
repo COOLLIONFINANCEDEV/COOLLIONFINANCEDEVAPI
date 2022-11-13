@@ -12,9 +12,16 @@ class Service extends BaseService {
         this.prisma = super.get_prisma_client();
     }
 
-    async retrive(id: number) {
-        return await this.prisma.offer_repayment_plan.findUnique({
-            where: { id: id },
+    async retrive(id: number, manager_id: number) {
+        return await this.prisma.offer_repayment_plan.findFirst({
+            where: {
+                id: id,
+                offer: {
+                    company: {
+                        manager_id: manager_id
+                    }
+                }
+            },
             include: {
                 offer: true,
             }
@@ -34,12 +41,19 @@ class Service extends BaseService {
         });
     }
 
-    async getByOffer(id: number, params: serviceGetType) {
+    async getByOffer(id: number, manager_id: number, params: serviceGetType) {
         let page = params.page ? Number(params.page) : paginationConfig.defaultPage;
         let perPage = params.perPage ? Number(params.perPage) : paginationConfig.defaultPerPage;
 
         return await this.prisma.offer_repayment_plan.findMany({
-            where: { offer_id: id },
+            where: {
+                offer: {
+                    id: id,
+                    company: {
+                        manager_id: manager_id
+                    }
+                }
+            },
             include: {
                 offer: true,
             },
@@ -55,10 +69,30 @@ class Service extends BaseService {
         )
     }
 
-    async update(id: number, data: offer_repayment_plan) {
-        return await this.prisma.offer_repayment_plan.update({
-            where: { id: Number(id) },
+    async update(id: number, manager_id: number, data: offer_repayment_plan) {
+        return await this.prisma.offer_repayment_plan.updateMany({
+            where: {
+                id: id,
+                offer: {
+                    company: {
+                        manager_id: manager_id
+                    }
+                }
+            },
             data: data
+        })
+    }
+
+    async remove(id: number, manager_id: number) {
+        return await this.prisma.offer_repayment_plan.deleteMany({
+            where: {
+                id: Number(id),
+                offer: {
+                    company: {
+                        manager_id: manager_id
+                    }
+                }
+            }
         })
     }
 
@@ -70,10 +104,15 @@ class Service extends BaseService {
     //     });
     // }
 
-    async deleteByOffer(id: number) {
+    async deleteByOffer(id: number, manager_id: number) {
         return await this.prisma.offer_repayment_plan.deleteMany({
             where: {
-                offer_id: id
+                offer: {
+                    id: id,
+                    company: {
+                        manager_id: manager_id
+                    }
+                }
             }
         });
     }

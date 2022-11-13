@@ -32,7 +32,7 @@ export const create = async (req: Request, res: Response) => {
     });
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -63,7 +63,7 @@ export const update = async (req: Request, res: Response) => {
     });
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 

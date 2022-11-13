@@ -12,9 +12,14 @@ class Service extends BaseService {
         this.prisma = super.get_prisma_client();
     }
 
-    async retrive(id: number) {
-        return await this.prisma.investment.findUnique({
-            where: { id: id },
+    async retrive(id: number, user_id: number) {
+        return await this.prisma.investment.findFirst({
+            where: {
+                id: id,
+                wallet: {
+                    user_id: user_id
+                }
+            },
             include: {
                 offer: true,
                 wallet: true,
@@ -36,12 +41,17 @@ class Service extends BaseService {
         });
     }
 
-    async getByOffer(id: number, params: serviceGetType) {
+    async getByOffer(id: number, manager_id: number, params: serviceGetType) {
         let page = params.page ? Number(params.page) : paginationConfig.defaultPage;
         let perPage = params.perPage ? Number(params.perPage) : paginationConfig.defaultPerPage;
 
         return await this.prisma.investment.findMany({
-            where: { offer_id: id },
+            where: {
+                offer_id: id,
+                wallet: {
+                    user_id: manager_id
+                }
+            },
             include: {
                 offer: true,
                 wallet: true,
@@ -51,12 +61,17 @@ class Service extends BaseService {
         });
     }
 
-    async getByWallet(id: number, params: serviceGetType) {
+    async getByWallet(id: number, user_id: number, params: serviceGetType) {
         let page = params.page ? Number(params.page) : paginationConfig.defaultPage;
         let perPage = params.perPage ? Number(params.perPage) : paginationConfig.defaultPerPage;
 
         return await this.prisma.investment.findMany({
-            where: { wallet_id: id },
+            where: {
+                wallet: {
+                    id: id,
+                    user_id: user_id
+                }
+            },
             include: {
                 offer: true,
                 wallet: true,
@@ -73,9 +88,14 @@ class Service extends BaseService {
         )
     }
 
-    async update(id: number, data: investment) {
-        return await this.prisma.investment.update({
-            where: { id: Number(id) },
+    async update(id: number, user_id: number, data: investment) {
+        return await this.prisma.investment.updateMany({
+            where: {
+                id: Number(id),
+                wallet: {
+                    user_id: user_id
+                }
+            },
             data: data
         })
     }
@@ -88,18 +108,35 @@ class Service extends BaseService {
     //     });
     // }
 
-    async deleteByOffer(id: number) {
+    async deleteByOffer(id: number, manager_id: number) {
         return await this.prisma.investment.deleteMany({
             where: {
-                offer_id: id
+                offer_id: id,
+                wallet: {
+                    user_id: manager_id
+                }
             }
         });
     }
 
-    async deleteByWallet(id: number) {
+    async deleteByWallet(id: number, user_id: number) {
         return await this.prisma.investment.deleteMany({
             where: {
-                wallet_id: id
+                wallet: {
+                    id: id,
+                    user_id: user_id
+                }
+            }
+        });
+    }
+
+    async remove(id: number, user_id: number) {
+        return await this.prisma.investment.deleteMany({
+            where: {
+                id: id,
+                wallet: {
+                    user_id: user_id
+                }
             }
         });
     }

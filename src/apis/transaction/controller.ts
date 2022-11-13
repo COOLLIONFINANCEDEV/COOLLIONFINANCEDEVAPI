@@ -34,7 +34,7 @@ export const create = async (req: Request, res: Response) => {
     });
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -67,14 +67,14 @@ export const update = async (req: Request, res: Response) => {
     });
 
     if (result.error) {
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
     data = result.result;
 
     try {
-        const update = await service.update(Number(id), data);
+        const update = await service.update(Number(id), res.locals.auth?.user_id, data);
         res.send(make_response(false, update));
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
@@ -103,7 +103,7 @@ export const findAll = async (req: Request, res: Response) => {
 // Retrive transaction
 export const findOne = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const transaction = await service.retrive(Number(id));
+    const transaction = await service.retrive(Number(id), res.locals.auth?.user_id);
 
     if (!error_404(transaction, res)) return;
 
@@ -114,7 +114,7 @@ export const findOne = async (req: Request, res: Response) => {
 // Retrive transaction by user
 export const findByWallet = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const transaction = await service.retriveByWallet(Number(id));
+    const transaction = await service.retriveByWallet(Number(id), res.locals.auth?.user_id);
 
     if (!error_404(transaction, res)) return;
 
@@ -127,7 +127,7 @@ export const remove = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const transaction = await service.deleteOne('transaction', Number(id));
+        const transaction = await service.remove(Number(id), res.locals.auth?.user_id);
         res.send(make_response(false, transaction));
     } catch (e) {
         if (!error_404(e, res)) return;
@@ -141,7 +141,7 @@ export const removeByWallet = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const result = await service.deleteByWallet(Number(id));
+        const result = await service.deleteByWallet(Number(id), res.locals.auth?.user_id);
         res.send(make_response(false, result));
     } catch (e) {
         if (!error_404(e, res)) return;

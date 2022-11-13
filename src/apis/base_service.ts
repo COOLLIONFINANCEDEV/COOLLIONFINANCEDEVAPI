@@ -13,6 +13,15 @@ class BaseService {
 
             // console.log(params.args);
 
+            if (params.model == 'users') {
+                if (params.action == 'findFirst'
+                    || params.action == "findMany") {
+                    if (params.args['where'] == undefined) params.args['where'] = {};
+                    params.args['where']["is_deleted"] = false;
+                }
+            }
+
+
 
             if (params.action == 'delete') {
                 // Delete queries
@@ -89,9 +98,21 @@ class BaseService {
         if (params.page == undefined) params.page = paginationConfig.defaultPage;
         if (params.perPage == undefined) params.perPage = paginationConfig.defaultPage;
 
-        const sql = `SELECT * FROM ${params.entity} LIMIT ${params.perPage}, ${(params.page - 1) * params.perPage}`;
+        const sql = `SELECT * FROM ${params.entity} WHERE is_deleted = 0 LIMIT ${params.perPage}, ${(params.page - 1) * params.perPage}`;
 
         return await client.$queryRawUnsafe(sql);
+    }
+
+    async isOwner(entity: Prisma.ModelName, id: number, owner: number, constraint = "user_id") {
+        
+        const sql = `SELECT ${constraint} FROM ${entity} WHERE id = ${Number(validator.escape(String(id)))}`;
+        const req: any = await client.$queryRawUnsafe(sql);
+
+        console.log(sql);
+        console.log(req);
+        
+
+        return req.length ? (req[0][constraint] === owner ? true : false) : true;
     }
 }
 

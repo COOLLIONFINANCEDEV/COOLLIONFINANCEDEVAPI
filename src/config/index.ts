@@ -22,14 +22,15 @@ export const corsAllowOrigin = {
 
 
 export const twilioConfig = {
-    SERVICE_ID: "VAe67e23df675d674c93422530206e04bd",
-    ACCOUNT_SID: "AC75abb9a086c1f5c4b395c62c1a566638",
-    AUTH_TOKEN: "a32fa61f7b6f7742540b7ddcdd507f38",
+    SERVICE_ID: "VA2638596ac85433b09755508af9b171ea",
+    ACCOUNT_SID: "ACacb10c996194dfc5f8890e14b1e8dc32",
+    AUTH_TOKEN: "c14a0b98a503ae708d0bb288d8bc2cac",
 }
 
 
 export const endpoints = {
     "baseUrl": "api",
+    
     "users": {
         "retrive": "users/retrive/:id",
         "list": "users/list/:page?/:perPage?",
@@ -81,7 +82,7 @@ export const endpoints = {
 
     "transactions": {
         "retrive": "transactions/retrive/:id",
-        "retriveByWallet": "transactions/retrive/wallet/:id",
+        "retriveByWallet": "transactions/retrive/wallet/:id/:page?/:perPage?",
         "list": "transactions/list/:page?/:perPage?",
         "create": "transactions/create/",
         "update": "transactions/update/:id",
@@ -91,6 +92,7 @@ export const endpoints = {
     },
     "company": {
         "retrive": "companies/retrive/:id",
+        "retriveByUser": "companies/retrive/manager/:id/:page?/:perPage?",
         "list": "companies/list/:page?/:perPage?",
         "create": "companies/create/",
         "update": "companies/update/:id",
@@ -141,16 +143,17 @@ export const endpoints = {
         "purge": "investment/purge/",
     },
 
-    "twoFACode": {
-        "send": "two-fa/send",
-        "check": "two-fa/check",
-        // "validate": "two-fa/validate",
-    },
-
     "auth": {
-        "login": 'oauth/login', // send auth code after login with credentials
+        "signin": 'oauth/sign-in', // send auth code after login with credentials
+        "signup": 'oauth/sign-up',
         "getAccessToken": "oauth/token/access-token", // get access token with code verifier
         "refreshAccessToken": "oauth/token/refresh-token", // get new access token with refresh token
+        "resetPasswordVerify": "oauth/reset-password/verify-user",
+        "resetPasswordReset": "oauth/reset-password/reset",
+        "twoFAVerify": "oauth/two-fa/verify-user",
+        "twoFACheck": "oauth/two-fa/check-verification",
+        "verifyUserInfo": "oauth/verify-info",
+        "checkVerification": "oauth/check-verification",
     },
 }
 

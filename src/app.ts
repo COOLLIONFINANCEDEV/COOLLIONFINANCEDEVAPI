@@ -1,3 +1,5 @@
+// with express.js
+
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
@@ -24,7 +26,6 @@ app.use(resolve_route(config.endpoints.baseUrl), router.offerRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.offerDocsRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.offerRepaymentPlanRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.investmentRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.twoFACodeRoute);
 app.use(resolve_route(config.endpoints.baseUrl), router.authRoute);
 
 

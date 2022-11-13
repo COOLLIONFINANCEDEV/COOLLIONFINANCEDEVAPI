@@ -13,7 +13,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
-        return await this.prisma.permissions.findUnique({
+        return await this.prisma.permissions.findFirst({
             where: { id: id },
             include: {
                 permission_: true

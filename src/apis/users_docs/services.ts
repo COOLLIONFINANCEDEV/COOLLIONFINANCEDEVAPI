@@ -13,7 +13,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
-        return await this.prisma.users_docs.findUnique({
+        return await this.prisma.users_docs.findFirst({
             where: { id: id },
             include: {
                 user: true,

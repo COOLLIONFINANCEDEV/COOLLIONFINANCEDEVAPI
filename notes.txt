@@ -1,0 +1,57 @@
+[PERSONAS ACCOUNT CREATION]
+email confirmation when signing up-----------------------------OK
+phone number confirmation when signing up----------------------OK
+INCOMPREHENSION: toute la branche Buisiness Sign in Portal
+
+[RECEIVER REQUEST APPLICATION ALGO]
+Verification Process
+    upload agreement docs
+    sign agreement docs with Docusign
+INCOMPREHENSION: Leasing process web 2.0
+
+[ISSUER FUNDING ALGO]
+Investment Proceed
+    INCOMPREHENSION: Review / Sign Document with docusign
+    Compute due Amount (Prices share + Fees and taxes)
+Payment Proceed
+    initiate payment with cinetpay
+    sent payment to cool lion bank
+    INCOMPREHENSION: investment confirmation with sendgrid (je comprends par là que lorsque le paiement est envoyé sur le compte de coollion il faut encore confirmer par mail l'investissement à l'offre et si ok actualiser le montant fictif en BD).
+
+[RECEIVER REFUND ALGO]
+Investment Proceed
+    Compute due Amount (Prices share + Fees and taxes)
+Payment Proceed
+    initiate payment with cinetpay
+    sent payment to cool lion bank
+    refund confirmation with sendgrid
+
+[ISSUER WITHDRAW ALGO]
+Investment Proceed
+Compute due Amount (Prices share + Fees and taxes)
+Payment Proceed
+initiate payment with cinetpay
+sent payment to issuer account
+INCOMPREHENSION: Withdrawal Confirmation with sendgrid
+
+
+
+[MOTEUR DE RECHERCHE]
+SUR LES PROJETS
+Elément de recherche
+    created_at
+    description
+    name
+    company {
+        created_at
+        city
+        description
+        name
+    }
+
+
+
+[SECURITY]
+users
+    delete: master or own user
+    purge: master

@@ -1,4 +1,4 @@
-import { PrismaClient, offer } from '@prisma/client'
+import { PrismaClient, offer, Prisma } from '@prisma/client'
 
 import BaseService from 'src/apis/base_service';
 import { paginationConfig } from 'src/config';
@@ -12,9 +12,14 @@ class Service extends BaseService {
         this.prisma = super.get_prisma_client();
     }
 
-    async retrive(id: number) {
-        return await this.prisma.offer.findUnique({
-            where: { id: id},
+    async retrive(id: number, manager_id: number) {
+        return await this.prisma.offer.findFirst({
+            where: {
+                id: id,
+                company: {
+                    manager_id: manager_id
+                }
+            },
             include: {
                 company: true,
                 investment: true,
@@ -45,10 +50,25 @@ class Service extends BaseService {
         )
     }
 
-    async update(id: number, data: offer) {
-        return await this.prisma.offer.update({
-            where: { id: Number(id) },
+    async update(id: number, manager_id: number, data: offer) {
+        return await this.prisma.offer.updateMany({
+            where: {
+                id: Number(id),
+                company: {
+                    manager_id: manager_id
+                } },
             data: data
+        })
+    }
+
+    async remove(id: number, manager_id: number) {
+        return await this.prisma.offer.deleteMany({
+            where: {
+                id: Number(id),
+                company: {
+                    manager_id: manager_id
+                }
+            } 
         })
     }
 

@@ -1,4 +1,4 @@
-import { PrismaClient, oauth } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
 import BaseService from 'src/apis/base_service';
 import { paginationConfig } from 'src/config';
@@ -15,10 +15,11 @@ class Service extends BaseService {
     async getUser(column: "email" | "contact", value: string) {
         const whereClause = column == "email" ? { email: value } : { contact: value };
 
-        return await this.prisma.users.findUnique({
+        return await this.prisma.users.findFirst({
             where: whereClause,
             select: {
                 id: true,
+                desable: true,
                 two_fa: true,
                 salt: true,
                 password: true,
@@ -30,11 +31,21 @@ class Service extends BaseService {
         });
     }
 
-    async save(data: oauth) {
-        return await this.prisma.oauth.create({
-            data: data,
-        })
+    async retriveUser(id: number) {
+        return await this.prisma.users.findFirst({
+            where: { id: id, two_fa: true },
+            select: {
+                contact: true,
+                email: true,
+            }
+        });
     }
+
+    // async save(data: oauth) {
+    //     return await this.prisma.oauth.create({
+    //         data: data,
+    //     })
+    // }
 }
 
 

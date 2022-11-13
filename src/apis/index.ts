@@ -9,7 +9,6 @@ import offerRoute from 'apis/offer';
 import offerDocsRoute from 'apis/offer_docs';
 import offerRepaymentPlanRoute from 'apis/offer_repayment_plan';
 import investmentRoute from 'apis/investment';
-import twoFACodeRoute from 'apis/two_fa_code';
 import authRoute from 'apis/auth';
 
 const router = {
@@ -24,7 +23,6 @@ const router = {
     offerDocsRoute: offerDocsRoute,
     offerRepaymentPlanRoute: offerRepaymentPlanRoute,
     investmentRoute: investmentRoute,
-    twoFACodeRoute: twoFACodeRoute,
     authRoute: authRoute,
 };
 

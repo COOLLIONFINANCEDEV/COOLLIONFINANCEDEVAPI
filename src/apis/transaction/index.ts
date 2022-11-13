@@ -27,7 +27,7 @@ router.put(resolve_route(transactionEndpoint.update), controller.update);
 router.delete(resolve_route(transactionEndpoint.delete), controller.remove);
 
 // // Delete a transactions by user
-router.delete(resolve_route(transactionEndpoint.deleteByWallet), controller.removeByWallet);
+// router.delete(resolve_route(transactionEndpoint.deleteByWallet), controller.removeByWallet);
 
 // // Purge transactions
 router.delete(resolve_route(transactionEndpoint.purge), controller.removeAll);

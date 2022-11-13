@@ -13,7 +13,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
-        return await this.prisma.role.findUnique({
+        return await this.prisma.role.findFirst({
             where: { id: id },
             include: {
                 role_: true
