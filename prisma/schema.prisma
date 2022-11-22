@@ -24,7 +24,7 @@ model users {
   id               Int      @id @default(autoincrement())
   first_name       String   @default("Undefined")
   last_name        String   @default("Undefined")
-  email            String   
+  email            String   @unique
   contact          String   @unique @default("Undefined")
   password         String   @db.Text
   salt             String   @db.Text

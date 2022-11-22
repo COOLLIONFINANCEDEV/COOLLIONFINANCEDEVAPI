@@ -1,18 +1,19 @@
 -- CreateTable
 CREATE TABLE `users` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `first_name` VARCHAR(191) NOT NULL,
-    `last_name` VARCHAR(191) NOT NULL,
+    `first_name` VARCHAR(191) NOT NULL DEFAULT 'Undefined',
+    `last_name` VARCHAR(191) NOT NULL DEFAULT 'Undefined',
     `email` VARCHAR(191) NOT NULL,
-    `contact` VARCHAR(191) NOT NULL DEFAULT '',
+    `contact` VARCHAR(191) NOT NULL DEFAULT 'Undefined',
     `password` TEXT NOT NULL,
     `salt` TEXT NOT NULL,
+    `contact_verified` BOOLEAN NOT NULL DEFAULT false,
     `desable` BOOLEAN NOT NULL DEFAULT true,
-    `two_fa` BOOLEAN NOT NULL DEFAULT true,
+    `two_fa` BOOLEAN NOT NULL DEFAULT false,
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
-    `role_id` INTEGER NOT NULL,
+    `role_id` INTEGER NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
     UNIQUE INDEX `users_contact_key`(`contact`),
@@ -41,6 +42,7 @@ CREATE TABLE `role` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `role_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -53,19 +55,7 @@ CREATE TABLE `permissions` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `two_fa_code` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `value` VARCHAR(191) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL DEFAULT false,
-    `created_at` DATETIME(3) NOT NULL,
-    `updated_at` DATETIME(3) NOT NULL,
-    `user_id` INTEGER NOT NULL,
-
-    UNIQUE INDEX `two_fa_code_user_id_key`(`user_id`),
+    UNIQUE INDEX `permissions_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -73,10 +63,10 @@ CREATE TABLE `two_fa_code` (
 CREATE TABLE `company` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `description` TEXT NOT NULL,
-    `logo` VARCHAR(191) NOT NULL,
-    `country` VARCHAR(191) NOT NULL,
-    `city` VARCHAR(191) NOT NULL,
+    `description` TEXT NOT NULL DEFAULT '',
+    `logo` VARCHAR(191) NOT NULL DEFAULT '',
+    `country` VARCHAR(191) NOT NULL DEFAULT '',
+    `city` VARCHAR(191) NOT NULL DEFAULT '',
     `phone` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
@@ -84,6 +74,10 @@ CREATE TABLE `company` (
     `updated_at` DATETIME(3) NOT NULL,
     `manager_id` INTEGER NOT NULL,
 
+    UNIQUE INDEX `company_name_phone_key`(`name`, `phone`),
+    UNIQUE INDEX `company_name_email_key`(`name`, `email`),
+    UNIQUE INDEX `company_name_city_key`(`name`, `city`),
+    UNIQUE INDEX `company_name_country_key`(`name`, `country`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -105,7 +99,7 @@ CREATE TABLE `offer` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` TEXT NOT NULL,
-    `image` VARCHAR(191) NOT NULL,
+    `image` VARCHAR(191) NOT NULL DEFAULT '',
     `total_investment_to_raise` DOUBLE NOT NULL,
     `price_per_unit` DOUBLE NOT NULL,
     `number_of_unit` DOUBLE NOT NULL,
@@ -114,8 +108,8 @@ CREATE TABLE `offer` (
     `investment_term` TIMESTAMP NOT NULL,
     `distribution_frequency` INTEGER NOT NULL,
     `start_payment` DATE NOT NULL,
-    `expected_return` DOUBLE NOT NULL,
-    `status` VARCHAR(191) NOT NULL,
+    `expected_return` DOUBLE NOT NULL DEFAULT 0.0,
+    `status` VARCHAR(191) NOT NULL DEFAULT '',
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
@@ -151,7 +145,7 @@ CREATE TABLE `investment` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `transactions` (
+CREATE TABLE `transaction` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `amount` DOUBLE NOT NULL DEFAULT 0.0,
     `type` VARCHAR(191) NOT NULL,
@@ -165,14 +159,14 @@ CREATE TABLE `transactions` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `offer_repayment_plans` (
+CREATE TABLE `offer_repayment_plan` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `date` DATETIME(3) NOT NULL,
     `expected_amount` DOUBLE NOT NULL,
     `received_amount` DOUBLE NOT NULL,
     `status` VARCHAR(191) NOT NULL,
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
-    `created_at` DATETIME(3) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
     `offer_id` INTEGER NOT NULL,
 
@@ -189,13 +183,10 @@ CREATE TABLE `_permissionsTorole` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `users` ADD CONSTRAINT `users_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `users` ADD CONSTRAINT `users_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `role`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `users_docs` ADD CONSTRAINT `users_docs_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `two_fa_code` ADD CONSTRAINT `two_fa_code_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `company` ADD CONSTRAINT `company_manager_id_fkey` FOREIGN KEY (`manager_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -216,10 +207,10 @@ ALTER TABLE `investment` ADD CONSTRAINT `investment_offer_id_fkey` FOREIGN KEY (
 ALTER TABLE `investment` ADD CONSTRAINT `investment_wallet_id_fkey` FOREIGN KEY (`wallet_id`) REFERENCES `wallet`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `transactions` ADD CONSTRAINT `transactions_wallet_id_fkey` FOREIGN KEY (`wallet_id`) REFERENCES `wallet`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `transaction` ADD CONSTRAINT `transaction_wallet_id_fkey` FOREIGN KEY (`wallet_id`) REFERENCES `wallet`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `offer_repayment_plans` ADD CONSTRAINT `offer_repayment_plans_offer_id_fkey` FOREIGN KEY (`offer_id`) REFERENCES `offer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `offer_repayment_plan` ADD CONSTRAINT `offer_repayment_plan_offer_id_fkey` FOREIGN KEY (`offer_id`) REFERENCES `offer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_permissionsTorole` ADD CONSTRAINT `_permissionsTorole_A_fkey` FOREIGN KEY (`A`) REFERENCES `permissions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
