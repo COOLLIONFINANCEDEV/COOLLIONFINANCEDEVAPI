@@ -339,13 +339,6 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/itty-router-extras@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@types/itty-router-extras/-/itty-router-extras-0.4.0.tgz"
-  integrity sha512-IcXmXB8vVbjWy4McZjKzo+3sdQyzMpyHi5mQ4iViu6yX9cS/SVlGR+6H/AgzfG32svaQJeOhl2gfXYwf1AKEgg==
-  dependencies:
-    itty-router "^2.3.10"
-
 "@types/jsonwebtoken@^8.5.9":
   version "8.5.9"
   resolved "https://registry.npmjs.org/@types/jsonwebtoken/-/jsonwebtoken-8.5.9.tgz"
@@ -1663,16 +1656,6 @@ isexe@^2.0.0:
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-itty-router-extras@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.npmjs.org/itty-router-extras/-/itty-router-extras-0.4.2.tgz"
-  integrity sha512-ppHaBzcTXs7idFSDISehG+8kif2/4aqLCfyY/Y/uIZv79sfEfNmTq9G+rDeqblun/VZRBiXZD8ztYmMS8EOsKw==
-
-itty-router@^2.3.10, itty-router@^2.6.6:
-  version "2.6.6"
-  resolved "https://registry.npmjs.org/itty-router/-/itty-router-2.6.6.tgz"
-  integrity sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g==
-
 joycon@^3.0.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/joycon/-/joycon-3.1.1.tgz"
@@ -2029,10 +2012,10 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   resolved "https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
-normalize-port@^1.0.0:
+normalize-port-2@^1.0.0:
   version "1.0.0"
-  resolved "https://registry.npmjs.org/normalize-port/-/normalize-port-1.0.0.tgz"
-  integrity sha512-T1kIq9yABl778UmJwfM0NkOvzf8E+s49opzjKFSSGFGd4EL9aWHS1rV8WIb8jxubrEIm5P7z6O1GQoPjtpuTPg==
+  resolved "https://registry.yarnpkg.com/normalize-port-2/-/normalize-port-2-1.0.0.tgz#d539d3a03ee4ffe3878049ea254f66c061de875b"
+  integrity sha512-aoRh/yCN7cX6Vk4E0I/VYPewRQ5SarthnJ7JX1DldqApKKUF2T/0XWvBVjGJfuafPsy8hMP62j5zpWq7pmL0Qw==
 
 npm-run-path@^4.0.1:
   version "4.0.1"

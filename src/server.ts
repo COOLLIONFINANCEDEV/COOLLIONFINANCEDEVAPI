@@ -1,5 +1,5 @@
 import http from 'http';
-import normalizePort from 'normalize-port';
+import normalizePort from 'normalize-port-2';
 
 import app from 'src/app';
 import { server as serverConfig } from 'config/index';

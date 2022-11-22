@@ -29,7 +29,7 @@ export const twilioConfig = {
 
 
 export const endpoints = {
-    "baseUrl": "api",
+    "baseUrl": "v1.1",
     
     "users": {
         "retrive": "users/retrive/:id",
