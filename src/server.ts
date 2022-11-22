@@ -9,9 +9,9 @@ const port = normalizePort(serverConfig.port || '3000');
 // app.set('port', port);
 
 // Créer un serveur HTTP.
-const server = http.createServer(app)
-    .listen(port, () => {
-        console.log(`Server running: http://${serverConfig.host}:${port}.`);
-    });
+// const server = http.createServer(app)
+//     .listen(port, () => {
+//         console.log(`Server running: http://${serverConfig.host}:${port}.`);
+//     });
 
-
+app.listen(port, () => console.log(`App listening on port ${port}!`));

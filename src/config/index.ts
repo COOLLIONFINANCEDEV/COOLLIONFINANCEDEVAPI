@@ -11,7 +11,7 @@ export const dbConfig = {
 };
 
 export const server = {
-    port: 8000,
+    port: process.env.PORT,
     host: "127.0.0.1",
 };
 
@@ -30,7 +30,7 @@ export const twilioConfig = {
 
 export const endpoints = {
     "baseUrl": "v1.1",
-    
+
     "users": {
         "retrive": "users/retrive/:id",
         "list": "users/list/:page?/:perPage?",
