@@ -404,6 +404,11 @@
   dependencies:
     "@types/superagent" "*"
 
+"@types/swagger-jsdoc@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@types/swagger-jsdoc/-/swagger-jsdoc-6.0.1.tgz#94a99aca0356cb64ad2a6eb903ed034703453801"
+  integrity sha512-+MUpcbyxD528dECUBCEVm6abNuORdbuGjbrUdHDeAQ+rkPuo2a+L4N02WJHF3bonSSE6SJ3dUJwF2V6+cHnf0w==
+
 "@types/validator@^13.7.8":
   version "13.7.8"
   resolved "https://registry.npmjs.org/@types/validator/-/validator-13.7.8.tgz"

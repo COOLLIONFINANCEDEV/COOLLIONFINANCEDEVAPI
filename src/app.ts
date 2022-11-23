@@ -37,5 +37,4 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
     next()
 });
 
-// app.listen(port, () => console.log(`sample-expressjs app listening on port ${port}!`))
 export default app;

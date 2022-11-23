@@ -14,4 +14,9 @@ const port = normalizePort(serverConfig.port || '3000');
 //         console.log(`Server running: http://${serverConfig.host}:${port}.`);
 //     });
 
-app.listen(port, () => console.log(`App listening on port ${port}!`));
+// app.listen(port, () => console.log(`App listening on port ${port}!`));
+
+const server = app.listen(port, () => {
+    // @ts-ignore
+    console.log(`App listenning at ${server.address().address}:${port}`)
+});
