@@ -31,8 +31,8 @@ app.use(resolve_route(config.endpoints.baseUrl), router.authRoute);
 
 // Response of undefined route middleware
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
-    error_404(false, res);
-    console.log("Url not found");
+    error_404(false, res, "Url Not Found!");
+    // console.log("Url not found");
 
     next()
 });
