@@ -31,9 +31,10 @@ class Service extends BaseService {
         });
     }
 
-    async retriveUser(id: number) {
+    async retriveUser(id: number, whereClause: { [x: string]: any } = { two_fa: true }) {
+        whereClause["id"] = id;
         return await this.prisma.users.findFirst({
-            where: { id: id, two_fa: true },
+            where: whereClause,
             select: {
                 contact: true,
                 email: true,

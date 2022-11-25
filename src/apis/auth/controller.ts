@@ -87,7 +87,7 @@ export const signin = async (req: Request, res: Response) => {
         let user = null;
         let valid = false;
 
-        user = await service.getUser("email", data.username);
+        user = await service.getUser("email", data.username); console.log(user);
         if (!user) user = await service.getUser("contact", data.username);
 
         if (!error_404(user, res)) return;
@@ -464,6 +464,8 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
         if (channel === "email") {
             const token = Hasher.decrypt(data.authorization_code, String(process.env.EMAIL_VERIFICATION_ENCRYPT_KEY));
             const payload = jwt.verify(token, String(process.env.JWT_EMAIL_VERIFICATION_SECRET_KEY));
+            console.log(payload);
+
             const resolveScope = async () => {
                 const response: {
                     bool: boolean,
@@ -490,7 +492,11 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
                         response.bool = false;
                     }
 
-                    user = await service.retriveUser(Number(payload.user_id));
+                    user = await service.retriveUser(Number(payload.user_id), {});
+                    // const user_2 = await service.retriveUser(Number(13), {});
+                    console.log("resolver user:", user);
+                    // console.log("resolver user_2:", user_2);
+
 
                     response.newPayload = {
                         user_id: payload.user_id,
@@ -510,6 +516,8 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
             }
 
             const resolver = await resolveScope();
+            console.log("resolver:", resolver);
+
 
             if (!resolver.bool) return;
 
@@ -524,7 +532,9 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
             }
         }
 
-        if (!error_404(user, res)) return;
+        console.log(user);
+        if (!error_404(user, res, "merde")) return;
+
 
         const to = channel == "email" ? user?.email : user?.contact;
         newPayload["to"] = to;
@@ -679,7 +689,7 @@ export const resetPasswordVerify = async (req: Request, res: Response) => {
 
     data = result.result
     console.log(!data.email);
-    
+
 
     // if (!data.email || !data.contact) {
     //     res.status(400).send(make_response(true, "Email or Contact must be given !"));
