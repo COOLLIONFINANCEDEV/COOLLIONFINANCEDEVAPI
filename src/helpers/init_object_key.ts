@@ -1,8 +1,8 @@
-function init_object_key(array: { [x: string]: any; }, key: keyof typeof array, defaultValue: any = []) {
-    if (array[key] == undefined)
-        array[key] = defaultValue;
+function init_object_key(obj: { [x: string]: any; }, key: keyof typeof obj, defaultValue: any = {}) {
+    if (obj[key] == undefined)
+        obj[key] = defaultValue;
 
-    return array;
+    return obj;
 }
 
 export default init_object_key;

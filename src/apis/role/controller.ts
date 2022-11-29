@@ -1,15 +1,14 @@
 import { Request, Response } from 'express';
 
-import check_req_body from 'src/helpers/check_req_body';
-import error_404 from 'src/middlewares/error_404';
 import Service from 'src/apis/role/services';
-import serializer from 'src/middlewares/data_serializer';
-import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
-import Hasher from 'src/helpers/hasher';
-import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
-import make_response from 'src/helpers/make_response';
-import validator from 'validator';
 import { paginationConfig } from 'src/config';
+import check_req_body from 'src/helpers/check_req_body';
+import make_response from 'src/helpers/make_response';
+import serializer from 'src/middlewares/data_serializer';
+import error_404 from 'src/middlewares/error_404';
+import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
+import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
+import validator from 'validator';
 
 const service = new Service();
 

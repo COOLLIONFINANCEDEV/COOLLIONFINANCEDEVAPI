@@ -12,7 +12,7 @@
     "@types/swagger-jsdoc": "^6.0.1",
     "@types/validator": "^13.7.8",
     "nodemon": "^2.0.20",
-    "prisma": "^4.5.0",
+    "prisma": "^4.7.0",
     "prisma-dbml-generator": "^0.9.1",
     "supertest": "^6.3.0",
     "ts-node": "^10.9.1",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@cloudflare/wrangler": "^1.20.0",
-    "@prisma/client": "^4.5.0",
+    "@prisma/client": "^4.7.0",
     "@types/crypto-js": "^4.1.1",
     "@types/cryptr": "^4.0.1",
     "cors": "^2.8.5",

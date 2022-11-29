@@ -12,6 +12,8 @@
 generator client {
   provider = "prisma-client-js" // generate prisma client
   // provider = "prisma-dbml-generator" // generate dbml shema for seeing relations
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 datasource db {
@@ -25,7 +27,7 @@ model users {
   first_name       String   @default("Undefined")
   last_name        String   @default("Undefined")
   email            String   @unique
-  contact          String   @unique @default("Undefined")
+  contact          String   @default("Undefined")
   password         String   @db.Text
   salt             String   @db.Text
   contact_verified Boolean  @default(false)
@@ -185,7 +187,7 @@ model transaction {
   id         Int      @id @default(autoincrement())
   amount     Float    @default(0.0)
   type       String
-  status     String
+  status     String   @default("pending")
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt // @default(now())

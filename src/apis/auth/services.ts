@@ -31,13 +31,14 @@ class Service extends BaseService {
         });
     }
 
-    async retriveUser(id: number, whereClause: { [x: string]: any } = { two_fa: true }) {
+    async retriveUser({ id, whereClause = { two_fa: true }, selectedItems = {} }: { id: number; whereClause?: { [x: string]: any; }; selectedItems?: { [x: string]: any; }; }) {
         whereClause["id"] = id;
         return await this.prisma.users.findFirst({
             where: whereClause,
             select: {
                 contact: true,
                 email: true,
+                ...selectedItems
             }
         });
     }

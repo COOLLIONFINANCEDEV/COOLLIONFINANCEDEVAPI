@@ -10,6 +10,7 @@ import offerDocsRoute from 'apis/offer_docs';
 import offerRepaymentPlanRoute from 'apis/offer_repayment_plan';
 import investmentRoute from 'apis/investment';
 import authRoute from 'apis/auth';
+import searchEngine from './search_engine';
 
 const router = {
     userRoute: userRoute,
@@ -24,6 +25,7 @@ const router = {
     offerRepaymentPlanRoute: offerRepaymentPlanRoute,
     investmentRoute: investmentRoute,
     authRoute: authRoute,
+    searchEngine: searchEngine,
 };
 
 export default router;

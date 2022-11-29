@@ -112,6 +112,17 @@ export const update = async (req: Request, res: Response) => {
             data["salt"] = password.salt;
             delete data["last_password"];
         }
+
+        if (data.contact !== undefined) {
+            const contactExist = await service.getUser({ contact: data.contact });
+
+            if (!contactExist) data["contact_verified"] = false;
+            else {
+                res.send(make_response(true, "Duplicate entry on field contact!"));
+                return;
+            }
+        }
+
         const update = await service.update(Number(id), data);
         res.send(make_response(false, update));
     } catch (e) {

@@ -48,6 +48,16 @@ export const signup = async (req: Request, res: Response) => {
         return;
     }
     data = result.result;
+
+    if (data.contact !== undefined) {
+        const contactExist = await service.getUser("contact", data.contact);
+
+        if (contactExist) {
+            res.send(make_response(true, "Duplicate entry on contact!"));
+            return;
+        }
+    }
+
     const password = Hasher.hash(data.password)
     data["password"] = password.hash;
     data["salt"] = password.salt;
@@ -298,13 +308,25 @@ export const twoFAVerify = async (req: Request, res: Response) => {
                 return;
             }
 
-            const user = await service.retriveUser(Number(payload.user_id));
+            const user = await service.retriveUser({
+                id: Number(payload.user_id),
+                selectedItems: { contact_verified: true }
+            });
 
             if (!error_404(user, res)) return;
 
             const channel = data.channel;
 
-            const to = channel == "email" ? user?.email : user?.contact;
+            let to = user?.email;
+
+            if (channel !== "email") {
+                // @ts-ignore
+                if (user?.contact_verified) to = user?.contact;
+                else {
+                    res.send(make_response(true, "Make sure your contact is verified or use another channel!"));
+                    return;
+                }
+            }
 
             await twilioClient.verify.v2.services(twilioConfig.SERVICE_ID)
                 .verifications
@@ -492,7 +514,7 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
                         response.bool = false;
                     }
 
-                    user = await service.retriveUser(Number(payload.user_id), {});
+                    user = await service.retriveUser({ id: Number(payload.user_id), whereClause: {} });
                     // const user_2 = await service.retriveUser(Number(13), {});
                     console.log("resolver user:", user);
                     // console.log("resolver user_2:", user_2);
@@ -524,7 +546,7 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
             user = resolver.user;
             newPayload = resolver.newPayload;
         } else {
-            user = await service.retriveUser(Number(data.user_id));
+            user = await service.retriveUser({ id: Number(data.user_id) });
 
             newPayload = {
                 user_id: data.user_id,

@@ -155,6 +155,16 @@ export const endpoints = {
         "verifyUserInfo": "oauth/verify-info",
         "checkVerification": "oauth/check-verification",
     },
+
+    "searchEngine": {
+        /**
+         * @example http://example.com/search?q=string&advanced=boolean&page=number&perPage=number&filter.gt=date
+         * @filter filter.gt=2022-18-12 entry which date are greater or equal than the enter date
+         * @filter filter.lt=2022-18-12 entry which date are lower or equal than the enter date
+         * @filter filter.eq=2022-18-12 entry which date are as equal as the enter date
+         */
+        "search": "search",
+    }
 }
 
 export const paginationConfig = {

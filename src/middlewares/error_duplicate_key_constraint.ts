@@ -9,7 +9,7 @@ function error_duplicate_key_constraint(res: Response, e: any, prisma: typeof Pr
             if (typeof e.meta?.target === 'string') {
                 const field = e.meta?.target.split('_').slice(1);
                 field.splice(-1);
-                res.send(make_response(true, `Duplicate entry on ${field.join('_')}`));
+                res.send(make_response(true, `Duplicate entry on ${field.join('_')}!`));
             }
 
             return false;
