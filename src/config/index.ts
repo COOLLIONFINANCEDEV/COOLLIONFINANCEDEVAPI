@@ -17,7 +17,8 @@ export const server = {
 
 
 export const corsAllowOrigin = {
-    origin: "http://localhost:8081",
+    // origin: "http://localhost:8081",
+    origin: ["coollionfinance-dev.vercel.app",],
 };
 
 
@@ -25,6 +26,15 @@ export const twilioConfig = {
     SERVICE_ID: "VA2638596ac85433b09755508af9b171ea",
     ACCOUNT_SID: "ACacb10c996194dfc5f8890e14b1e8dc32",
     AUTH_TOKEN: "c14a0b98a503ae708d0bb288d8bc2cac",
+}
+
+
+export const cinetpayConfig = {
+    API_KEY: "14047243215ebd680ed0d0c0.07903569",
+    SITE_ID: 622120,
+    NOTIFY_URL: '',
+    RETURN_URL: '',
+    PASSWORD: 'Developpeur1010!',
 }
 
 
