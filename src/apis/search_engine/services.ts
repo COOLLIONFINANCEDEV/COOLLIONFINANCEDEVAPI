@@ -47,7 +47,6 @@ class Service extends BaseService {
                 MATCH (name, description, status) AGAINST (\'${q}\' ${queryExpansion}) AS Score
             FROM offer WHERE
                 MATCH (name, description, status) AGAINST (\'${q}\' ${queryExpansion})
-                ${filterClause}
         `)
             .then(async (result: (offer | company)[]) => {
                 if (!advanced) return result;
@@ -57,7 +56,6 @@ class Service extends BaseService {
                             MATCH (name, description, country, city) AGAINST (\'${q}\' ${queryExpansion}) AS Score
                         FROM company WHERE
                             MATCH (name, description, country, city) AGAINST (\'${q}\' ${queryExpansion})
-                            ${filterClause}
                     `);
                     result = [...result, ...advancedResult];
 

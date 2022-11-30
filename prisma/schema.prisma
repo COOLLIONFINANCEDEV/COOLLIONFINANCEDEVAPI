@@ -1,19 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// RELATION IMPORTANT NOTE
-// The side of the relation which is annotated with the @relation attribute represents the side
-// that stores the foreign key in the underlying database. The "actual" field that 
-// represents the foreign key is required on that side of the relation as well, it's called 
-// relation scalar field, and is referenced inside @relation attribute
-
-// npx prisma migrate dev --name migration_name
-
 generator client {
   provider = "prisma-client-js" // generate prisma client
   // provider = "prisma-dbml-generator" // generate dbml shema for seeing relations
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 datasource db {

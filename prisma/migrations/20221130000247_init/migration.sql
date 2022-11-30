@@ -16,7 +16,6 @@ CREATE TABLE `users` (
     `role_id` INTEGER NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
-    UNIQUE INDEX `users_contact_key`(`contact`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -149,7 +148,7 @@ CREATE TABLE `transaction` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `amount` DOUBLE NOT NULL DEFAULT 0.0,
     `type` VARCHAR(191) NOT NULL,
-    `status` VARCHAR(191) NOT NULL,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
