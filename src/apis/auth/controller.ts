@@ -68,6 +68,7 @@ export const signup = async (req: Request, res: Response) => {
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
         if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;
+        res.status(500).send("Cloudflare 504");
         if (process.env.DEBUG) console.log(e);
     }
 }
