@@ -12,6 +12,17 @@ class Service extends BaseService {
         this.prisma = super.get_prisma_client();
     }
 
+    async simple_retrive(id: number) {
+        return await this.prisma.offer.findFirst({
+            where: {
+                id: id,
+            },
+            include: {
+                investment: true
+            }
+        });
+    }
+
     async retrive(id: number, manager_id: number) {
         return await this.prisma.offer.findFirst({
             where: {
@@ -56,7 +67,8 @@ class Service extends BaseService {
                 id: Number(id),
                 company: {
                     manager_id: manager_id
-                } },
+                }
+            },
             data: data
         })
     }
@@ -68,7 +80,7 @@ class Service extends BaseService {
                 company: {
                     manager_id: manager_id
                 }
-            } 
+            }
         })
     }
 

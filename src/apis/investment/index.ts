@@ -25,10 +25,10 @@ router.get(resolve_route(investmentEndpoint.retriveByOffer), authentication, con
 router.get(resolve_route(investmentEndpoint.retriveByWallet), authentication, controller.findByWallet);
 
 // Update a offer doc
-router.put(resolve_route(investmentEndpoint.update), authentication, controller.update);
+// router.put(resolve_route(investmentEndpoint.update), authentication, controller.update);
 
 // Delete a offer doc
-router.delete(resolve_route(investmentEndpoint.delete), authentication, controller.remove);
+// router.delete(resolve_route(investmentEndpoint.delete), authentication, controller.remove);
 
 // Delete a offer docs by offer
 // router.delete(resolve_route(investmentEndpoint.deleteByOffer), authentication, controller.removeByOffer);
@@ -37,7 +37,7 @@ router.delete(resolve_route(investmentEndpoint.delete), authentication, controll
 // router.delete(resolve_route(investmentEndpoint.deleteByWallet), authentication, controller.removeByWallet);
 
 // // Purge offers
-router.delete(resolve_route(investmentEndpoint.purge), authentication, controller.removeAll);
+// router.delete(resolve_route(investmentEndpoint.purge), authentication, controller.removeAll);
 
 export default router;
 

@@ -3,14 +3,23 @@ import { Request, Response } from 'express';
 import check_req_body from 'src/helpers/check_req_body';
 import error_404 from 'src/middlewares/error_404';
 import Service from 'src/apis/transaction/services';
+import UserService from 'src/apis/users/services';
 import serializer from 'src/middlewares/data_serializer';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
 import make_response from 'src/helpers/make_response';
 import validator from 'validator';
-import { paginationConfig } from 'src/config';
+import { cinetpayConfig, paginationConfig } from 'src/config';
+import { Cinetpay } from 'src/helpers/payments';
+import { getPaymentUrlData } from 'src/types/cinetpay_types';
+import { transaction } from '@prisma/client';
+import customTransaction from 'src/types/transaction';
+import check_type_and_return_any from 'src/helpers/check_type_and_return_any';
+import Hasher from 'src/helpers/hasher';
 
 const service = new Service();
+const userService = new UserService();
+const cinetpay = new Cinetpay();
 
 // const { check_body } = require("../utils/check_body.js");
 // import Hasher from "helpers/hasher";
@@ -28,9 +37,14 @@ export const create = async (req: Request, res: Response) => {
 
     const result = serializer(data, {
         amount: 'not_null, float',
-        type: "not_null",
-        status: "not_null",
-        wallet_id: "not_null, integer",
+        currency: 'or=[XOF | XAF | CDF | GNF | USD]',
+        use_credit_card: "boolean",
+        customer_address: 'not_null | optional', // card - addresse du client
+        customer_city: "optional | not_null", // card - La ville du client
+        customer_country: 'ptional | not_null', // card - le code ISO du pays
+        customer_state: 'optional | not_null', //card - le code ISO de l'état ou ou du pays
+        customer_zip_code: 'optional | not_null',
+        customer_phone_number: "optional, number",
     });
 
     if (result.error) {
@@ -38,13 +52,134 @@ export const create = async (req: Request, res: Response) => {
         return;
     }
 
+    data = result.result;
+
+    // data = JSON.stringify({
+    //     "apikey": "14047243215ebd680ed0d0c0.07903569",
+    //     "site_id": '622120',
+    //     "transaction_id":  Math.floor(Math.random() * 100000000).toString(), //
+    //     "amount": 100,
+    //     "currency": "XOF",
+    //     "alternative_currency": "",
+    //     "description": " TEST INTEGRATION ",
+    //     // "customer_id": "172",
+    //     "customer_name": "KOUADIO",
+    //     "customer_surname": "Francisse",
+    //     "customer_email": "harrissylver@gmail.com",
+    //     "customer_phone_number": "+225004315545",
+    //     "customer_address": "Antananarivo",
+    //     "customer_city": "Antananarivo",
+    //     "customer_country": "CM",
+    //     "customer_state": "CM",
+    //     "customer_zip_code": "065100",
+    //     "notify_url": "https://webhook.site/b7e1f738-6c07-4ecb-b4ad-9868c04fc1fb",
+    //     "return_url": "https://webhook.site/b7e1f738-6c07-4ecb-b4ad-9868c04fc1fb",
+    //     "channels": "ALL",
+    //     // "metadata": "user1",
+    //     // "lang": "FR",
+    //     // "invoice_data": {
+    //     //   "Donnee1": "",
+    //     //   "Donnee2": "",
+    //     //   "Donnee3": ""
+    //     // }
+    //   });
+
+
     try {
-        const insert = await service.create(data);
-        res.status(201).send(make_response(false, insert));
+
+        const user = await userService.retrive(res.locals.auth.user_id);
+
+        if (!error_404(user, res)) return;
+
+        const wallet = user?.wallet;
+
+        const resolve_scope = () => {
+            if (data.use_credit_card) {
+                if (data.customer_address && data.customer_city && data.customer_country && data.customer_zip_code && data.customer_state) {
+                    if (user?.contact_verified && user?.last_name !== "Undefined" && user?.first_name !== "Undefined" && user?.email !== "Undefined") {
+                        return {
+                            error: false,
+                            code: 0,
+                            result: {
+                                customer_id: wallet?.id != null ? wallet?.id : -1,
+                                customer_name: user.last_name,
+                                customer_surname: user.first_name,
+                                customer_email: user.email,
+                                lock_phone_number: true,
+                                customer_phone_number: user.contact,
+                                customer_address: data.customer_address,
+                                customer_city: data.customer_city,
+                                customer_country: data.customer_country,
+                                customer_state: data.customer_state,
+                                customer_zip_code: data.customer_zip_code,
+                            }
+                        }
+                    } else
+                        return { error: true, code: 200, message: "complete your profile to use this option !" }
+                } else
+                    return { error: true, code: 404, message: "Make sure you fill in all the fields!" }
+            } else return {
+                error: false,
+                code: 0,
+                result: {
+                    customer_id: -1,
+                    customer_name: "",
+                    customer_surname: "",
+                    customer_email: "",
+                    customer_phone_number: "",
+                    customer_address: "",
+                    customer_city: "",
+                    customer_country: "",
+                    customer_state: "",
+                    customer_zip_code: 0,
+                }
+            }
+        }
+
+
+        const useCreditCard = resolve_scope();
+
+        if (useCreditCard.error) {
+            res.status(useCreditCard.code).send(useCreditCard.message);
+            return;
+        }
+
+
+        const payment: getPaymentUrlData = {
+            apikey: "",
+            site_id: 0,
+            transaction_id: "",
+            amount: data.amount,
+            currency: data.currency,
+            alternative_currency: "XOF",
+            description: "RECHARGEMENT DE COMPTE COOLLION FINANCE",
+            notify_url: "",
+            return_url: "",
+            channels: "ALL",
+            lang: "fr",
+            ...useCreditCard.result
+        }
+
+        const url = (await cinetpay.get_payment_url(payment));
+
+        if (url.error) throw new Error(url.message);
+
+        const newTransaction = check_type_and_return_any<customTransaction>({
+            amount: payment.amount,
+            currency: payment.currency,
+            service: "cinetpay",
+            type: "deposit",
+            transaction_id: payment.transaction_id,
+            wallet_id: wallet != null ? wallet.id : -1,
+        });
+
+        await service.create(newTransaction);
+        res.status(201).send(make_response(false, { payment_url: url.payment_url }));
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
         if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;
-        throw e;
+        res.status(500).send(make_response(true, "Internal Server Error!"));
+        if (process.env.DEBUG) throw e;
     }
 }
 
@@ -159,24 +294,70 @@ export const removeAll = async (req: Request, res: Response) => {
 
 
 
+// Payment notify url
+export const cinetpay_payment_notification_url = async (req: Request, res: Response) => {
+    if (!check_req_body(req, res)) return;
 
-// // Delete all transaction
-// exports.deleteAll = (req: Request, res: Response) => {
-//     Service.purge((err, data) => {
-//         if (err) {
-//             res.status(500);
+    let data = req.body;
 
-//             if (err.kind == 'not_found') {
-//                 res.status(404);
-//                 err.message = "Not Found!";
-//             }
+    // const result = serializer(data, {
+    //     cpm_site_id: "not_null, number",
+    //     cpm_trans_id: "not_null",
+    //     cpm_trans_date: "not_null",
+    //     cpm_amount: "not_null, float",
+    //     cpm_currency: "or=[XOF | XAF | CDF | GNF | USD]",
+    //     signature: "not_null",
+    //     payment_method: "not_null",
+    //     cel_phone_num: "number",
+    //     cpm_phone_prefixe: "number",
+    //     cpm_language: "not_null",
+    //     cpm_version: "not_null",
+    //     cpm_payment_config: "not_null",
+    //     cpm_page_action: "not_null",
+    //     cpm_custom: "not_null",
+    //     cpm_designation: "not_null",
+    //     cpm_error_message: "",
+    // });
 
-//             res.send({
-//                 message:
-//                     err.message || "Some error occurred while deleting the transaction."
-//             });
-//         }
-//         else res.send(data);
-//     });
-// };
+    // if (result.error) {
+    //     res.status(400).send(result);
+    //     return;
+    // }
+
+    // data = result.result;
+
+
+    try {
+        const cmp = data.cpm_site_id + data.cpm_trans_id + data.cpm_trans_date + data.cpm_amount + data.cpm_currency +
+            data.signature + data.payment_method + data.cel_phone_num + data.cpm_phone_prefixe +
+            data.cpm_language + data.cpm_version + data.cpm_payment_config + data.cpm_page_action + data.cpm_custom + data.cpm_designation + data.cpm_error_message;
+
+        const hmac = Hasher.hmac(cmp, "SHA256", cinetpayConfig.SECRET_KEY);
+
+        if (hmac === req.headers["x-token"]) {
+            const transaction = await service.retriveByTransactionID(data.cpm_trans_id);
+
+            if (transaction?.status == "ACCEPTED") res.send();
+            else {
+                const transactionIssue = await cinetpay.verify_payment(data.cpm_trans_id);
+                const update = check_type_and_return_any<any>({
+                    status: (transactionIssue.data.status).toLowerCase(),
+                    method: (transactionIssue.data.payment_method).toLowerCase()
+                })
+                await service.update(Number(transaction?.id), Number(transaction?.wallet?.user_id), update);
+
+                if (transactionIssue.error) {
+                    // notify the customer by email that his transaction has been canceled
+                } else {
+                    // notify the customer by email that his transaction accepted
+                }
+            }
+
+            res.send();
+        } else res.status(404).send("Hmac token not verified!");
+    } catch {
+        res.status(500).send();
+    }
+}
+
 

@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import Service from 'src/apis/investment/services';
+import UsersService from 'src/apis/users/services';
+import OfferService from 'src/apis/offer/services';
+import TransactionrService from 'src/apis/transaction/services';
 import { paginationConfig } from 'src/config';
 import check_req_body from 'src/helpers/check_req_body';
 import make_response from 'src/helpers/make_response';
@@ -9,8 +13,13 @@ import error_404 from 'src/middlewares/error_404';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
 import validator from 'validator';
+import check_type_and_return_any from 'src/helpers/check_type_and_return_any';
+import customTransaction from 'src/types/transaction';
 
 const service = new Service();
+const usersService = new UsersService();
+const offerService = new OfferService();
+const transactionService = new TransactionrService();
 
 
 // Create and Save a new investment docs
@@ -21,8 +30,7 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        amount: 'not_null, float',
-        wallet_id: 'not_null, integer',
+        units: 'not_null, float',
         offer_id: "not_null, integer",
     });
 
@@ -31,9 +39,58 @@ export const create = async (req: Request, res: Response) => {
         return;
     }
 
+    data = result.result;
+
     try {
-        const insert = await service.create(data);
-        res.status(201).send(make_response(false, insert));
+        const offer = await offerService.simple_retrive(data.offer_id);
+        const user = await usersService.retrive(res.locals.auth.user_id);
+        const userWallet = Number(user?.wallet?.amount);
+        const investments = offer ? offer?.investment : [];
+        const investmentAmount = data.units * Number(offer?.price_per_unit);
+        let raisedFund = 0;
+
+        for (let investment of investments)
+            raisedFund += investment.amount;
+
+        if (raisedFund === offer?.total_investment_to_raise) {
+            res.send(make_response(false, "The proposed investment is closed."));
+            return;
+        }
+
+        const unitsToRaised = (raisedFund / Number(offer?.price_per_unit)) - Number(offer?.number_of_unit);
+
+        if (data.units <= unitsToRaised) {
+            res.send(make_response(false, `You have exceeded the number of units that can be invested. Availlable units : ${unitsToRaised}.`));
+            return;
+        }
+
+        if (investmentAmount > userWallet) {
+            res.send(make_response(false, `You have exceeded the amount on your wallet, please make a deposit on your wallet to access the investment offer. Remaining amount: ${investmentAmount - userWallet}.`));
+            return;
+        }
+
+        const newInvestment = {
+            amount: investmentAmount,
+            offer_id: data.offer_id,
+            wallet_id: user?.wallet?.id,
+        }
+
+        const newTransaction: customTransaction = {
+            amount: investmentAmount,
+            type: "investment",
+            wallet_id: Number(user?.wallet?.id),
+            currency: "XOF",
+            service: "coollionfi",
+            transaction_id: uuidv4(),
+            status: "success"
+        }
+
+        await transactionService.create(check_type_and_return_any(newTransaction));
+        await service.create(check_type_and_return_any(newInvestment));
+
+        // Notify the customer by email that his invesment is accepted
+
+        res.status(201).send(make_response(false, "Invesment accepted."));
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
         if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;

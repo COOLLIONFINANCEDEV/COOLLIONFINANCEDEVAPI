@@ -31,8 +31,10 @@ export const twilioConfig = {
 
 export const cinetpayConfig = {
     API_KEY: "14047243215ebd680ed0d0c0.07903569",
+    SECRET_KEY: "15339844795f294f74a65e51.35665952",
     SITE_ID: 622120,
     NOTIFY_URL: '',
+    TRANSFER_NOTIFY_URL: '',
     RETURN_URL: '',
     PASSWORD: 'Developpeur1010!',
 }
@@ -99,6 +101,7 @@ export const endpoints = {
         "delete": "transactions/delete/:id",
         "deleteByWallet": "transactions/delete/wallet/:id",
         "purge": "transactions/purge/",
+        "CinetpayPaymentNotificationUrl": "transactions/cinetpay/notification",
     },
     "company": {
         "retrive": "companies/retrive/:id",
@@ -145,7 +148,7 @@ export const endpoints = {
         "retriveByOffer": "investment/retrive/offer/:id/:page?/:perPage?",
         "retriveByWallet": "investment/retrive/wallet/:id/:page?/:perPage?",
         "list": "investment/list/:page?/:perPage?",
-        "create": "investment/create/",
+        "create": "investment/invest",
         "update": "investment/update/:id",
         "delete": "investment/delete/:id",
         "deleteByOffer": "investment/delete/offer/:id",

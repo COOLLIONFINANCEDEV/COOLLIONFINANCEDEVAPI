@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client-js" // generate prisma client
-  // provider = "prisma-dbml-generator" // generate dbml shema for seeing relations
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -18,14 +17,14 @@ model users {
   password         String   @db.Text
   salt             String   @db.Text
   contact_verified Boolean  @default(false)
-  desable          Boolean  @default(true) // user account is desable
-  two_fa           Boolean  @default(false) // user subscribe to 2fa
+  desable          Boolean  @default(true)
+  two_fa           Boolean  @default(false)
   is_deleted       Boolean  @default(false)
   created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt // @default(now())
+  updated_at       DateTime @updatedAt
 
-  user_docs users_docs[]
   role_id   Int?
+  user_docs users_docs[]
   role      role?        @relation(fields: [role_id], references: [id])
   companies company[]
   wallet    wallet?
@@ -39,7 +38,7 @@ model users_docs {
   path       String   @db.Text
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt // @default(now())
+  updated_at DateTime @updatedAt
 
   user_id Int
   user    users @relation(fields: [user_id], references: [id])
@@ -53,10 +52,10 @@ model role {
   description String
   is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt // @default(now())
+  updated_at  DateTime @updatedAt
 
-  role_ permissions[]
   users users[]
+  role_ permissions[]
 
   @@map("role")
 }
@@ -67,7 +66,7 @@ model permissions {
   description String
   is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt // @default(now())
+  updated_at  DateTime @updatedAt
 
   permission_ role[]
 
@@ -77,15 +76,15 @@ model permissions {
 model company {
   id          Int      @id @default(autoincrement())
   name        String
-  description String   @default("") @db.Text
-  logo        String   @default("") // lien ou chaine base64, si chaine base64 alors ajouter @db.Text ou n@db.Blob
+  description String   @db.Text
+  logo        String   @default("")
   country     String   @default("")
   city        String   @default("")
   phone       String
   email       String
   is_deleted  Boolean  @default(false)
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt // @default(now())
+  updated_at  DateTime @updatedAt
 
   manager_id Int
   manager    users   @relation(fields: [manager_id], references: [id])
@@ -103,7 +102,7 @@ model wallet {
   amount     Float
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt // @default(now())
+  updated_at DateTime @updatedAt
 
   user_id      Int           @unique
   user         users         @relation(fields: [user_id], references: [id])
@@ -123,14 +122,14 @@ model offer {
   number_of_unit            Float
   maximum_amount            Float
   minimum_amount            Float
-  investment_term           DateTime @db.Timestamp() // le temps mis pour le remboursement en Jours
-  distribution_frequency    Int // la frequence de remboursement en Jours
+  investment_term           DateTime @db.Timestamp(0)
+  distribution_frequency    Int
   start_payment             DateTime @db.Date
-  expected_return           Float    @default(0.0)
+  expected_return           Float    @default(0)
   status                    String   @default("")
   is_deleted                Boolean  @default(false)
   created_at                DateTime @default(now())
-  updated_at                DateTime @updatedAt // @default(now())
+  updated_at                DateTime @updatedAt
 
   company_id            Int
   company               company                @relation(fields: [company_id], references: [id])
@@ -147,7 +146,7 @@ model offer_docs {
   path       String
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt // @default(now())
+  updated_at DateTime @updatedAt
 
   offer_id Int
   offer    offer @relation(fields: [offer_id], references: [id])
@@ -160,7 +159,7 @@ model investment {
   amount     Float
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt // @default(now())
+  updated_at DateTime @updatedAt
 
   offer_id  Int
   offer     offer?  @relation(fields: [offer_id], references: [id])
@@ -171,13 +170,17 @@ model investment {
 }
 
 model transaction {
-  id         Int      @id @default(autoincrement())
-  amount     Float    @default(0.0)
-  type       String
-  status     String   @default("pending")
-  is_deleted Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt // @default(now())
+  id             Int      @id @default(autoincrement())
+  amount         Float    @default(0)
+  type           String
+  status         String   @default("pending")
+  is_deleted     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  currency       String   @db.VarChar(10)
+  service        String   @db.VarChar(30)
+  transaction_id String   @unique(map: "transaction_id") @db.VarChar(255)
+  method         String   @default("unknown") @db.VarChar(25)
 
   wallet_id Int
   wallet    wallet? @relation(fields: [wallet_id], references: [id])
@@ -193,7 +196,7 @@ model offer_repayment_plan {
   status          String
   is_deleted      Boolean  @default(false)
   created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt // @default(now())
+  updated_at      DateTime @updatedAt
 
   offer_id Int
   offer    offer? @relation(fields: [offer_id], references: [id])

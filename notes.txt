@@ -55,3 +55,10 @@ Elément de recherche
 users
     delete: master or own user
     purge: master
+
+
+
+
+[CINETPAY]
+    token HMAC sur url de notifacation
+    

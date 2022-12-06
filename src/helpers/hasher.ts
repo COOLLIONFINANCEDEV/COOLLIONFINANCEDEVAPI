@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import Cryptr from 'cryptr';
 import CryptoJS from 'crypto-js';
+import check_type_and_return_any from './check_type_and_return_any';
 
 const cryptr = new Cryptr(String(process.env.CRYPTR_SECRET_KEY));
 
@@ -95,6 +96,14 @@ class Hasher {
         // return cryptr.decrypt(crypted);
 
         return CryptoJS.AES.decrypt(crypted, secretKey).toString(CryptoJS.enc.Utf8);
+    }
+
+    static hmac(strToHash: string, algorithm: "MD5" | "SHA1" | "SHA256" | "SHA512", secretKey: string) {
+        const hashFunction = "Hmac" + algorithm;
+        // @ts-ignore
+        const hmac = CryptoJS[hashFunction](strToHash, secretKey);
+
+        return CryptoJS.enc.Hex.stringify(hmac);
     }
 }
 

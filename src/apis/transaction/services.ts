@@ -12,6 +12,17 @@ class Service extends BaseService {
         this.prisma = super.get_prisma_client();
     }
 
+    async retriveByTransactionID(transaction_id: string) {
+        return await this.prisma.transaction.findFirst({
+            where: {
+                transaction_id: transaction_id
+            },
+            include: {
+                wallet: true,
+            }
+        });
+    }
+
     async retrive(id: number, user_id: number) {
         return await this.prisma.transaction.findFirst({
             where: {
