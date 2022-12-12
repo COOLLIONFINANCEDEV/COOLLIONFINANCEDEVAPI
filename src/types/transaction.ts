@@ -6,7 +6,7 @@ type customTransaction = {
     service: string,
     transaction_id: string,
     method?: string,
-    status?: "pending" | "success" | "refused",
+    status?: "ACCEPTED" | "REJECTED" | "REFUSED",
 }
 
 export default customTransaction;

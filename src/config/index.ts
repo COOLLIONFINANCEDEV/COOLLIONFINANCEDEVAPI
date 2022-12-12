@@ -26,6 +26,7 @@ export const twilioConfig = {
     SERVICE_ID: "VA2638596ac85433b09755508af9b171ea",
     ACCOUNT_SID: "ACacb10c996194dfc5f8890e14b1e8dc32",
     AUTH_TOKEN: "c14a0b98a503ae708d0bb288d8bc2cac",
+    SG_APIKEY: "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",
 }
 
 

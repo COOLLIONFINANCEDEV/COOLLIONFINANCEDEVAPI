@@ -12,7 +12,7 @@ export default function perform_query_parameter(req: Request, res: Response, nex
 
         // queryKeyValue[key] = subKey ? { [subKey]: value } : value;
         if (subKey) {
-            init_object_key(queryKeyValue, key);
+            init_object_key({ obj: queryKeyValue, key });
             queryKeyValue[key][subKey] = value;
         }
         else if (key.substring(key.length - 2) === "[]") {

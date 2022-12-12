@@ -15,6 +15,7 @@ import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_cons
 import validator from 'validator';
 import check_type_and_return_any from 'src/helpers/check_type_and_return_any';
 import customTransaction from 'src/types/transaction';
+import sg_send_email from 'src/helpers/send_email';
 
 const service = new Service();
 const usersService = new UsersService();
@@ -82,13 +83,28 @@ export const create = async (req: Request, res: Response) => {
             currency: "XOF",
             service: "coollionfi",
             transaction_id: uuidv4(),
-            status: "success"
+            status: "ACCEPTED"
         }
 
         await transactionService.create(check_type_and_return_any(newTransaction));
         await service.create(check_type_and_return_any(newInvestment));
-
         // Notify the customer by email that his invesment is accepted
+
+        const username = user?.first_name && user.last_name
+            ? `${user.first_name} ${user.last_name}` : user?.last_name
+                ? user.last_name : user?.first_name
+                    ? user.first_name : "Dear";
+
+        // notify the customer by email that his transaction accepted
+        await sg_send_email({
+            to: String(user?.email),
+            templateData: {
+                subject: "Investment info",
+                title: "INVESTMENT ACCEPTED",
+                username: username,
+                body: `Your investment under Offer ${offer?.name} has been accepted. See more details on your dashboard. Now, wait for your winnings.\nSee more  offer:`
+            }
+        }).catch();
 
         res.status(201).send(make_response(false, "Invesment accepted."));
     } catch (e) {

@@ -36,6 +36,8 @@ export const signup = async (req: Request, res: Response) => {
     if (!check_req_body(req, res)) return;
 
     let data = req.body;
+    console.log(data);
+    
 
     const result = serializer(data, {
         email: 'not_null, email',

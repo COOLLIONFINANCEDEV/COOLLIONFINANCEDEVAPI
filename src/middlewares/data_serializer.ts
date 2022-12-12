@@ -16,7 +16,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
     if (!options?.acceptUnknow)
         diffFields.forEach(field => {
-            init_object_key(result, field);
+            init_object_key({ obj: result, key: field, defaultValue: [] });
             result[field].push("This field it's a parasite!");
         });
 
@@ -31,7 +31,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
         // if (body[field] == undefined && !constraints.includes("optional")) {
         if (constraints.includes("optional") && !not_null(body[field], ["empty"])) {
-            // init_object_key(result, field);
+            // init_object_key(result, field, []);
             // result[field].push("This field is required!");
             // console.log('jumps', field);
         }
@@ -45,7 +45,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = not_null(body[field]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push("This field is required!");
                         }
                         // false = 0 | true = 1
@@ -54,7 +54,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = min_length(body[field], constraint[1]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Min length is ${constraint[1]}!`);
                         }
                         break;
@@ -62,7 +62,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = max_length(body[field], constraint[1]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Max length is ${constraint[1]}!`);
                         }
                         break;
@@ -70,7 +70,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_email(body[field]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a valid email!`);
                         }
                         break;
@@ -79,7 +79,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a number!`);
                         }
                         break;
@@ -87,7 +87,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_integer(body[field]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be an integer!`);
                         } else
                             body[field] = validator.toInt(String(body[field]));
@@ -96,7 +96,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_float(body[field]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a float!`);
                         } else
                             body[field] = validator.toFloat(String(body[field]));
@@ -105,7 +105,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_boolean(body[field], { loose: options?.booleanUseStrict || false });
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a boolean!`);
 
                         } else
@@ -115,7 +115,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_date(body[field]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a date!`);
 
                         } else
@@ -125,7 +125,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_like(body[field], constraint[1]);
 
                         if (!bool) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Valid value is: ${constraint[1].substring(1, constraint[1].length - 1).replaceAll('|', ',')} !`);
                         } else
                             body[field] = body[field].toString().trim();
@@ -134,7 +134,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         const orResult = or(body[field], constraint[1]);
 
                         if (!orResult) {
-                            init_object_key(result, field);
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Valid value type is: ${constraint[1].substring(1, constraint[1].length - 1).replaceAll('|', ',')} !`);
                         } else
                             body[field] = orResult;

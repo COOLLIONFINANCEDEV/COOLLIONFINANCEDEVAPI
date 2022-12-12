@@ -16,6 +16,7 @@ import { transaction } from '@prisma/client';
 import customTransaction from 'src/types/transaction';
 import check_type_and_return_any from 'src/helpers/check_type_and_return_any';
 import Hasher from 'src/helpers/hasher';
+import sg_send_email from 'src/helpers/send_email';
 
 const service = new Service();
 const userService = new UserService();
@@ -157,6 +158,7 @@ export const create = async (req: Request, res: Response) => {
             return_url: "",
             channels: "ALL",
             lang: "fr",
+            metadata: String(user?.id),
             ...useCreditCard.result
         }
 
@@ -335,7 +337,7 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
         const hmac = Hasher.hmac(cmp, "SHA256", cinetpayConfig.SECRET_KEY);
 
         if (hmac === req.headers["x-token"]) {
-            const transaction = await service.retriveByTransactionID(data.cpm_trans_id);
+            let transaction = await service.retriveByTransactionID(data.cpm_trans_id);
 
             if (transaction?.status == "ACCEPTED") res.send();
             else {
@@ -345,11 +347,37 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
                     method: (transactionIssue.data.payment_method).toLowerCase()
                 })
                 await service.update(Number(transaction?.id), Number(transaction?.wallet?.user_id), update);
+                transaction = await service.retriveByTransactionID(data.cpm_trans_id);
+                const balance = transaction?.wallet?.amount;
+
+                const user = await userService.retrive(data.cpm_custom).catch();
+                const username = user?.first_name && user.last_name
+                    ? `${user.first_name} ${user.last_name}` : user?.last_name
+                        ? user.last_name : user?.first_name
+                            ? user.first_name : "Dear";
 
                 if (transactionIssue.error) {
                     // notify the customer by email that his transaction has been canceled
+                    await sg_send_email({
+                        to: String(user?.email),
+                        templateData: {
+                            subject: "Transaction info",
+                            title: "TRANSACTION REJECTED",
+                            username: username,
+                            body: `failed to deposit ${data.cpm_amount}${data.cpm_currency} on your fiat wallet. Try again and if you receive a similar email contact us`,
+                        }
+                    }).catch();
                 } else {
                     // notify the customer by email that his transaction accepted
+                    await sg_send_email({
+                        to: String(user?.email),
+                        templateData: {
+                            subject: "Transaction info",
+                            title: "TRANSACTION ACCEPTED",
+                            username: username,
+                            body: `${data.cpm_amount}${data.cpm_currency} deposit on your fiat wallet. New balance is ${balance} XOF`,
+                        }
+                    }).catch();
                 }
             }
 
