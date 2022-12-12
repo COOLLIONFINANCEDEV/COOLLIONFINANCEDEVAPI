@@ -70,7 +70,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         bool = is_email(body[field]);
 
                         if (!bool) {
-                            init_object_key({ obj: result, key: field, defaultValue: {} });
+                            init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a valid email!`);
                         }
                         break;
