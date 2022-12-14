@@ -17,7 +17,7 @@ export const server = {
 
 
 export const corsAllowOrigin = {
-    // origin: "http://localhost:8081",
+    origin: "http://localhost:3000",
     origin: ["coollionfinance-dev.vercel.app",],
 };
 
