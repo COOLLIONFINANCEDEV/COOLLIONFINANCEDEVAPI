@@ -9,15 +9,12 @@ import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_cons
 import Hasher from 'src/helpers/hasher';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
 import make_response from 'src/helpers/make_response';
-import validator from 'validator';
-import { paginationConfig, twilioConfig } from 'src/config';
-import { getEventListeners } from 'events';
+import { twilioConfig } from 'src/config';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import twilio from 'twilio';
 import { error_invalid_code, error_invalid_to } from 'src/middlewares/error_twilio';
-import { right_user } from 'src/middlewares/authentication';
 
 
 const service = new Service();
@@ -41,6 +38,7 @@ export const signup = async (req: Request, res: Response) => {
         email: 'not_null, email',
         contact: 'number, optional',
         password: 'not_null, min_length=8, max_length=20',
+        role_id: 'integer',
     });
 
     if (result.error) {
@@ -487,7 +485,6 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
         if (channel === "email") {
             const token = Hasher.decrypt(data.authorization_code, String(process.env.EMAIL_VERIFICATION_ENCRYPT_KEY));
             const payload = jwt.verify(token, String(process.env.JWT_EMAIL_VERIFICATION_SECRET_KEY));
-            console.log(payload);
 
             const resolveScope = async () => {
                 const response: {
@@ -555,7 +552,6 @@ export const verifyUserInfo = async (req: Request, res: Response) => {
             }
         }
 
-        console.log(user);
         if (!error_404(user, res, "merde")) return;
 
 
@@ -711,7 +707,6 @@ export const resetPasswordVerify = async (req: Request, res: Response) => {
     }
 
     data = result.result
-    console.log(!data.email);
 
 
     // if (!data.email || !data.contact) {
