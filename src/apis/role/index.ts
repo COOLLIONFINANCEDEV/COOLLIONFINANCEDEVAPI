@@ -13,7 +13,7 @@ const router: Router = Router();
 router.post(resolve_route(roleEndpoint.create), authentication, controller.create);
 
 // // List roles
-router.get(resolve_route(roleEndpoint.list), authentication, controller.findAll);
+router.get(resolve_route(roleEndpoint.list), controller.findAll);
 
 // Retrieve role
 router.get(resolve_route(roleEndpoint.retrive), authentication, controller.findOne);
