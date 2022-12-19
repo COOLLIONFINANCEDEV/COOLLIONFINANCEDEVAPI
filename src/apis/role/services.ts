@@ -16,7 +16,7 @@ class Service extends BaseService {
         return await this.prisma.role.findFirst({
             where: { id: id },
             include: {
-                role_: true
+                permissions: true
             }
         });
     }
@@ -27,7 +27,7 @@ class Service extends BaseService {
 
         return await this.prisma.role.findMany({
             include: {
-                role_: true
+                permissions: true
             },
             skip: (page - 1) * perPage,
             take: perPage,

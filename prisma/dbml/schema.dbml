@@ -2,97 +2,100 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table Users {
+Table users {
   id Int [pk, increment]
-  first_name String [not null]
-  last_name String [not null]
+  first_name String [not null, default: 'Undefined']
+  last_name String [not null, default: 'Undefined']
   email String [unique, not null]
-  contact String [unique, not null, default: '']
+  contact String [not null, default: 'Undefined']
   password String [not null]
   salt String [not null]
+  contact_verified Boolean [not null, default: false]
   desable Boolean [not null, default: true]
-  two_fa Boolean [not null, default: true]
+  two_fa Boolean [not null, default: false]
   is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  user_docs UsersDocs [not null]
-  role_id Int [not null]
-  role Role [not null]
-  two_fa_code TwoFACode
-  companies Company [not null]
-  wallet Wallet
+  role_id Int
+  user_docs users_docs [not null]
+  role role
+  companies company [not null]
+  wallet wallet
 }
 
-Table UsersDocs {
+Table users_docs {
   id Int [pk, increment]
   name String [not null]
   path String [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   user_id Int [not null]
-  user Users [not null]
+  user users [not null]
 }
 
-Table Role {
+Table role {
   id Int [pk, increment]
-  name String [not null]
+  name String [unique, not null]
   description String [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  role_ Permissions [not null]
-  users Users [not null]
+  users users [not null]
+  role_ permissions [not null]
 }
 
-Table Permissions {
+Table permissions {
   id Int [pk, increment]
-  name String [not null]
+  name String [unique, not null]
   description String [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  permission_ Role [not null]
+  permission_ role [not null]
 }
 
-Table TwoFACode {
-  id Int [pk, increment]
-  value String [not null]
-  created_at DateTime [not null]
-  updated_at DateTime [not null]
-  user_id Int [unique, not null]
-  user Users [not null]
-}
-
-Table Company {
+Table company {
   id Int [pk, increment]
   name String [not null]
   description String [not null]
-  logo String [not null]
-  country String [not null]
-  city String [not null]
+  logo String [not null, default: '']
+  country String [not null, default: '']
+  city String [not null, default: '']
   phone String [not null]
   email String [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   manager_id Int [not null]
-  manager Users [not null]
-  offers Offer [not null]
+  manager users [not null]
+  offers offer [not null]
+
+  indexes {
+    (name, phone) [unique]
+    (name, email) [unique]
+    (name, city) [unique]
+    (name, country) [unique]
+  }
 }
 
-Table Wallet {
+Table wallet {
   id Int [pk, increment]
   amount Float [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   user_id Int [unique, not null]
-  user Users [not null]
-  investments Investment [not null]
-  transactions Transactions [not null]
+  user users [not null]
+  investments investment [not null]
+  transactions transaction [not null]
 }
 
-Table Offer {
+Table offer {
   id Int [pk, increment]
   name String [not null]
   description String [not null]
-  image String [not null]
+  image String [not null, default: '']
   total_investment_to_raise Float [not null]
   price_per_unit Float [not null]
   number_of_unit Float [not null]
@@ -101,84 +104,91 @@ Table Offer {
   investment_term DateTime [not null]
   distribution_frequency Int [not null]
   start_payment DateTime [not null]
-  expected_return Float [not null]
-  status String [not null]
+  expected_return Float [not null, default: 0]
+  status String [not null, default: '']
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   company_id Int [not null]
-  company Company [not null]
-  offer_docs OfferDocs [not null]
-  investment Investment [not null]
-  offer_repayment_plans OfferRepaymentPlans [not null]
+  company company [not null]
+  offer_docs offer_docs [not null]
+  investment investment [not null]
+  offer_repayment_plans offer_repayment_plan [not null]
 }
 
-Table OfferDocs {
+Table offer_docs {
   id Int [pk, increment]
   name String [not null]
   path String [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   offer_id Int [not null]
-  offer Offer [not null]
+  offer offer [not null]
 }
 
-Table Investment {
+Table investment {
   id Int [pk, increment]
   amount Float [not null]
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   offer_id Int [not null]
-  offer Offer
+  offer offer
   wallet_id Int [not null]
-  wallet Wallet
+  wallet wallet
 }
 
-Table Transactions {
+Table transaction {
   id Int [pk, increment]
   amount Float [not null, default: 0]
   type String [not null]
-  status String [not null]
+  status String [not null, default: 'pending']
+  is_deleted Boolean [not null, default: false]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
+  currency String [not null]
+  service String [not null]
+  transaction_id String [unique, not null]
+  method String [not null, default: 'unknown']
   wallet_id Int [not null]
-  wallet Wallet
+  wallet wallet
 }
 
-Table OfferRepaymentPlans {
+Table offer_repayment_plan {
   id Int [pk, increment]
   date DateTime [not null]
   expected_amount Float [not null]
   received_amount Float [not null]
   status String [not null]
-  created_at DateTime [not null]
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   offer_id Int [not null]
-  offer Offer
+  offer offer
 }
 
 Table permissionsTorole {
-  role_Id Int [ref: > Permissions.id]
-  permission_Id Int [ref: > Role.id]
+  role_Id Int [ref: > permissions.id]
+  permission_Id Int [ref: > role.id]
 }
 
-Ref: Users.role_id > Role.id
+Ref: users.role_id > role.id
 
-Ref: UsersDocs.user_id > Users.id
+Ref: users_docs.user_id > users.id
 
-Ref: TwoFACode.user_id - Users.id
+Ref: company.manager_id > users.id
 
-Ref: Company.manager_id > Users.id
+Ref: wallet.user_id - users.id
 
-Ref: Wallet.user_id - Users.id
+Ref: offer.company_id > company.id
 
-Ref: Offer.company_id > Company.id
+Ref: offer_docs.offer_id > offer.id
 
-Ref: OfferDocs.offer_id > Offer.id
+Ref: investment.offer_id > offer.id
 
-Ref: Investment.offer_id > Offer.id
+Ref: investment.wallet_id > wallet.id
 
-Ref: Investment.wallet_id > Wallet.id
+Ref: transaction.wallet_id > wallet.id
 
-Ref: Transactions.wallet_id > Wallet.id
-
-Ref: OfferRepaymentPlans.offer_id > Offer.id
+Ref: offer_repayment_plan.offer_id > offer.id

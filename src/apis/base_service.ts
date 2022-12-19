@@ -107,9 +107,6 @@ class BaseService {
         
         const sql = `SELECT ${constraint} FROM ${entity} WHERE id = ${Number(validator.escape(String(id)))}`;
         const req: any = await client.$queryRawUnsafe(sql);
-
-        console.log(sql);
-        console.log(req);
         
 
         return req.length ? (req[0][constraint] === owner ? true : false) : true;

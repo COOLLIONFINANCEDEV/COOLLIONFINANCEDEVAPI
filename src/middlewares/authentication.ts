@@ -28,17 +28,21 @@ function authentication(req: Request, res: Response, next: NextFunction): void {
                 next();
             } else {
                 res.status(401).send(make_response(true, "Unauthorized!"));
-                if (process.env.DEBUG)
-                    throw new Error("Token error!");
+                if (process.env.DEBUG) console.warn("Token error!");
+                return
             }
         } else {
             res.status(401).send(make_response(true, "Unauthorized!"));
             if (process.env.DEBUG)
-                throw new Error("Authorization not provided!");
+                console.warn("Authorization not provided!");
+
+            return;
         }
     } catch (e) {
         res.status(401).send(make_response(true, "Unauthorized!"));
-        if (process.env.DEBUG) throw e;
+        if (process.env.DEBUG) console.error(e);
+
+        return;
     }
 }
 
@@ -64,8 +68,10 @@ export function right_owner({ entity, id, owner, constraint }: { entity: Prisma.
             owner = owner || res.locals.auth?.user_id;
             const _id = id || req.params.id;
 
-            const isOwner = await service.isOwner(entity, Number(_id), Number(owner), constraint);
-            assert(isOwner);
+            if (!res.locals.auth?.isAdmin) {
+                const isOwner = await service.isOwner(entity, Number(_id), Number(owner), constraint);
+                assert(isOwner);
+            }
         }
         catch (e) {
             res.status(401).send(make_response(true, "Unauthorized!"));

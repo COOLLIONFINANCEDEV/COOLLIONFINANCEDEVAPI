@@ -59,10 +59,20 @@ CREATE TABLE `permissions` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `roleToPermission` (
+    `role_id` INTEGER NOT NULL,
+    `permission_id` INTEGER NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`role_id`, `permission_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `company` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `description` TEXT NOT NULL DEFAULT '',
+    `description` TEXT NOT NULL,
     `logo` VARCHAR(191) NOT NULL DEFAULT '',
     `country` VARCHAR(191) NOT NULL DEFAULT '',
     `city` VARCHAR(191) NOT NULL DEFAULT '',
@@ -104,10 +114,10 @@ CREATE TABLE `offer` (
     `number_of_unit` DOUBLE NOT NULL,
     `maximum_amount` DOUBLE NOT NULL,
     `minimum_amount` DOUBLE NOT NULL,
-    `investment_term` TIMESTAMP NOT NULL,
+    `investment_term` TIMESTAMP(0) NOT NULL,
     `distribution_frequency` INTEGER NOT NULL,
     `start_payment` DATE NOT NULL,
-    `expected_return` DOUBLE NOT NULL DEFAULT 0.0,
+    `expected_return` DOUBLE NOT NULL DEFAULT 0,
     `status` VARCHAR(191) NOT NULL DEFAULT '',
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -146,14 +156,19 @@ CREATE TABLE `investment` (
 -- CreateTable
 CREATE TABLE `transaction` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `amount` DOUBLE NOT NULL DEFAULT 0.0,
+    `amount` DOUBLE NOT NULL DEFAULT 0,
     `type` VARCHAR(191) NOT NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `is_deleted` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
+    `currency` VARCHAR(10) NOT NULL,
+    `service` VARCHAR(30) NOT NULL,
+    `transaction_id` VARCHAR(255) NOT NULL,
+    `method` VARCHAR(25) NOT NULL DEFAULT 'unknown',
     `wallet_id` INTEGER NOT NULL,
 
+    UNIQUE INDEX `transaction_id`(`transaction_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -172,20 +187,17 @@ CREATE TABLE `offer_repayment_plan` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
-CREATE TABLE `_permissionsTorole` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_permissionsTorole_AB_unique`(`A`, `B`),
-    INDEX `_permissionsTorole_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- AddForeignKey
 ALTER TABLE `users` ADD CONSTRAINT `users_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `role`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `users_docs` ADD CONSTRAINT `users_docs_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `roleToPermission` ADD CONSTRAINT `roleToPermission_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `roleToPermission` ADD CONSTRAINT `roleToPermission_permission_id_fkey` FOREIGN KEY (`permission_id`) REFERENCES `permissions`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `company` ADD CONSTRAINT `company_manager_id_fkey` FOREIGN KEY (`manager_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -210,9 +222,3 @@ ALTER TABLE `transaction` ADD CONSTRAINT `transaction_wallet_id_fkey` FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE `offer_repayment_plan` ADD CONSTRAINT `offer_repayment_plan_offer_id_fkey` FOREIGN KEY (`offer_id`) REFERENCES `offer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_permissionsTorole` ADD CONSTRAINT `_permissionsTorole_A_fkey` FOREIGN KEY (`A`) REFERENCES `permissions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_permissionsTorole` ADD CONSTRAINT `_permissionsTorole_B_fkey` FOREIGN KEY (`B`) REFERENCES `role`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

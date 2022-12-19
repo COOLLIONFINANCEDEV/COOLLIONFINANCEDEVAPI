@@ -1,11 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  // provider = "prisma-dbml-generator"
 }
 
 datasource db {
   provider          = "mysql"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model users {
@@ -54,8 +55,8 @@ model role {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  users users[]
-  role_ permissions[]
+  users       users[]
+  permissions roleToPermission[]
 
   @@map("role")
 }
@@ -68,9 +69,20 @@ model permissions {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  permission_ role[]
+  roles roleToPermission[]
 
   @@map("permissions")
+}
+
+model roleToPermission {
+  role          role        @relation(fields: [role_id], references: [id])
+  role_id       Int // relation scalar field (used in the `@relation` attribute above)
+  permission    permissions @relation(fields: [permission_id], references: [id])
+  permission_id Int // relation scalar field (used in the `@relation` attribute above)
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+
+  @@id([role_id, permission_id])
 }
 
 model company {
