@@ -10,8 +10,8 @@ import error_404 from "src/middlewares/error_404";
 import perform_query_parameter from "./middlewares/support_dot_map_query_parameter";
 
 const app: express.Application = express();
-
-app.use(cors(config.corsAllowOrigin)); // allow cors 
+// config.corsAllowOrigin
+app.use(cors()); // allow cors 
 app.use(express.json()); // parse requests body on json format
 app.use(express.json()); // parse requests of content-type - application/json
 app.use(express.urlencoded({ extended: true })); // parse requests of content-type - application/x-www-form-urlencoded

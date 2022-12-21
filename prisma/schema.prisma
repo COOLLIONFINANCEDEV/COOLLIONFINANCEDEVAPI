@@ -4,8 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -15,6 +15,11 @@ model users {
   last_name        String   @default("Undefined")
   email            String   @unique
   contact          String   @default("Undefined")
+  image            String   @db.Text
+  about_me         String   @default("Undefined")
+  localisation     String   @default("Undefined")
+  loan_reason      String   @default("Undefined")
+  newsletter       Boolean  @default(false)
   password         String   @db.Text
   salt             String   @db.Text
   contact_verified Boolean  @default(false)
@@ -86,17 +91,21 @@ model roleToPermission {
 }
 
 model company {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String   @db.Text
-  logo        String   @default("")
-  country     String   @default("")
-  city        String   @default("")
-  phone       String
-  email       String
-  is_deleted  Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id                  Int    @id @default(autoincrement())
+  name                String
+  description         String @db.Text
+  logo                String @db.Text
+  localisation        String
+  phone               String
+  email               String
+  domain              String
+  website             String
+  payment_information String @default("")
+  about_me            String @db.Text
+
+  is_deleted Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   manager_id Int
   manager    users   @relation(fields: [manager_id], references: [id])
@@ -104,8 +113,6 @@ model company {
 
   @@unique([name, phone])
   @@unique([name, email])
-  @@unique([name, city])
-  @@unique([name, country])
   @@map("company")
 }
 
@@ -125,14 +132,28 @@ model wallet {
 }
 
 model offer {
-  id                        Int      @id @default(autoincrement())
-  name                      String
-  description               String   @db.Text
-  image                     String   @default("")
+  id                      Int      @id @default(autoincrement())
+  name                    String
+  summary                 String
+  description             String   @db.Text
+  image                   String   @db.Text
+  localisation            String
+  category                String
+  stroy                   String
+  investment_motive       String   @db.Text
+  loan_about              String   @db.Text
+  about_friendship_bridge String   @db.Text
+  loan_length             Int
+  interest_rate           Float
+  start_date              DateTime
+  end_date                DateTime
+  disbursed_date          DateTime
+  repayment_schedule      String
+
   total_investment_to_raise Float
-  price_per_unit            Float
-  number_of_unit            Float
-  maximum_amount            Float
+  price_per_unit            Float    @default(0.0)
+  number_of_unit            Float    @default(0.0)
+  maximum_amount            Float    @default(0.0)
   minimum_amount            Float
   investment_term           DateTime @db.Timestamp(0)
   distribution_frequency    Int

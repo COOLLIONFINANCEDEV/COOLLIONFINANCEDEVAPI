@@ -31,7 +31,8 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        units: 'not_null, float',
+        // units: 'not_null, float',
+        amount: 'not_null, float',
         offer_id: "not_null, integer",
     });
 
@@ -47,37 +48,46 @@ export const create = async (req: Request, res: Response) => {
         const user = await usersService.retrive(res.locals.auth.user_id);
         const userWallet = Number(user?.wallet?.amount);
         const investments = offer ? offer?.investment : [];
-        const investmentAmount = data.units * Number(offer?.price_per_unit);
+        // const investmentAmount = data.units * Number(offer?.price_per_unit);
         let raisedFund = 0;
 
         for (let investment of investments)
             raisedFund += investment.amount;
 
         if (raisedFund === offer?.total_investment_to_raise) {
-            res.send(make_response(false, "The proposed investment is closed."));
+            res.send(make_response(false, "The investment proposal is closed."));
             return;
         }
 
-        const unitsToRaised = (raisedFund / Number(offer?.price_per_unit)) - Number(offer?.number_of_unit);
+        const amountToRaised = Number(offer?.total_investment_to_raise) - raisedFund
+        // const unitsToRaised = (raisedFund / Number(offer?.price_per_unit)) - Number(offer?.number_of_unit);
 
-        if (data.units <= unitsToRaised) {
-            res.send(make_response(false, `You have exceeded the number of units that can be invested. Availlable units : ${unitsToRaised}.`));
+        if (data.amount > amountToRaised) {
+            res.send(make_response(false, `You have exceeded the amount that can be invested. Outstanding amount : ${amountToRaised}.`));
             return;
         }
+        // if (data.units <= unitsToRaised) {
+        //     res.send(make_response(false, `You have exceeded the number of units that can be invested. Availlable units : ${unitsToRaised}.`));
+        //     return;
+        // }
 
-        if (investmentAmount > userWallet) {
-            res.send(make_response(false, `You have exceeded the amount on your wallet, please make a deposit on your wallet to access the investment offer. Remaining amount: ${investmentAmount - userWallet}.`));
+        if (data.amount > userWallet) {
+            res.send(make_response(false, `You have exceeded the amount on your wallet, please make a deposit on your wallet to access the investment offer. Remaining amount: ${data.amount - userWallet}.`));
             return;
         }
+        // if (investmentAmount > userWallet) {
+        //     res.send(make_response(false, `You have exceeded the amount on your wallet, please make a deposit on your wallet to access the investment offer. Remaining amount: ${investmentAmount - userWallet}.`));
+        //     return;
+        // }
 
         const newInvestment = {
-            amount: investmentAmount,
+            amount: data.amount, // investmentAmount,
             offer_id: data.offer_id,
             wallet_id: user?.wallet?.id,
         }
 
         const newTransaction: customTransaction = {
-            amount: investmentAmount,
+            amount: data.amount, // investmentAmount,
             type: "investment",
             wallet_id: Number(user?.wallet?.id),
             currency: "XOF",

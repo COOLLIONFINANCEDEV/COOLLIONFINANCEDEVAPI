@@ -80,6 +80,11 @@ export const update = async (req: Request, res: Response) => {
         role_id: 'not_null, integer, optional',
         desable: 'not_null, boolean, optional',
         is_deleted: 'not_null, boolean, optional',
+        image: 'not_null, optional',
+        about_me: 'not_null, optional',
+        localisation: 'not_null, optional',
+        loan_reason: 'not_null, optional',
+        newsletter: 'not_null, boolean, optional',
     });
 
     if (result.error) {

@@ -27,8 +27,11 @@ export const create = async (req: Request, res: Response) => {
         manager_id: 'integer, not_null',
         description: 'not_null, optional',
         logo: 'not_null, optional',
-        country: 'not_null, optional',
-        city: 'not_null, optional',
+        localisation: 'not_null',
+        domain: 'not_null',
+        website: 'not_null',
+        payment_information: 'not_null',
+        about_me: 'not_null',
     });
 
 
@@ -67,9 +70,12 @@ export const update = async (req: Request, res: Response) => {
         manager_id: 'integer, not_null, optional',
         description: 'not_null, optional',
         logo: 'not_null, optional',
-        country: 'not_null, optional',
-        city: 'not_null, optional',
         is_deleted: "boolean, optional",
+        website: 'not_null, optional',
+        localisation: 'not_null, optional',
+        domain: 'not_null, optional',
+        payment_information: 'not_null, optional',
+        about_me: 'not_null, optional',
     });
 
 

@@ -1,0 +1,10 @@
+
+users -----0,n-----> company -----0,n-----> offer
+  |                     |
+  |                     |
+ 0,1                   1,1
+  |                     |
+  |          ___________|
+  |         |
+  v         v
+payment method
