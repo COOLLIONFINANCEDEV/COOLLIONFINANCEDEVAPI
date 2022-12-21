@@ -1,4 +1,4 @@
-import { PrismaClient, users } from '@prisma/client'
+import { Prisma, PrismaClient, users } from '@prisma/client'
 
 import BaseService from 'src/apis/base_service';
 import { paginationConfig } from 'src/config';
@@ -13,6 +13,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number) {
+        Prisma.CompanyScalarFieldEnum
         return await this.prisma.users.findFirst({
             where: { id: id },
             include: {
