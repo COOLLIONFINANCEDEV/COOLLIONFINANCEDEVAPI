@@ -30,8 +30,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
         // console.log(field, not_null(body[field]));
 
         // if (body[field] == undefined && !constraints.includes("optional")) {
-        // if (constraints.includes("optional") && !not_null(body[field], ["empty"])) {
-        if (constraints.includes("optional") && !not_null(body[field])) {
+        if (constraints.includes("optional") && !not_null(body[field], ["empty"])) {
             // init_object_key(result, field, []);
             // result[field].push("This field is required!");
             // console.log('jumps', field);
