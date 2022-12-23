@@ -34,6 +34,22 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
             // init_object_key(result, field, []);
             // result[field].push("This field is required!");
             // console.log('jumps', field);
+            init_object_key({ obj: result, key: "other_fields" });
+            result["other_fields"][field] = each(constraints, (item: string, key: any, col: any) => {
+                if (item == 'not_null') {
+                    if (
+                        col.includes("integer")
+                        || col.includes("number")
+                        || col.includes("float")
+                        || col.includes("boolean")
+                        || col.includes("date")
+                        || col.includes("email")
+                    ) return "";
+                    else return 'string';
+                } else return item;
+            });
+
+            result["other_fields"][field] = result["other_fields"][field].filter((elt: string) => elt != "");
         }
         else {
             for (constraint of constraints) {
@@ -147,7 +163,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
         }
     }
 
-    if (Object.keys(result).length == 0)
+    if ((Object.keys(result).filter((elt: string) => elt != "other_fields")).length == 0)
         return { error: false, result: body };
 
     return { error: true, result: result };

@@ -38,7 +38,7 @@ export const create = async (req: Request, res: Response) => {
 
     const result = serializer(data, {
         amount: 'not_null, float',
-        currency: 'or=[XOF | XAF | CDF | GNF | USD]',
+        currency: 'like=[XOF | XAF | CDF | GNF | USD]',
         use_credit_card: "boolean",
         customer_address: 'not_null | optional', // card - addresse du client
         customer_city: "optional | not_null", // card - La ville du client
