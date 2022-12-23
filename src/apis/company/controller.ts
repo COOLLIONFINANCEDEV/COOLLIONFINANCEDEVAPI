@@ -41,6 +41,7 @@ export const create = async (req: Request, res: Response) => {
     }
 
     data = result.result;
+    data.logo = data.logo == "" ? "Undefined" : data.logo;
 
 
     try {
