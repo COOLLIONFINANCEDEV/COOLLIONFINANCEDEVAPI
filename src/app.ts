@@ -11,10 +11,9 @@ import perform_query_parameter from "./middlewares/support_dot_map_query_paramet
 
 const app: express.Application = express();
 // config.corsAllowOrigin
-app.use(cors()); // allow cors 
-app.use(express.json()); // parse requests body on json format
-app.use(express.json()); // parse requests of content-type - application/json
-app.use(express.urlencoded({ extended: true })); // parse requests of content-type - application/x-www-form-urlencoded
+app.use(cors()); // allow cors
+app.use(express.json({ limit: '10mb' })); // parse requests body on json format
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); // parse requests of content-type - application/x-www-form-urlencoded
 app.use(perform_query_parameter); // allow query parameter to support dot map structure notation like /d?age.gt=50&age.lt=18
 
 app.use(resolve_route(config.endpoints.baseUrl), router.userRoute);
