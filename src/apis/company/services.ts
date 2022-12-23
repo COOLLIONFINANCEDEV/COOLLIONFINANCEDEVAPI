@@ -1,4 +1,4 @@
-import { PrismaClient, company } from '@prisma/client'
+import { Prisma, PrismaClient, company } from '@prisma/client'
 
 import BaseService from 'src/apis/base_service';
 import { paginationConfig } from 'src/config';
@@ -51,6 +51,24 @@ class Service extends BaseService {
     }
 
     async create(data: company) {
+        Prisma.CompanyScalarFieldEnum
+        const o = {
+            id: 'id',
+            name: 'name',
+            description: 'description',
+            logo: 'logo',
+            localisation: 'localisation',
+            phone: 'phone',
+            email: 'email',
+            domain: 'domain',
+            website: 'website',
+            payment_information: 'payment_information',
+            about_me: 'about_me',
+            is_deleted: 'is_deleted',
+            created_at: 'created_at',
+            updated_at: 'updated_at',
+            manager_id: 'manager_id'
+        };
         return await this.prisma.company.create({
             data: data,
         }

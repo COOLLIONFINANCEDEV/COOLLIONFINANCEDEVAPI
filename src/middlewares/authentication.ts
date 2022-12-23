@@ -13,6 +13,7 @@ function authentication(req: Request, res: Response, next: NextFunction): void {
                 res.status(401).send(make_response(true, "Unauthorized! You want to provide a \"Bearer token\""));
                 if (process.env.DEBUG)
                     throw new Error("Authorization is not a Bearer token!");
+                // console.log(0);
                 return;
             }
 
@@ -22,6 +23,8 @@ function authentication(req: Request, res: Response, next: NextFunction): void {
                 if (payload.exp)
                     if (Date.now() >= payload.exp) {
                         res.status(401).send(make_response(true, "Unauthorized!"));
+                        // console.log(1);
+
                         return;
                     }
 
@@ -34,6 +37,7 @@ function authentication(req: Request, res: Response, next: NextFunction): void {
             } else {
                 res.status(401).send(make_response(true, "Unauthorized!"));
                 if (process.env.DEBUG) console.warn("Token error!");
+                // console.log(2);
                 return
             }
         } else {
@@ -41,12 +45,14 @@ function authentication(req: Request, res: Response, next: NextFunction): void {
             if (process.env.DEBUG)
                 console.warn("Authorization not provided!");
 
+            // console.log(3);
             return;
         }
     } catch (e) {
         res.status(401).send(make_response(true, "Unauthorized!"));
         if (process.env.DEBUG) console.error(e);
 
+        // console.log(4);
         return;
     }
 }
@@ -58,6 +64,7 @@ export function right_user(req: Request, res: Response, next: NextFunction): voi
 
     if (auth?.user_id !== Number(id)) {
         res.status(401).send(make_response(true, "Unauthorized!"));
+        // console.log(5);
         return;
     }
 
@@ -74,12 +81,14 @@ export function right_owner({ entity, id, owner, constraint }: { entity: Prisma.
             const _id = id || req.params.id;
 
             if (!res.locals.auth?.isAdmin) {
-                const isOwner = await service.isOwner(entity, Number(_id), Number(owner), constraint);
+                const isOwner = await service.isOwner({ entity, id: Number(_id), owner: Number(owner), constraint });
                 assert(isOwner);
             }
         }
         catch (e) {
             res.status(401).send(make_response(true, "Unauthorized!"));
+            console.error(e);
+            // console.log(6);
             return;
         }
 

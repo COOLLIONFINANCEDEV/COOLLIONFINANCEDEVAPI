@@ -25,8 +25,8 @@ export const create = async (req: Request, res: Response) => {
         email: 'not_null, email',
         phone: 'number',
         manager_id: 'integer, not_null',
-        description: 'not_null, optional',
-        logo: 'not_null, optional',
+        description: 'not_null',
+        logo: 'not_null',
         localisation: 'not_null',
         domain: 'not_null',
         website: 'not_null',
@@ -44,6 +44,11 @@ export const create = async (req: Request, res: Response) => {
 
 
     try {
+        if (res.locals.auth.user_id != data.manager_id) {
+            res.status(401).send(make_response(true, "Unauthorized! You cannot define a manager other than yourself to a company."))
+            return;
+        }
+
         const insert = await service.create(data);
         res.send(make_response(false, insert));
     } catch (e) {

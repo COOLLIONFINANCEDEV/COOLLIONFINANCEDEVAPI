@@ -103,11 +103,11 @@ class BaseService {
         return await client.$queryRawUnsafe(sql);
     }
 
-    async isOwner(entity: Prisma.ModelName, id: number, owner: number, constraint = "user_id") {
-        
+    async isOwner({ entity, id, owner, constraint = "user_id" }: { entity: Prisma.ModelName; id: number; owner: number; constraint?: string; }) {
+
         const sql = `SELECT ${constraint} FROM ${entity} WHERE id = ${Number(validator.escape(String(id)))}`;
         const req: any = await client.$queryRawUnsafe(sql);
-        
+
 
         return req.length ? (req[0][constraint] === owner ? true : false) : true;
     }

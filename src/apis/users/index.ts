@@ -20,10 +20,10 @@ router.get(resolve_route(userEndpoint.list), authentication, /*basic_tenant_mana
 router.get(resolve_route(userEndpoint.retrive), authentication, /*basic_tenant_manager({ authaurizedTenant: ["admin", "master"], permission: "read__users" }),*/ right_user, controller.findOne);
 
 // // Update a user
-router.put(resolve_route(userEndpoint.update), authentication, /*basic_tenant_manager({ permission: "read__users" }),*/ right_user, right_owner, controller.update);
+router.put(resolve_route(userEndpoint.update), authentication, /*basic_tenant_manager({ permission: "read__users" }),*/ right_user, right_owner({ entity: 'users', constraint: "id" }), controller.update);
 
 // // Delete a user
-router.delete(resolve_route(userEndpoint.delete), authentication, /*basic_tenant_manager({ permission: "read__users" }),*/ right_user, right_owner, controller.remove);
+router.delete(resolve_route(userEndpoint.delete), authentication, /*basic_tenant_manager({ permission: "read__users" }),*/ right_user, right_owner({ entity: 'users', constraint: "id" }), controller.remove);
 
 // // Purge users
 router.delete(resolve_route(userEndpoint.purge), authentication,/* basic_tenant_manager({ authaurizedTenant: ["admin", "master"] }),*/ controller.removeAll);
