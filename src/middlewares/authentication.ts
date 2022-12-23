@@ -9,7 +9,12 @@ function authentication(req: Request, res: Response, next: NextFunction): void {
     try {
         const oauth = req.headers.authorization?.split(" ");
         if (oauth !== undefined) {
-            if (oauth[0] !== "Bearer") throw new Error("Authorization is not a Bearer token!");
+            if (oauth[0] !== "Bearer") {
+                res.status(401).send(make_response(true, "Unauthorized! You want to provide a \"Bearer token\""));
+                if (process.env.DEBUG)
+                    throw new Error("Authorization is not a Bearer token!");
+                return;
+            }
 
             const payload = jwt.verify(oauth[1], String(process.env.JWT_ACCESS_TOKEN_SECRET_KEY));
 
