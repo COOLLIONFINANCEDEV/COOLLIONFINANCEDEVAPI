@@ -19,7 +19,6 @@ export const create = async (req: Request, res: Response) => {
     if (!check_req_body(req, res)) return;
 
     let data = req.body;
-    console.log(data);
     
     if (data.logo == "") delete data["logo"];
     console.log(data);

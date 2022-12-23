@@ -69,6 +69,10 @@ export const update = async (req: Request, res: Response) => {
 
     let data = req.body;
 
+    for (const key in data) {
+        if (data[key] == "") delete data[key];
+    }
+
     const result = serializer(data, {
         first_name: 'not_null, optional',
         last_name: 'not_null, optional',
