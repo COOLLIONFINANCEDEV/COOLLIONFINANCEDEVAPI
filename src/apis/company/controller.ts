@@ -24,8 +24,8 @@ export const create = async (req: Request, res: Response) => {
         name: 'not_null',
         email: 'not_null, email',
         phone: 'number',
-        manager_id: 'integer, not_null, optional',
-        description: 'not_null',
+        manager_id: 'integer, not_null',
+        description: 'not_null, optional',
         logo: 'not_null, optional',
         localisation: 'not_null',
         domain: 'not_null',
@@ -41,7 +41,7 @@ export const create = async (req: Request, res: Response) => {
     }
 
     data = result.result;
-    data.logo = data.logo == "" ? "Undefined" : data.logo;
+    data.logo = data.logo == "" || !data.logo ? "Undefined" : data.logo;
 
 
     try {
