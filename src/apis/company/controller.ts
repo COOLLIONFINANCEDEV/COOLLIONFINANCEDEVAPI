@@ -45,7 +45,7 @@ export const create = async (req: Request, res: Response) => {
 
     data = result.result;
     data.logo = data.logo == "" || !data.logo ? "Undefined" : data.logo;
-
+    data.description = data.description == "" || !data.description ? "Undefined" : data.description;
 
     try {
         if (res.locals.auth.user_id != data.manager_id) {
