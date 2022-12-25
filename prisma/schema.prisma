@@ -17,7 +17,7 @@ model users {
   contact          String   @default("Undefined")
   image            String   @db.Text
   about_me         String   @default("Undefined")
-  localisation     String   @default("Undefined")
+  localisation     String   @db.Text
   loan_reason      String   @default("Undefined")
   newsletter       Boolean  @default(false)
   password         String   @db.Text
@@ -95,7 +95,7 @@ model company {
   name                String
   description         String @db.Text
   logo                String @db.Text
-  localisation        String
+  localisation        String @db.Text
   phone               String
   email               String
   domain              String
@@ -137,7 +137,7 @@ model offer {
   summary                 String
   description             String   @db.Text
   image                   String   @db.Text
-  localisation            String
+  localisation            String   @db.Text
   category                String
   stroy                   String
   investment_motive       String   @db.Text
