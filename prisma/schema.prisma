@@ -175,13 +175,12 @@ model offer {
 
 model offer_docs {
   id         Int      @id @default(autoincrement())
-  name       String
-  path       String
+  docs       String   @db.Text
   is_deleted Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  offer_id Int
+  offer_id Int   @unique
   offer    offer @relation(fields: [offer_id], references: [id])
 
   @@map("offer_docs")

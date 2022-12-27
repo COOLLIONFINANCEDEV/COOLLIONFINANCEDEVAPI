@@ -21,8 +21,7 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        name: 'not_null',
-        path: 'not_null',
+        docs: 'not_null',
         offer_id: "not_null, integer",
     });
 
