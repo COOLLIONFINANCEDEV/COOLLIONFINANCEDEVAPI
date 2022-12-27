@@ -30,7 +30,7 @@ const cinetpay = new Cinetpay();
 
 
 // Create and Save a new transaction
-export const create = async (req: Request, res: Response) => {
+export const deposit = async (req: Request, res: Response) => {
     // Validate request
     if (!check_req_body(req, res)) return;
 
@@ -185,6 +185,10 @@ export const create = async (req: Request, res: Response) => {
     }
 }
 
+
+export const withdrawal = async (req: Request, res: Response) => {
+    res.send("Maintance");
+}
 
 // Update and Save a new transaction
 export const update = async (req: Request, res: Response) => {

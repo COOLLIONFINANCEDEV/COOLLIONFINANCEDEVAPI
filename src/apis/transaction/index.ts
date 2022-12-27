@@ -10,7 +10,10 @@ const router: Router = Router();
 // var router = require("express").Router();
 
 // // Create a new transactions
-router.post(resolve_route(transactionEndpoint.create), authentication, controller.create);
+router.post(resolve_route(transactionEndpoint.deposit), authentication, controller.deposit);
+
+// // Create a new transactions
+router.post(resolve_route(transactionEndpoint.withdrawal), authentication, controller.withdrawal);
 
 // // List transactions
 router.get(resolve_route(transactionEndpoint.list), authentication, controller.findAll);
