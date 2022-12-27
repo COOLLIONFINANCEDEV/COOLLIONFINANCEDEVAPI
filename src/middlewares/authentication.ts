@@ -77,11 +77,11 @@ export function right_owner({ entity, id, owner, constraint }: { entity: Prisma.
 
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            owner = owner || res.locals.auth?.user_id;
+            const _owner = owner || res.locals.auth?.user_id;
             const _id = id || req.params.id;
 
             if (!res.locals.auth?.isAdmin) {
-                const isOwner = await service.isOwner({ entity, id: Number(_id), owner: Number(owner), constraint });
+                const isOwner = await service.isOwner({ entity, id: Number(_id), owner: Number(_owner), constraint });
                 assert(isOwner);
             }
         }
