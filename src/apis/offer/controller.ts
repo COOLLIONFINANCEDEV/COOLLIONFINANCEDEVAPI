@@ -23,8 +23,8 @@ export const create = async (req: Request, res: Response) => {
 
     const result = serializer(data, {
         name: 'not_null',
-        description: 'not_null',
-        summary: 'not_null',
+        // description: 'not_null',
+        // summary: 'not_null',
         localisation: 'not_null',
         image: 'optional, not_null',
         category: 'not_null',
@@ -41,7 +41,7 @@ export const create = async (req: Request, res: Response) => {
         minimum_amount: 'float',
         investment_term: 'date',
         distribution_frequency: 'integer',
-        start_payment: 'date',
+        // start_payment: 'date',
         expected_return: 'optional',
         status: 'optional',
         company_id: 'integer, not_null',

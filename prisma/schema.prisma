@@ -1,3 +1,7 @@
+// npx prisma migrate dev --create-only
+// npx prisma migrate deploy
+// npx prisma generate
+
 generator client {
   provider = "prisma-client-js"
   // provider = "prisma-dbml-generator"
@@ -134,8 +138,8 @@ model wallet {
 model offer {
   id                      Int      @id @default(autoincrement())
   name                    String
-  summary                 String
-  description             String   @db.Text
+  // summary                 String  
+  // description             String   @db.Text
   image                   String   @db.Text
   localisation            String   @db.Text
   category                String
@@ -157,7 +161,7 @@ model offer {
   minimum_amount            Float
   investment_term           DateTime @db.Timestamp(0)
   distribution_frequency    Int
-  start_payment             DateTime @db.Date
+  // start_payment             DateTime @db.Date
   expected_return           Float    @default(0)
   status                    String   @default("")
   is_deleted                Boolean  @default(false)

@@ -245,7 +245,9 @@ function is_boolean(str: string | number, option?: { loose: boolean }) {
 
 
 function is_date(str: any): boolean {
-    return validator.isDate(String(str));
+    if ((str.split("/")).length == 3 || (str.split("-")).length == 3)
+        return validator.toDate(String(str)) ? true : false;
+    return false;
 }
 
 

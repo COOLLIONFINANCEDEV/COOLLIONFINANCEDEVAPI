@@ -43,7 +43,7 @@
   },
   "scripts": {
     "dev": "nodemon --watch . -e js,ts,json --exec \"ts-node src/server.ts\"",
-    "test": "nodemon --watch . -e js,ts,json --exec \"ts-node src/apis/tests.ts\"",
+    "test": "nodemon --watch . -e js,ts,json --exec \"ts-node src/test/test.ts\"",
     "build": "tsup src/server.ts --format cjs --clean",
     "start": "node dist/server.js"
   }
