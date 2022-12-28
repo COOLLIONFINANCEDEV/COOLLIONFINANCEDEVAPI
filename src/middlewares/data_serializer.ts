@@ -63,7 +63,8 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                         if (!bool) {
                             init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push("This field is required!");
-                        }
+                        } else
+                            body[field] = `${body[field]}`;
                         // false = 0 | true = 1
                         break;
                     case 'min_length':

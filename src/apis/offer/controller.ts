@@ -31,6 +31,7 @@ export const create = async (req: Request, res: Response) => {
         stroy: 'not_null',
         investment_motive: 'not_null',
         loan_about: 'not_null',
+        loan_length: 'integer, not_null',
         about_friendship_bridge: 'not_null',
         interest_rate: 'float',
         start_date: 'date',
@@ -43,7 +44,7 @@ export const create = async (req: Request, res: Response) => {
         distribution_frequency: 'integer',
         // start_payment: 'date',
         expected_return: 'optional',
-        status: 'optional',
+        status: 'not_null, optional',
         company_id: 'integer, not_null',
     });
 
