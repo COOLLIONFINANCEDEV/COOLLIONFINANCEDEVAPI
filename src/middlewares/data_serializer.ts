@@ -30,7 +30,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
         // console.log(field, not_null(body[field]));
 
         // if (body[field] == undefined && !constraints.includes("optional")) {
-        if (constraints.includes("optional") && !not_null(body[field], ["empty"])) {
+        if (constraints.includes("optional") && !not_null({ str: body[field], ignore: ["empty"] })) {
             // init_object_key(result, field, []);
             // result[field].push("This field is required!");
             // console.log('jumps', field);
@@ -58,13 +58,12 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
                 switch (constraint[0]) {
                     case 'not_null':
-                        bool = not_null(body[field]);
+                        bool = not_null({ str: body[field] });
 
                         if (!bool) {
                             init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push("This field is required!");
-                        } else
-                            body[field] = `${body[field]}`;
+                        }
                         // false = 0 | true = 1
                         break;
                     case 'min_length':
@@ -174,7 +173,7 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
 
 
-function not_null(str: string | number | null | undefined, ignore?: notNullType) {
+function not_null({ str, ignore }: { str: string | number | null | undefined; ignore?: notNullType; }): boolean {
     let bool = false;
 
     if (typeof str === "string" || typeof str == "number" || typeof str == "boolean") {
@@ -187,7 +186,7 @@ function not_null(str: string | number | null | undefined, ignore?: notNullType)
 
     if ((str == null || str == undefined) && !ignore?.includes("null")) return false;
 
-    return true;
+    return true
 }
 
 
@@ -216,12 +215,12 @@ function max_length(str: string | any[], length: string | number) {
 
 
 function is_email(str: string | number) {
-    return not_null(str) ? validator.isEmail(String(str)) : false;
+    return not_null({ str }) ? validator.isEmail(String(str)) : false;
 }
 
 
 function is_numeric(str: string) {
-    return not_null(str) ? validator.isNumeric(str) : false;
+    return not_null({ str }) ? validator.isNumeric(str) : false;
 }
 
 
@@ -231,7 +230,7 @@ function is_integer(str: string | number) {
 
 
 function is_float(str: string | number) {
-    return not_null(str) ? validator.isFloat(String(str)) : false;
+    return not_null({ str }) ? validator.isFloat(String(str)) : false;
 }
 
 
@@ -253,7 +252,7 @@ function is_date(str: any): boolean {
 
 
 function is_like(str: string | number, likeOption: string, strict?: boolean): boolean {
-    if (!not_null(str)) return false;
+    if (!not_null({ str })) return false;
 
     const likeOptionLastIndex = likeOption.length - 1;
 
@@ -277,7 +276,7 @@ function is_like(str: string | number, likeOption: string, strict?: boolean): bo
 
 
 function or(str: string, orOption: string): string | number | boolean {
-    if (!not_null(str)) return false;
+    if (!not_null({ str })) return false;
 
     const orOptionLastIndex = orOption.length - 1;
 
