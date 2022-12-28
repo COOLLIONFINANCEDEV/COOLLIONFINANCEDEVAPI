@@ -32,6 +32,7 @@ export type addContactData = {
     phone: string,
     name: string,
     surname: string,
+    email: string
 }
 
 export type transferMoneyDate = {

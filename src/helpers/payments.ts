@@ -21,12 +21,12 @@ export class Cinetpay {
             protocols: ["https"],
             require_protocol: true,
             require_valid_protocol: true
-        }) ? data.notify_url : cinetpayConfig.NOTIFY_URL;
+        }) ? cinetpayConfig.NOTIFY_URL : data.notify_url;
         data.return_url = validator.isURL(cinetpayConfig.RETURN_URL, {
             protocols: ["https"],
             require_protocol: true,
             require_valid_protocol: true
-        }) ? data.notify_url : cinetpayConfig.RETURN_URL;
+        }) ? cinetpayConfig.RETURN_URL : data.return_url;
         data.channels = data.channels || "ALL";
         data.invoice_data = data.invoice_data ? data.invoice_data : {
             "ID transaction": data.transaction_id,
@@ -104,7 +104,7 @@ export class Cinetpay {
     }
 
 
-    async get_token() {
+    async generate_transfer_token() {
         const data = {
             apikey: cinetpayConfig.API_KEY,
             password: cinetpayConfig.PASSWORD,
@@ -175,7 +175,7 @@ export class Cinetpay {
     }
 
 
-    async add_contact(token: string, data: addContactData) {
+    async add_contact({ token, data }: { token: string; data: addContactData; }) {
         const config = {
             method: 'post',
             url: `https://client.cinetpay.com/v1/transfer/contact?token=${token}&lang=fr`,
@@ -185,7 +185,7 @@ export class Cinetpay {
             data: data
         };
 
-        axios(config)
+        return axios(config)
             .then(function (response: any) {
                 // return JSON.stringify(response.data)
                 const data = response.data;
@@ -198,7 +198,7 @@ export class Cinetpay {
                 } else {
                     return {
                         error: true,
-                        messag: data.description,
+                        message: data.description,
                     }
                 }
             })
@@ -208,13 +208,13 @@ export class Cinetpay {
     }
 
 
-    async money_transfer(token: String, data: transferMoneyDate) {
+    async money_transfer({ token, data }: { token: String; data: transferMoneyDate; }) {
         data.client_transaction_id = check_uuidv4(data.client_transaction_id) ? data.client_transaction_id : uuidv4();
         data.notify_url = validator.isURL(cinetpayConfig.TRANSFER_NOTIFY_URL, {
             protocols: ["https"],
             require_protocol: true,
             require_valid_protocol: true
-        }) ? data.notify_url : cinetpayConfig.TRANSFER_NOTIFY_URL;
+        }) ? cinetpayConfig.TRANSFER_NOTIFY_URL : data.notify_url;
 
         const config = {
             method: 'get',
@@ -225,7 +225,7 @@ export class Cinetpay {
             data: data
         };
 
-        axios(config)
+        return axios(config)
             .then(function (response: any) {
                 // return JSON.stringify(response.data)
                 const data = response.data;
@@ -249,16 +249,16 @@ export class Cinetpay {
     }
 
 
-    async check_transfer(token: String, transaction_id: String) {
+    async check_transfer({ token, client_transaction_id }: { token: String; client_transaction_id: String; }) {
         const config = {
             method: 'get',
-            url: `https://client.cinetpay.com/v1/transfer/check/money?token=${token}&transaction_id=${transaction_id}`,
+            url: `https://client.cinetpay.com/v1/transfer/check/money?token=${token}&client_transaction_id =${client_transaction_id }`,
             headers: {
                 'Content-Type': 'application/json'
             },
         };
 
-        axios(config)
+        return axios(config)
             .then(function (response: any) {
                 // return JSON.stringify(response.data)
                 const data = response.data;

@@ -147,7 +147,7 @@ model offer {
   investment_motive       String   @db.Text
   loan_about              String   @db.Text
   about_friendship_bridge String   @db.Text
-  loan_length             Int
+  loan_length             DateTime
   interest_rate           Float
   start_date              DateTime
   end_date                DateTime
@@ -159,7 +159,7 @@ model offer {
   number_of_unit            Float    @default(0.0)
   maximum_amount            Float    @default(0.0)
   minimum_amount            Float
-  investment_term           DateTime @db.Timestamp(0)
+  // investment_term           DateTime @db.Timestamp(0)
   distribution_frequency    Int
   // start_payment             DateTime @db.Date
   expected_return           Float    @default(0)

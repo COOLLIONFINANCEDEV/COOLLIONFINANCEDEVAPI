@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import resolve_route from "src/helpers/resolve_route";
 
 dotenv.config();
 
@@ -33,19 +34,11 @@ export const twilioConfig = {
 }
 
 
-export const cinetpayConfig = {
-    API_KEY: "14047243215ebd680ed0d0c0.07903569",
-    SECRET_KEY: "15339844795f294f74a65e51.35665952",
-    SITE_ID: 622120,
-    NOTIFY_URL: '',
-    TRANSFER_NOTIFY_URL: '',
-    RETURN_URL: '',
-    PASSWORD: 'Developpeur1010!',
-}
+
 
 
 export const endpoints = {
-    "baseUrl": "v1.1",
+    "apiVersion": "v1.1",
 
     "users": {
         "retrive": "users/retrive/:id",
@@ -106,7 +99,8 @@ export const endpoints = {
         "delete": "transactions/delete/:id",
         "deleteByWallet": "transactions/delete/wallet/:id",
         "purge": "transactions/purge/",
-        "CinetpayPaymentNotificationUrl": "transactions/cinetpay/notification",
+        "CinetpayPaymentNotificationUrl": "transactions/cinetpay/payment-notification",
+        "CinetpayTransferNotificationUrl": "transactions/cinetpay/transfer-notification",
     },
     "company": {
         "retrive": "companies/retrive/:id",
@@ -183,6 +177,17 @@ export const endpoints = {
          */
         "search": "search",
     }
+}
+
+
+export const cinetpayConfig = {
+    API_KEY: "14047243215ebd680ed0d0c0.07903569",
+    SECRET_KEY: "15339844795f294f74a65e51.35665952",
+    SITE_ID: 622120,
+    NOTIFY_URL: `https://api.coollionfi.dev/${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayPaymentNotificationUrl)}`,
+    TRANSFER_NOTIFY_URL: `https://api.coollionfi.dev/${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayTransferNotificationUrl)}`,
+    RETURN_URL: '',
+    PASSWORD: 'Developpeur1010!',
 }
 
 export const paginationConfig = {

@@ -44,8 +44,8 @@ export const deposit = async (req: Request, res: Response) => {
         customer_city: "optional | not_null", // card - La ville du client
         customer_country: 'ptional | not_null', // card - le code ISO du pays
         customer_state: 'optional | not_null', //card - le code ISO de l'état ou ou du pays
-        customer_zip_code: 'optional | not_null',
-        customer_phone_number: "optional, number",
+        customer_zip_code: 'optional | not_null', //card - le code ISO de l'état ou ou du pays
+        customer_phone_number: "optional, number", //card - le code ISO de l'état ou ou du pays
     });
 
     if (result.error) {
@@ -162,7 +162,7 @@ export const deposit = async (req: Request, res: Response) => {
             ...useCreditCard.result
         }
 
-        const url = (await cinetpay.get_payment_url(payment));
+        const url = await cinetpay.get_payment_url(payment);
 
         if (url.error) throw new Error(url.message);
 
@@ -186,9 +186,115 @@ export const deposit = async (req: Request, res: Response) => {
 }
 
 
+// Withdraw
 export const withdrawal = async (req: Request, res: Response) => {
-    res.send("Maintance");
+    // Validate request
+    if (!check_req_body(req, res)) return;
+
+    let data = req.body;
+
+    const result = serializer(data, {
+        amount: "number",
+        use_existing_phone_number: "boolean",
+        phone_prefix: 'optional, number', //card - le code ISO de l'état ou ou du pays
+        phone_number: "optional, number", //card - le code ISO de l'état ou ou du pays
+    });
+
+    if (result.error) {
+        res.status(400).send(result);
+        return;
+    }
+
+    data = result.result;
+
+    try {
+        // Generation du token de transfert
+        const generateToken = await cinetpay.generate_transfer_token();
+
+        if (generateToken.error) throw new Error(generateToken.message);
+
+        // solde du compte de transfert : optionel
+
+        // Ajout du contact receveur du transfert à notre liste de contact de transfert
+        const userId = res.locals.auth.user_id;
+        let customerPhonePrefix: string = "225";
+        let customerPhoneNumber: string;
+        const customer = await userService.retrive(userId);
+        const customerBalance = customer?.wallet?.amount ? Number(customer?.wallet?.amount) : 0;
+
+        if (customerBalance < data.amount) {
+            res.send(`The amount you want to withdraw exceed your balance ! Your balance: ${customerBalance}`);
+            return;
+        }
+
+
+        if (data.use_existing_phone_number) {
+
+            if (!customer?.contact_verified) {
+                res.send("Complete your contact on your profile to use this option");
+                return;
+            }
+
+            customerPhoneNumber = customer.contact;
+        } else {
+            if (!Number(data.phone_prefix) || !Number(data.phone_number)) {
+                res.status(400).send("Give a right phone number and prefix or use your profile phone number with set to true use_existing_phone_number");
+                return;
+            }
+
+            customerPhonePrefix = data.phone_prefix;
+            customerPhoneNumber = data.phone_number;
+        }
+
+        // [{ "prefix": "221", "phone": "777396921", "name": "Cédric", "surname": "S", "email": "email@example.com" }]
+        const addContact = await cinetpay.add_contact({
+            token: generateToken.token,
+            data: {
+                prefix: Number(customerPhonePrefix),
+                phone: customerPhoneNumber,
+                name: String(customer?.last_name),
+                surname: String(customer?.first_name),
+                email: String(customer?.email),
+            }
+        });
+
+        if (addContact.error) throw new Error(addContact.message);
+
+        // Transfert
+
+        const transfer = await cinetpay.money_transfer({
+            token: generateToken.token,
+            data: {
+                prefix: Number(customerPhonePrefix),
+                phone: customerPhoneNumber,
+                amount: data.amount,
+                client_transaction_id: "",
+                notify_url: "",
+            }
+        });
+
+        if (transfer.error) throw new Error(transfer.message);
+
+        const newTransaction = check_type_and_return_any<customTransaction>({
+            amount: transfer.data.amount,
+            currency: "XOF",
+            service: "cinetpay",
+            type: "withdrawal",
+            transaction_id: transfer.data.transaction_id,
+            wallet_id: Number(customer?.wallet?.id),
+        });
+
+        await service.create(newTransaction);
+        res.status(201).send(make_response(false, { status: "pending" }));
+
+    } catch (e) {
+        if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
+        if (!error_duplicate_key_constraint(res, e, service.get_prisma())) return;
+        res.status(500).send(make_response(true, "Internal Server Error!"));
+        if (process.env.DEBUG) throw e;
+    }
 }
+
 
 // Update and Save a new transaction
 export const update = async (req: Request, res: Response) => {
@@ -343,7 +449,7 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
         if (hmac === req.headers["x-token"]) {
             let transaction = await service.retriveByTransactionID(data.cpm_trans_id);
 
-            if (transaction?.status == "ACCEPTED") res.send();
+            if (transaction?.status.toUpperCase() == "ACCEPTED") res.send();
             else {
                 const transactionIssue = await cinetpay.verify_payment(data.cpm_trans_id);
                 const update = check_type_and_return_any<any>({
@@ -392,4 +498,72 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
     }
 }
 
+// Money transfer notify url
+export const cinetpay_transfer_notification_url = async (req: Request, res: Response) => {
+    if (!check_req_body(req, res)) return;
+
+    let data = req.body;
+
+    try {
+        let transaction = await service.retriveByTransactionID(data.client_transaction_id);
+        
+        if (transaction?.status.toUpperCase() == "ACCEPTED") res.send();
+        else {
+            const generateToken = await cinetpay.generate_transfer_token();
+
+            if (generateToken.error) throw new Error(generateToken.message);
+
+            const transferInfo = await cinetpay.check_transfer({ token: generateToken.token, client_transaction_id: String(transaction?.transaction_id) });
+
+            if (transferInfo.error) throw new Error(transferInfo.message);
+
+            let transferStatus: customTransaction["status"] = "PENDING";
+
+            if (transferInfo.data.treatment_status == "VAL") transferStatus = "ACCEPTED";
+            else if (transferInfo.data.treatment_status == "REJ" || transferInfo.data.treatment_status == "RES") transferStatus = "REJECTED";
+
+            const update = check_type_and_return_any<any>({
+                status: (transferStatus).toLowerCase(),
+                method: (transferInfo.data.operator).toLowerCase()
+            })
+            
+            await service.update(Number(transaction?.id), Number(transaction?.wallet?.user_id), update);
+            // transaction = await service.retriveByTransactionID(data.client_transaction_id);
+            // const balance = transaction?.wallet?.amount;
+
+            // const user = await userService.retrive(data.cpm_custom).catch();
+            // const username = user?.first_name && user.last_name
+            //     ? `${user.first_name} ${user.last_name}` : user?.last_name
+            //         ? user.last_name : user?.first_name
+            //             ? user.first_name : "Dear";
+
+            // if (transactionIssue.error) {
+            //     // notify the customer by email that his transaction has been canceled
+            //     await sg_send_email({
+            //         to: String(user?.email),
+            //         templateData: {
+            //             subject: "Transaction info",
+            //             title: "TRANSACTION REJECTED",
+            //             username: username,
+            //             body: `failed to deposit ${data.cpm_amount}${data.cpm_currency} on your fiat wallet. Try again and if you receive a similar email contact us`,
+            //         }
+            //     }).catch();
+            // } else {
+            //     // notify the customer by email that his transaction accepted
+            //     await sg_send_email({
+            //         to: String(user?.email),
+            //         templateData: {
+            //             subject: "Transaction info",
+            //             title: "TRANSACTION ACCEPTED",
+            //             username: username,
+            //             body: `${data.cpm_amount}${data.cpm_currency} deposit on your fiat wallet. New balance is ${balance} XOF`,
+            //         }
+            //     }).catch();
+            // }
+
+        }
+    } catch {
+        res.status(500).send();
+    }
+}
 

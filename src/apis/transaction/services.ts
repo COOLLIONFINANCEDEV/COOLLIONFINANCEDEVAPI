@@ -1,4 +1,4 @@
-import { PrismaClient, transaction } from '@prisma/client'
+import { Prisma, PrismaClient, transaction } from '@prisma/client'
 
 import BaseService from 'src/apis/base_service';
 import { paginationConfig } from 'src/config';

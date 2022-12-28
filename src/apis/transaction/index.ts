@@ -42,5 +42,11 @@ router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), (r
 // Used by cinetpay to notify a payment state
 router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), controller.cinetpay_payment_notification_url);
 
+// Used by cinetpay to ping our server
+router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), (res: Response) => res.send());
+
+// Used by cinetpay to notify a payment state
+router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), controller.cinetpay_transfer_notification_url);
+
 export default router;
 

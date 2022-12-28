@@ -1,5 +1,8 @@
 function resolve_route(route: string): string {
-    return route[0] != "/" ? `/${route}` : route;
+    route = route[0] != "/" ? `/${route}` : route;
+    route = route[route.length - 1] != "/" ? `${route}/` : route;
+
+    return route;
 }
 
 export default resolve_route;

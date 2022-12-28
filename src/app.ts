@@ -16,19 +16,19 @@ app.use(express.json({ limit: '10mb' })); // parse requests body on json format
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // parse requests of content-type - application/x-www-form-urlencoded
 app.use(perform_query_parameter); // allow query parameter to support dot map structure notation like /d?age.gt=50&age.lt=18
 
-app.use(resolve_route(config.endpoints.baseUrl), router.userRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.usersDocsRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.roleRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.permissionsRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.walletRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.transactionsRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.companyRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.offerRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.offerDocsRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.offerRepaymentPlanRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.investmentRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.authRoute);
-app.use(resolve_route(config.endpoints.baseUrl), router.searchEngine);
+app.use(resolve_route(config.endpoints.apiVersion), router.userRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.usersDocsRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.roleRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.permissionsRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.walletRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.transactionsRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.companyRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.offerRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.offerDocsRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.offerRepaymentPlanRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.investmentRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.authRoute);
+app.use(resolve_route(config.endpoints.apiVersion), router.searchEngine);
 
 
 // Response of undefined route middleware
