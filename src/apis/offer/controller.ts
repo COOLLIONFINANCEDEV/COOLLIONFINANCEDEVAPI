@@ -58,6 +58,7 @@ export const create = async (req: Request, res: Response) => {
 
     // data['investment_term'] = new Date(data['investment_term']);
     // data['start_payment'] = new Date(data['start_payment']);
+    data["image"] = data.image ? data.image : "undefined";
     data['expected_return'] = ((data.interest_rate / 100) * data.total_investment_to_raise) + data.total_investment_to_raise;
 
 

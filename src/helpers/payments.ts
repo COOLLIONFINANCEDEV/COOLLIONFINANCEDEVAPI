@@ -41,12 +41,16 @@ export class Cinetpay {
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: data
+            data: JSON.stringify(data)
         };
 
         return axios(config)
             .then(function (response) {
                 const data = response.data;
+                console.log(response);
+                console.log(data);
+                console.log(JSON.stringify(response.data));                
+                
 
                 if (data.message === "CREATED") {
                     return data.data
@@ -58,6 +62,7 @@ export class Cinetpay {
                 }
             })
             .catch(function (error: any) {
+                console.log(error);
                 throw error;
             });
 
