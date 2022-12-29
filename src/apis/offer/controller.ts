@@ -37,7 +37,7 @@ export const create = async (req: Request, res: Response) => {
         start_date: 'date',
         end_date: 'date',
         disbursed_date: 'date',
-        repayment_schedule: 'not_null',
+        // repayment_schedule: 'not_null',
         total_investment_to_raise: 'float',
         minimum_amount: 'float',
         // investment_term: 'date',

@@ -152,7 +152,7 @@ model offer {
   start_date              DateTime
   end_date                DateTime
   disbursed_date          DateTime
-  repayment_schedule      String
+  // repayment_schedule      String
 
   total_investment_to_raise Float
   price_per_unit            Float    @default(0.0)
