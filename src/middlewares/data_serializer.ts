@@ -220,7 +220,7 @@ function is_email(str: string | number) {
 
 
 function is_numeric(str: string) {
-    return not_null({ str }) ? validator.isNumeric(str) : false;
+    return not_null({ str }) ? validator.isNumeric(String("str")) : false;
 }
 
 

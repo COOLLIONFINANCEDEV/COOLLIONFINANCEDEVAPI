@@ -194,7 +194,7 @@ export const withdrawal = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        amount: "number",
+        amount: "float",
         use_existing_phone_number: "boolean",
         phone_prefix: 'optional, number', //card - le code ISO de l'état ou ou du pays
         phone_number: "optional, number", //card - le code ISO de l'état ou ou du pays
@@ -223,7 +223,7 @@ export const withdrawal = async (req: Request, res: Response) => {
         const customerBalance = customer?.wallet?.amount ? Number(customer?.wallet?.amount) : 0;
 
         if (customerBalance < data.amount) {
-            res.send(`The amount you want to withdraw exceed your balance ! Your balance: ${customerBalance}`);
+            res.send(make_response(true, `The amount you want to withdraw exceed your balance ! Your balance: ${customerBalance}`));
             return;
         }
 
@@ -231,14 +231,14 @@ export const withdrawal = async (req: Request, res: Response) => {
         if (data.use_existing_phone_number) {
 
             if (!customer?.contact_verified) {
-                res.send("Complete your contact on your profile to use this option");
+                res.send(make_response(true, "Complete your contact on your profile to use this option"));
                 return;
             }
 
             customerPhoneNumber = customer.contact;
         } else {
             if (!Number(data.phone_prefix) || !Number(data.phone_number)) {
-                res.status(400).send("Give a right phone number and prefix or use your profile phone number with set to true use_existing_phone_number");
+                res.status(400).send(make_response(true, "Give a right phone number and prefix or use your profile phone number with set to true use_existing_phone_number"));
                 return;
             }
 

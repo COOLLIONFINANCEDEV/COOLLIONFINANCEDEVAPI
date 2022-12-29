@@ -49,7 +49,7 @@ export class Cinetpay {
         return axios(config)
             .then(function (response) {
                 const data = response.data;
-                console.log(data);
+                console.log(response);
                 
 
 

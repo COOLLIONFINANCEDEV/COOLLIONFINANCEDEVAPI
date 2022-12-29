@@ -184,8 +184,8 @@ export const cinetpayConfig = {
     API_KEY: "14047243215ebd680ed0d0c0.07903569",
     SECRET_KEY: "15339844795f294f74a65e51.35665952",
     SITE_ID: 622120,
-    NOTIFY_URL: `https://api.coollionfi.dev/${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayPaymentNotificationUrl)}`,
-    TRANSFER_NOTIFY_URL: `https://api.coollionfi.dev/${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayTransferNotificationUrl)}`,
+    NOTIFY_URL: `https://api.coollionfi.dev${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayPaymentNotificationUrl)}`,
+    TRANSFER_NOTIFY_URL: `https://api.coollionfi.dev${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayTransferNotificationUrl)}`,
     RETURN_URL: 'https://coollionfi.com/',
     PASSWORD: 'Developpeur1010!',
 }

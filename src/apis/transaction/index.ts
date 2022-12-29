@@ -1,6 +1,6 @@
 // const controller = require("../controllers/userController.js");
 import * as controller from 'src/apis/transaction/controller'
-import { Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { endpoints } from 'config/index';
 import resolve_route from 'src/helpers/resolve_route';
 import authentication from 'src/middlewares/authentication';
@@ -37,16 +37,24 @@ router.get(resolve_route(transactionEndpoint.retriveByWallet), authentication, c
 // router.delete(resolve_route(transactionEndpoint.purge), authentication, controller.removeAll);
 
 // Used by cinetpay to ping our server
-router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), (res: Response) => res.send());
+router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), logger({ msg: "Payment notification called: GET" }), (res: Response) => res.send());
 
 // Used by cinetpay to notify a payment state
-router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), controller.cinetpay_payment_notification_url);
+router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), logger({ msg: "Payment notification called: POST" }), controller.cinetpay_payment_notification_url);
 
 // Used by cinetpay to ping our server
-router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), (res: Response) => res.send());
+router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), logger({ msg: "Transfer notification called: GET" }), (res: Response) => res.send());
+
 
 // Used by cinetpay to notify a payment state
-router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), controller.cinetpay_transfer_notification_url);
+router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), logger({ msg: "Transfer notification called: POST" }), controller.cinetpay_transfer_notification_url);
 
 export default router;
 
+
+function logger({ msg }: { msg: any; }) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        console.log(msg);
+        next();
+    };
+}
