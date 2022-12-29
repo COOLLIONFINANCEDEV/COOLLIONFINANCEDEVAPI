@@ -43,7 +43,7 @@ export const create = async (req: Request, res: Response) => {
         // investment_term: 'date',
         distribution_frequency: 'integer',
         // start_payment: 'date',
-        expected_return: 'optional',
+        // expected_return: 'optional',
         status: 'not_null, optional',
         company_id: 'integer, not_null',
     });
@@ -58,6 +58,7 @@ export const create = async (req: Request, res: Response) => {
 
     // data['investment_term'] = new Date(data['investment_term']);
     // data['start_payment'] = new Date(data['start_payment']);
+    data['expected_return'] = ((data.interest_rate / 100) * data.total_investment_to_raise) + data.total_investment_to_raise;
 
 
     try {

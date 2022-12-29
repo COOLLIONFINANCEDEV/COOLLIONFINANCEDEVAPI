@@ -143,7 +143,7 @@ model offer {
   image                   String   @db.Text
   localisation            String   @db.Text
   category                String
-  stroy                   String
+  stroy                   String 
   investment_motive       String   @db.Text
   loan_about              String   @db.Text
   about_friendship_bridge String   @db.Text
@@ -162,7 +162,7 @@ model offer {
   // investment_term           DateTime @db.Timestamp(0)
   distribution_frequency    Int
   // start_payment             DateTime @db.Date
-  expected_return           Float    @default(0)
+  expected_return           Float
   status                    String   @default("")
   is_deleted                Boolean  @default(false)
   created_at                DateTime @default(now())

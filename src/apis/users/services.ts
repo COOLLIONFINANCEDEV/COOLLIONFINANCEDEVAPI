@@ -54,7 +54,14 @@ class Service extends BaseService {
 
     async create(data: users) {
         return await this.prisma.users.create({
-            data: data,
+            data: {
+                ...data,
+                wallet: {
+                    create: {
+                        amount: 0,
+                    }
+                }
+            }
         })
     }
 

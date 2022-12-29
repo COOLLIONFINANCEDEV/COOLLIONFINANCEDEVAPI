@@ -40,11 +40,11 @@ export const deposit = async (req: Request, res: Response) => {
         amount: 'not_null, float',
         currency: 'like=[XOF | XAF | CDF | GNF | USD]',
         use_credit_card: "boolean",
-        customer_address: 'not_null | optional', // card - addresse du client
-        customer_city: "optional | not_null", // card - La ville du client
-        customer_country: 'ptional | not_null', // card - le code ISO du pays
-        customer_state: 'optional | not_null', //card - le code ISO de l'état ou ou du pays
-        customer_zip_code: 'optional | not_null', //card - le code ISO de l'état ou ou du pays
+        customer_address: 'not_null, optional', // card - addresse du client
+        customer_city: "optional, not_null", // card - La ville du client
+        customer_country: 'ptional, not_null', // card - le code ISO du pays
+        customer_state: 'optional, not_null', //card - le code ISO de l'état ou ou du pays
+        customer_zip_code: 'optional, not_null', //card - le code ISO de l'état ou ou du pays
         customer_phone_number: "optional, number", //card - le code ISO de l'état ou ou du pays
     });
 
