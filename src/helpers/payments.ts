@@ -44,15 +44,16 @@ export class Cinetpay {
             data: JSON.stringify(data)
         };
 
+
+
         return axios(config)
             .then(function (response) {
                 const data = response.data;
-                console.log(response);
                 console.log(data);
-                console.log(JSON.stringify(response.data));                
                 
 
-                if (data.message === "CREATED") {
+
+                if (data.message === "CREATED" && data.code == 201) {
                     return data.data
                 } else {
                     return {
@@ -257,7 +258,7 @@ export class Cinetpay {
     async check_transfer({ token, client_transaction_id }: { token: String; client_transaction_id: String; }) {
         const config = {
             method: 'get',
-            url: `https://client.cinetpay.com/v1/transfer/check/money?token=${token}&client_transaction_id =${client_transaction_id }`,
+            url: `https://client.cinetpay.com/v1/transfer/check/money?token=${token}&client_transaction_id =${client_transaction_id}`,
             headers: {
                 'Content-Type': 'application/json'
             },

@@ -20,7 +20,6 @@ export const create = async (req: Request, res: Response) => {
 
     let data = req.body;
 
-
     const result = serializer(data, {
         name: 'not_null',
         // description: 'not_null',
@@ -44,7 +43,7 @@ export const create = async (req: Request, res: Response) => {
         distribution_frequency: 'integer',
         // start_payment: 'date',
         // expected_return: 'optional',
-        status: 'not_null, optional',
+        status: 'not_null, optional, string',
         company_id: 'integer, not_null',
     });
 

@@ -186,7 +186,7 @@ export const cinetpayConfig = {
     SITE_ID: 622120,
     NOTIFY_URL: `https://api.coollionfi.dev/${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayPaymentNotificationUrl)}`,
     TRANSFER_NOTIFY_URL: `https://api.coollionfi.dev/${resolve_route(endpoints.apiVersion)}${resolve_route(endpoints.transactions.CinetpayTransferNotificationUrl)}`,
-    RETURN_URL: '',
+    RETURN_URL: 'https://coollionfi.com/',
     PASSWORD: 'Developpeur1010!',
 }
 
