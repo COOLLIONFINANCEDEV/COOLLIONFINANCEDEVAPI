@@ -74,15 +74,15 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                             result[field].push(`Min length is ${constraint[1]}!`);
                         }
                         break;
-                    case "string":
-                        bool = is_string({ str: body[field] });
+                    // case "string":
+                    //     bool = is_string({ str: body[field] });
 
-                        if (!bool) {
-                            init_object_key({ obj: result, key: field, defaultValue: [] });
-                            result[field].push("Must be a string!");
-                        } else body[field] = `${body[field]}`;
+                    //     if (!bool) {
+                    //         init_object_key({ obj: result, key: field, defaultValue: [] });
+                    //         result[field].push("Must be a string!");
+                    //     } else body[field] = `${body[field]}`;
 
-                        break;
+                    //     break;
                     case 'max_length':
                         bool = max_length(body[field], constraint[1]);
 
@@ -181,10 +181,10 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
 
 
 
-function is_string(str: any) {
-    if (["number", "string"].includes(typeof str)) return true;
-    return false;
-}
+// function is_string(str: any) {
+//     if (["number", "string"].includes(typeof str)) return true;
+//     return false;
+// }
 
 function not_null({ str, ignore }: { str: string | number | null | undefined; ignore?: notNullType; }): boolean {
     let bool = false;

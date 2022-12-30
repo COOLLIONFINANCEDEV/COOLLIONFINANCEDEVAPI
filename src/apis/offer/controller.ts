@@ -43,7 +43,7 @@ export const create = async (req: Request, res: Response) => {
         distribution_frequency: 'integer',
         // start_payment: 'date',
         // expected_return: 'optional',
-        status: 'not_null, optional, string',
+        status: 'not_null, optional',
         company_id: 'integer, not_null',
     });
 
