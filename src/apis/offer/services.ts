@@ -26,8 +26,8 @@ class Service extends BaseService {
     async retrive(id: number, manager_id: number) {
         return await this.prisma.offer.findFirst({
             where: {
-                id: id,
                 company: {
+                    id: id,
                     manager_id: manager_id
                 }
             },
