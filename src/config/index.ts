@@ -113,6 +113,7 @@ export const endpoints = {
     },
     "offer": {
         "retrive": "offers/retrive/:id",
+        "retriveByCompany": "offers/retrive/company/:id",
         "list": "offers/list/:page?/:perPage?",
         "create": "offers/create/",
         "update": "offers/update/:id",

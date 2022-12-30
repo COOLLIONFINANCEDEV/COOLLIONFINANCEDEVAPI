@@ -151,9 +151,20 @@ export const findAll = async (req: Request, res: Response) => {
 
 
 // Retrive offer
-export const findOne = async (req: Request, res: Response) => {
+export const findByCompany = async (req: Request, res: Response) => {
     const { id } = req.params;
     const offer = await service.retrive(Number(id), res.locals.auth?.user_id);
+
+    if (!error_404(offer, res)) return;
+
+    res.send(make_response(false, offer));
+};
+
+
+// Retrive offer
+export const findOne = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const offer = await service.simple_retrive(Number(id));
 
     if (!error_404(offer, res)) return;
 

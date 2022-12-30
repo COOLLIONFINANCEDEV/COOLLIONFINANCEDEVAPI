@@ -18,7 +18,8 @@ class Service extends BaseService {
                 id: id,
             },
             include: {
-                investment: true
+                investment: true,
+                company: true,
             }
         });
     }
