@@ -375,7 +375,7 @@ export const twoFACheck = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        code: 'not_null, number',
+        code: 'integer',
         authorization_code: "not_null",
         code_verifier: "not_null",
     });
@@ -600,7 +600,7 @@ export const checkVerification = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        code: 'number',
+        code: 'integer',
         authorization_code: "not_null",
         code_verifier: "not_null, optional",
     });
