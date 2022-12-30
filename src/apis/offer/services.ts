@@ -25,7 +25,7 @@ class Service extends BaseService {
     }
 
     async retrive(id: number, manager_id: number) {
-        return await this.prisma.offer.findFirst({
+        return await this.prisma.offer.findMany({
             where: {
                 company: {
                     id: id,
