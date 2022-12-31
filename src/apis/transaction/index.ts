@@ -37,17 +37,17 @@ router.get(resolve_route(transactionEndpoint.retriveByWallet), authentication, c
 // router.delete(resolve_route(transactionEndpoint.purge), authentication, controller.removeAll);
 
 // Used by cinetpay to ping our server
-router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), logger({ msg: "Payment notification called: GET" }), (res: Response) => res.send());
+router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), logger({ msg: "Payment notification called: GET" }), (req: Request, res: Response) => res.send());
 
 // Used by cinetpay to notify a payment state
-router.get(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), logger({ msg: "Payment notification called: POST" }), controller.cinetpay_payment_notification_url);
+router.post(resolve_route(transactionEndpoint.CinetpayPaymentNotificationUrl), logger({ msg: "Payment notification called: POST" }), controller.cinetpay_payment_notification_url);
 
 // Used by cinetpay to ping our server
-router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), logger({ msg: "Transfer notification called: GET" }), (res: Response) => res.send());
+router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), logger({ msg: "Transfer notification called: GET" }), (req: Request, res: Response) => res.send());
 
 
 // Used by cinetpay to notify a payment state
-router.get(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), logger({ msg: "Transfer notification called: POST" }), controller.cinetpay_transfer_notification_url);
+router.post(resolve_route(transactionEndpoint.CinetpayTransferNotificationUrl), logger({ msg: "Transfer notification called: POST" }), controller.cinetpay_transfer_notification_url);
 
 export default router;
 

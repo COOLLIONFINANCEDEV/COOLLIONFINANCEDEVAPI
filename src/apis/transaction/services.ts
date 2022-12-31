@@ -82,6 +82,15 @@ class Service extends BaseService {
         });
     }
 
+    async simple_update(id: number, data: transaction) {
+        return await this.prisma.transaction.update({
+            where: {
+                id: Number(id),
+            },
+            data: data
+        });
+    }
+
     async deleteByWallet(id: number, user_id: number) {
         return await this.prisma.transaction.deleteMany({
             where: {

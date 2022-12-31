@@ -411,6 +411,7 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
     if (!check_req_body(req, res)) return;
 
     let data = req.body;
+    // console.log(data);
 
     // const result = serializer(data, {
     //     cpm_site_id: "not_null, number",
@@ -438,8 +439,11 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
 
     // data = result.result;
 
+    // console.log("1");
+
 
     try {
+        // console.log("2");
         const cmp = data.cpm_site_id + data.cpm_trans_id + data.cpm_trans_date + data.cpm_amount + data.cpm_currency +
             data.signature + data.payment_method + data.cel_phone_num + data.cpm_phone_prefixe +
             data.cpm_language + data.cpm_version + data.cpm_payment_config + data.cpm_page_action + data.cpm_custom + data.cpm_designation + data.cpm_error_message;
@@ -447,16 +451,23 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
         const hmac = Hasher.hmac(cmp, "SHA256", cinetpayConfig.SECRET_KEY);
 
         if (hmac === req.headers["x-token"]) {
+            // console.log("3", data, data.cpm_trans_id);
             let transaction = await service.retriveByTransactionID(data.cpm_trans_id);
+            console.log(transaction);
 
-            if (transaction?.status.toUpperCase() == "ACCEPTED") res.send();
+
+            if (transaction?.status.toUpperCase() == "ACCEPTED") {
+                // res.send(); console.log("4");
+            }
             else {
+                // console.log("5");
                 const transactionIssue = await cinetpay.verify_payment(data.cpm_trans_id);
+                console.log("transactionIssue :", transactionIssue);
                 const update = check_type_and_return_any<any>({
                     status: (transactionIssue.data.status).toLowerCase(),
                     method: (transactionIssue.data.payment_method).toLowerCase()
                 })
-                await service.update(Number(transaction?.id), Number(transaction?.wallet?.user_id), update);
+                await service.simple_update(Number(transaction?.id), update);
                 transaction = await service.retriveByTransactionID(data.cpm_trans_id);
                 const balance = transaction?.wallet?.amount;
 
@@ -493,8 +504,9 @@ export const cinetpay_payment_notification_url = async (req: Request, res: Respo
 
             res.send();
         } else res.status(404).send("Hmac token not verified!");
-    } catch {
+    } catch (error) {
         res.status(500).send();
+        if (process.env.DEBUG) throw error;
     }
 }
 
@@ -506,7 +518,7 @@ export const cinetpay_transfer_notification_url = async (req: Request, res: Resp
 
     try {
         let transaction = await service.retriveByTransactionID(data.client_transaction_id);
-        
+
         if (transaction?.status.toUpperCase() == "ACCEPTED") res.send();
         else {
             const generateToken = await cinetpay.generate_transfer_token();
@@ -526,7 +538,7 @@ export const cinetpay_transfer_notification_url = async (req: Request, res: Resp
                 status: (transferStatus).toLowerCase(),
                 method: (transferInfo.data.operator).toLowerCase()
             })
-            
+
             await service.update(Number(transaction?.id), Number(transaction?.wallet?.user_id), update);
             // transaction = await service.retriveByTransactionID(data.client_transaction_id);
             // const balance = transaction?.wallet?.amount;
@@ -562,8 +574,9 @@ export const cinetpay_transfer_notification_url = async (req: Request, res: Resp
             // }
 
         }
-    } catch {
+    } catch (error) {
         res.status(500).send();
+        if (process.env.DEBUG) throw error;
     }
 }
 
