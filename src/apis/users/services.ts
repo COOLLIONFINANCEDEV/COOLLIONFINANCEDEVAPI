@@ -15,7 +15,7 @@ class Service extends BaseService {
     async retrive(id: number) {
         Prisma.CompanyScalarFieldEnum
         return await this.prisma.users.findFirst({
-            where: { id: id },
+            where: { id: Number(id) },
             include: {
                 role: {
                     select: { name: true }
