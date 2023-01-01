@@ -102,7 +102,6 @@ export default function serializer(body: { [x: string]: any; } | any, fieldConst
                     case 'number':
                         bool = is_numeric(body[field]);
 
-
                         if (!bool) {
                             init_object_key({ obj: result, key: field, defaultValue: [] });
                             result[field].push(`Must be a number!`);
@@ -233,7 +232,7 @@ function is_email(str: string | number) {
 
 
 function is_numeric(str: string) {
-    return not_null({ str }) ? validator.isNumeric(String("str")) : false;
+    return not_null({ str }) ? validator.isNumeric(String(str)) : false;
 }
 
 
