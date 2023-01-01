@@ -95,6 +95,7 @@ export const endpoints = {
         "list": "transactions/list/:page?/:perPage?",
         "deposit": "transactions/deposit/",
         "withdrawal": "transactions/withdrawal",
+        "payBorrower": "transactions/pay-borrower",
         "update": "transactions/update/:id",
         "delete": "transactions/delete/:id",
         "deleteByWallet": "transactions/delete/wallet/:id",

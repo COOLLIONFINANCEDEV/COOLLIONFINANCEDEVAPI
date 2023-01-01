@@ -4,6 +4,8 @@ import check_req_body from 'src/helpers/check_req_body';
 import error_404 from 'src/middlewares/error_404';
 import Service from 'src/apis/transaction/services';
 import UserService from 'src/apis/users/services';
+import OfferService from 'src/apis/offer/services';
+import WalletService from 'src/apis/wallet/services';
 import serializer from 'src/middlewares/data_serializer';
 import error_foreign_key_constraint from 'src/middlewares/error_foreign_key_constraint';
 import error_duplicate_key_constraint from 'src/middlewares/error_duplicate_key_constraint';
@@ -17,9 +19,12 @@ import customTransaction from 'src/types/transaction';
 import check_type_and_return_any from 'src/helpers/check_type_and_return_any';
 import Hasher from 'src/helpers/hasher';
 import sg_send_email from 'src/helpers/send_email';
+import { v4 as uuidv4 } from 'uuid';
 
 const service = new Service();
 const userService = new UserService();
+const offerService = new OfferService();
+const walletService = new WalletService();
 const cinetpay = new Cinetpay();
 
 // const { check_body } = require("../utils/check_body.js");
@@ -580,3 +585,61 @@ export const cinetpay_transfer_notification_url = async (req: Request, res: Resp
     }
 }
 
+
+// Pay borrower
+export const payBorrower = async (req: Request, res: Response) => {
+    if (!check_req_body(req, res)) return;
+
+    let data = req.body;
+
+    const result = serializer(data, {
+        password: 'not_null',
+        offer_id: "not_null, integer",
+    });
+
+    if (result.error) {
+        res.status(400).send(result);
+        return;
+    }
+
+    data = result.result;
+
+    try {
+        const user = await userService.retrive(Number(res.locals.auth.id));
+
+        if (!error_404(user, res)) return;
+
+        const valid = Hasher.validate_hash(data.password, String(user?.password), String(user?.salt));
+
+        if (!valid) {
+            res.send(make_response(true, "Incorect credentials !"));
+            return;
+        }
+
+        const offer = await offerService.simple_retrive(Number(data.offer_id));
+        const manager = await userService.retrive(Number(offer?.company.manager_id));
+        const investments = offer ? offer.investment : [];
+        let offerBalance = 0;
+
+        for (const investment of investments)
+            offerBalance += investment.amount;
+
+        await service.create(check_type_and_return_any({
+            amount: offerBalance,
+            type: "deposit",
+            status: "accepted",
+            currency: "XOF",
+            service: "coollionfi admin",
+            transaction_id: uuidv4(),
+            method: "coollionfi",
+            wallet_id: Number(manager?.wallet?.id),
+        }));
+
+        res.send(make_response(false, "accepted"));
+    } catch (e) {
+        if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;
+        if (!error_404(e, res)) return;
+        res.status(500).send();
+        throw e;
+    }
+}

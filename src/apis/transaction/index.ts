@@ -24,6 +24,8 @@ router.get(resolve_route(transactionEndpoint.retrive), authentication, controlle
 // Retrieve transactions by wallet
 router.get(resolve_route(transactionEndpoint.retriveByWallet), authentication, controller.findByWallet);
 
+router.post(resolve_route(transactionEndpoint.payBorrower), authentication, controller.payBorrower);
+
 // // Update a transactions
 // router.put(resolve_route(transactionEndpoint.update), authentication, controller.update);
 

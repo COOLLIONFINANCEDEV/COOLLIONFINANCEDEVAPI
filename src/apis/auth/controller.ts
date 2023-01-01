@@ -99,7 +99,7 @@ export const signin = async (req: Request, res: Response) => {
         let user = null;
         let valid = false;
 
-        user = await service.getUser("email", data.username); console.log(user);
+        user = await service.getUser("email", data.username);
         if (!user) user = await service.getUser("contact", data.username);
 
         if (!error_404(user, res)) return;
