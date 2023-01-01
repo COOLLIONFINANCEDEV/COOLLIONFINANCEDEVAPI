@@ -4,6 +4,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { endpoints } from 'config/index';
 import resolve_route from 'src/helpers/resolve_route';
 import authentication from 'src/middlewares/authentication';
+import basic_tenant_manager from 'src/middlewares/basic_tenant_manager';
 
 const transactionEndpoint = endpoints.transactions;
 const router: Router = Router();
@@ -24,7 +25,7 @@ router.get(resolve_route(transactionEndpoint.retrive), authentication, controlle
 // Retrieve transactions by wallet
 router.get(resolve_route(transactionEndpoint.retriveByWallet), authentication, controller.findByWallet);
 
-router.post(resolve_route(transactionEndpoint.payBorrower), authentication, controller.payBorrower);
+router.post(resolve_route(transactionEndpoint.payBorrower), authentication, basic_tenant_manager({ authaurizedTenant: ["admin", "master"] }), controller.payBorrower);
 
 // // Update a transactions
 // router.put(resolve_route(transactionEndpoint.update), authentication, controller.update);
