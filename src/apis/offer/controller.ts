@@ -59,10 +59,12 @@ export const create = async (req: Request, res: Response) => {
     // data['start_payment'] = new Date(data['start_payment']);
     data["image"] = data.image ? data.image : "undefined";
     data['expected_return'] = ((data.interest_rate / 100) * data.total_investment_to_raise) + data.total_investment_to_raise;
-
+    data['funds_to_raise'] = data.Ptotal_investment_to_raise;
 
     try {
         const insert = await service.create(data);
+
+        // await service.init_event(insert);
         res.send(make_response(false, insert));
     } catch (e) {
         if (!error_foreign_key_constraint(res, e, service.get_prisma())) return;

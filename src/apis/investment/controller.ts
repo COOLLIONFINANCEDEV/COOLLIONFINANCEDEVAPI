@@ -84,6 +84,7 @@ export const create = async (req: Request, res: Response) => {
             amount: data.amount, // investmentAmount,
             offer_id: data.offer_id,
             wallet_id: user?.wallet?.id,
+            amount_with_interest_rate: data.amount * (Number(offer?.interest_rate) / 100),
         }
 
         const newTransaction: customTransaction = {
@@ -93,11 +94,13 @@ export const create = async (req: Request, res: Response) => {
             currency: "XOF",
             service: "coollionfi",
             transaction_id: uuidv4(),
-            status: "ACCEPTED"
+            status: check_type_and_return_any("accepted"),
         }
 
         await transactionService.create(check_type_and_return_any(newTransaction));
         await service.create(check_type_and_return_any(newInvestment));
+        await offerService.update(Number(offer?.id), Number(offer?.company.manager_id), check_type_and_return_any({ funds_to_raise: amountToRaised }));
+
         // Notify the customer by email that his invesment is accepted
 
         const username = user?.first_name && user.last_name
@@ -123,6 +126,7 @@ export const create = async (req: Request, res: Response) => {
         throw e;
     }
 }
+
 
 
 // Update and Save a new investment docs
