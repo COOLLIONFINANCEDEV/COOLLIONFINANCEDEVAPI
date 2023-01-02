@@ -32,7 +32,7 @@ export const create = async (req: Request, res: Response) => {
 
     const result = serializer(data, {
         // units: 'not_null, float',
-        amount: 'not_null, float',
+        amount: 'not_null, integer',
         offer_id: "not_null, integer",
     });
 

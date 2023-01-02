@@ -42,7 +42,7 @@ export const deposit = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        amount: 'not_null, float',
+        amount: 'not_null, integer',
         currency: 'like=[XOF | XAF | CDF | GNF | USD]',
         use_credit_card: "boolean",
         customer_address: 'not_null, optional', // card - addresse du client
@@ -199,10 +199,10 @@ export const withdrawal = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        amount: "float",
+        amount: "integer",
         use_existing_phone_number: "boolean",
-        phone_prefix: 'optional, number', //card - le code ISO de l'état ou ou du pays
-        phone_number: "optional, number", //card - le code ISO de l'état ou ou du pays
+        phone_prefix: 'optional, number',
+        phone_number: "optional, number",
     });
 
     if (result.error) {
@@ -311,7 +311,7 @@ export const update = async (req: Request, res: Response) => {
     let data = req.body;
 
     const result = serializer(data, {
-        amount: 'not_null, float, optional',
+        amount: 'not_null, integer, optional',
         type: "not_null, optional",
         status: "not_null, optional",
         wallet_id: "not_null, integer, optional",
@@ -540,8 +540,8 @@ export const cinetpay_transfer_notification_url = async (req: Request, res: Resp
             else if (transferInfo.data.treatment_status == "REJ" || transferInfo.data.treatment_status == "RES") transferStatus = "REJECTED";
 
             const update = check_type_and_return_any<any>({
-                status: (transferStatus).toLowerCase(),
-                method: (transferInfo.data.operator).toLowerCase()
+                status: transferStatus.toLowerCase(),
+                method: transferInfo.data.operator.toLowerCase()
             })
 
             await service.update(Number(transaction?.id), Number(transaction?.wallet?.user_id), update);
