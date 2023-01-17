@@ -61,4 +61,22 @@ users
 
 [CINETPAY]
     token HMAC sur url de notifacation
-    
+
+
+[SIGN IN SESSION]
+
+disconnect = 1 => invalid all delivered access_token (use refresh_token to restablish connection and give new access_token)
+last_activity > 45min => destroy session
+persist = 1 et last_activity > 45min => disconnect
+expire_date < actual timestamp => destroy session
+
+[LOG EXAMPLE]
+
+[DATE][HEURE] 		IP			USER-AGENT		ACTION
+[2023/02/01][10:34:05] 	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	CREATE NEW USER WITH ID 58
+[2023/02/01][10:34:05] 	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	USER ACCOUNT WITH ID 58 ACTIVATE
+[2023/02/01][10:34:05]	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	USER WITH ID 58 LOGGED IN
+[2023/02/01][10:34:05]	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	USER WITH ID 58 CREATE TENANT ACCOUNT WITH ID 63, ROLE OWNER
+[2023/02/01][10:34:05]	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	TENANT ACCOUNT WITH ID 63 ACTIVATE
+[2023/02/01][10:34:05]	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	USER WITH ID 58 CONNECT TO TENANT WITH ID 63
+[2023/02/01][10:34:05]	192.168.125.127	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19041	TENANT WITH ID 63 LEND 588 XOF ON OFFER WITH ID 102
