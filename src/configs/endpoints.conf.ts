@@ -476,17 +476,41 @@ export const paymentMethod: TEndpoint = {
         method: 'post',
         path: '/tenant/:tenantId/payment-method/',
         schema: Joi.object({
-            paymentMethodTypeId: Joi.number().integer().required(),
-            // currencyId: Joi.number().integer().required(),
-            bank: Joi.string().lowercase().trim().min(3).max(95),
-            iban: Joi.string().lowercase().trim().min(3).max(95),
-            rib: Joi.string().lowercase().trim().min(3).max(95),
-            phone: Joi.string().lowercase().trim().custom(isPhoneNumber, "Validate phone number")
+            paymentMethodTypeCodename: Joi.string().trim().valid("MM", "CrC", "CC").required()
+                .messages({
+                    "any.only": "The allowed values for {#label} are \"MM\": Mobile Money, \"CrC\": Credit Card, \"CC\": Crypto Currency"
+                }),
+        }).when('paymentMethodTypeCodename', {
+            is: Joi.string().valid('CC'),
+            then: Joi.object({ address: Joi.string().required() })
+        }).when('paymentMethodTypeCodename', {
+            is: Joi.string().valid('MM'),
+            then: Joi.object({
+                customerPhoneNumber: Joi.string().trim().lowercase().required(),
+            })
+        }).when('paymentMethodTypeCodename', {
+            is: Joi.string().valid('CrC'),
+            then: Joi.object({
+                customerName: Joi.string().trim().lowercase().required(),
+                customerSurname: Joi.string().trim().lowercase().required(),
+                customerEmail: Joi.string().trim().lowercase().email().required(),
+                customerPhoneNumber: Joi.string().trim().lowercase().required(),
+                customerAddress: Joi.string().trim().lowercase().required(),
+                customerCity: Joi.string().trim().lowercase().required(),
+                customerCountry: Joi.string().trim().lowercase().required(),
+                customerState: Joi.string().trim().lowercase().required(),
+                customerZipCode: Joi.string().trim().lowercase().required(),
+            })
         }),
         authorizationRules: [{
             action: "create",
             subject: "PaymentMethod",
-            fields: ["paymentMethodTypeId", /*"currencyId",*/ "bank", "iban", "rib"],
+            fields: [
+                "paymentMethodTypeCodename",
+                'address',
+                'customerName', 'customerSurname', 'customerEmail', 'customerPhoneNumber',
+                'customerAddress', 'customerCity', 'customerState', 'customerCountry', 'customerZipCode'
+            ],
             mainRule: true,
         }]
     }

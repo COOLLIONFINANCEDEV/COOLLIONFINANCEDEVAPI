@@ -172,7 +172,7 @@ export const syncCinetpayPayment = async (req: ICustomRequest, res: Response) =>
                         updateTransaction(transaction.id, {
                             status: statusCode,
                             operator: body.payment_method,
-                            phone: `+${body.cpm_phone_prefixe}${body.cel_phone_num}`,
+                            customerPhoneNumber: `+${body.cpm_phone_prefixe}${body.cel_phone_num}`,
                         });
 
                         if (statusCode === transactionStatus["ACCEPTED"]) {

@@ -208,18 +208,26 @@ model Wallet {
 
 model PaymentMethod {
   id                  Int               @id @default(autoincrement())
-  paymentMethodType   PaymentMethodType @relation(fields: [paymentMethodTypeId], references: [id])
-  paymentMethodTypeId Int
-  bank                String?
-  iban                String?
-  rib                 String?
-  phone               String?
+  paymentMethodType   PaymentMethodType @relation(fields: [paymentMethodTypeCodename], references: [codename])
+  paymentMethodTypeCodename String
   disabled            Boolean           @default(false)
   deleted             Boolean           @default(false)
   createdAt           DateTime          @default(now())
   updatedAt           DateTime?         @updatedAt
   Wallet              Wallet?           @relation(fields: [walletId], references: [id])
   walletId            Int?
+  // CrC Cinetpay
+  customerName              String?
+  customerSurname           String?
+  customerEmail             String?
+  customerPhoneNumber       String? // MM Cinetpay
+  customerAddress           String?
+  customerCity              String?
+  customerCountry           String?
+  customerState             String?
+  customerZipCode           String?
+  // CC
+  address                   String?
 }
 
 model PaymentMethodType {
@@ -265,12 +273,11 @@ model Transaction {
   updatedAt                 DateTime?         @updatedAt
   // MM Cinetpay
   operator                  String?
-  phone                     String?
   // CrC Cinetpay
   customerName              String?
   customerSurname           String?
   customerEmail             String?
-  customerPhoneNumber       String?
+  customerPhoneNumber       String? // MM Cinetpay
   customerAddress           String?
   customerCity              String?
   customerCountry           String?
