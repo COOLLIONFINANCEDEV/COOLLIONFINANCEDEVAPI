@@ -413,7 +413,7 @@
 
 1. List other transactions
 
-   - Endpoint: GET /tenant/:tenantId/user/list:page?/:perPage?
+   - Endpoint: GET /tenant/:tenantId/:otherId/transaction/list:page?/:perPage?
    - Response:
 
         ```json
@@ -441,7 +441,7 @@
 
 2. List transactions
 
-   - Endpoint: GET /tenant/:tenantId/user/list:page?/:perPage?
+   - Endpoint: GET /tenant/:tenantId/transaction/list:page?/:perPage?
    - Response:
 
         ```json
@@ -467,9 +467,9 @@
             }
        ```
 
-3. Retrive transactions
+3. Retrive transactionstransaction/:transactionId
 
-   - Endpoint: GET /tenant/:tenantId/user/list:page?/:perPage?
+   - Endpoint: GET /tenant/:tenantId/transaction/:transactionId
    - Response:
 
         ```json
@@ -496,7 +496,7 @@
        ```
 
 4. Make deposit
-    - Endpoint: POST /tenant
+    - Endpoint: POST /tenant/:tenantId/transaction
     - Request Body Schema:
 
         ```javascript
@@ -533,19 +533,137 @@
             }
         ```
 
-<!-- 
-## Account Type API
 
-1. Register account type
-    - Endpoint: POST /account-type/
-    - Request Body Schema:
+## Wallet APIs
+
+1. retrieve balance
+
+   - Endpoint: GET /tenant/:tenantId/wallet
+   - Response:
 
         ```json
             {
-                name: string,
-                description?: string,
-                roles: number[],
-                permissions?: number[]
+                "success":true,
+                "message":"Wallet retrieved successfully.",
+                "data":[
+                    {
+                        "id": 1,
+                        "balance": "1000000",
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+2. Create wallet
+
+    - Endpoint: POST /tenant/:tenantId/wallet/
+    - Request Body Schema:
+
+        ```javascript
+            {}
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Wallet registered successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+## Project APIs
+
+1. List projects
+
+   - Endpoint: GET /tenant/:tenantId/project/list/:page?/:perPage?
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Projects retrieved successfully.",
+                "data":[
+                    {
+                        "id": 1,
+                        "title": "Cool Lion Finance Core Fund",
+                        "owner": 1,
+                        "treat": 1,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+2. Retrieve project
+    - Endpoint: GET /tenant/:tenantId/ptoject/:projectId
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Project retrieved successfully.",
+                "data":[
+                    {
+                        "id": 1,
+                        "title": "Cool Lion Finance Core Fund",
+                        "owner": 1,
+                        "treat": 1,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    }
+                ],
+                "errors":[]
+            }
+        ```
+
+3. Remove project
+   - Endpoint: DELETE /tenant/:tenantId/project/:projectId
+   - Response:
+  
+        ```json
+            {
+                "success":true,
+                "message":"Project removed successfully.",
+                "data":[],
+                "errors":[]
+            }
+        ```
+
+4. Update project
+    - Endpoint: PUT /tenant/:tenantId/project/:projectId
+    - Request Body Schema:
+
+        ```javascript
+            {
+                title?: string,
+                treat:? number,
+            },
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Project updated successfully.",
+                "data":[],
+                "errors":[]
+            }
+        ```
+
+5. Register tenant
+    - Endpoint: POST /tenant/:tenantId/project/
+    - Request Body Schema:
+
+        ```javascript
+            {
+                title: string,
             }
         ```
 
@@ -554,8 +672,8 @@
         ```json
             {
                 "success":true,
-                "message":"Account type registered successfully.",
-                "data":[],
-                "errors":[]
+                "message": "Project registered successfully.",
+                "data": [],
+                "errors": []
             }
-        ``` -->
+        ```
