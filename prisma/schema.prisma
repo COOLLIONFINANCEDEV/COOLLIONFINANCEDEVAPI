@@ -1,0 +1,316 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  // provider = "prisma-dbml-generator"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id                      Int           @id @default(autoincrement())
+  name                    String
+  accountType             AccountType?  @relation(fields: [accountTypeId], references: [id])
+  accountTypeId           Int
+  roles                   Role[]
+  receivedTransaction     Transaction[] @relation(name: "receivedTransaction")
+  transactionsSent        Transaction[] @relation(name: "transactionSent")
+  deleted                 Boolean       @default(false)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime?     @updatedAt
+  Project                 Project[]
+  Investment              Investment[]
+  Wallet                  Wallet[]
+  invitationSent          Invitation[]  @relation(name: "invitationSent")
+  UserTenant              UserTenant[]
+  UserTenantOnAttribution UserTenant[]  @relation(name: "userTenantOnAttribution")
+}
+
+model AccountType {
+  id                       Int                     @id @default(autoincrement())
+  name                     String
+  codename                 String
+  description              String?
+  tenants                  Tenant[]
+  accountsTypesRoles       AccountTypeRole[]
+  accountsTypesPermissions AccountTypePermission[]
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime?               @updatedAt
+}
+
+model User {
+  id               Int                @id @default(autoincrement())
+  firstName        String?
+  lastName         String?
+  email            String             @unique
+  phone            String?            @unique
+  phone2           String?            @unique
+  password         String
+  emailVerified    Boolean            @default(false)
+  phoneVerified    Boolean            @default(false)
+  phone2Verified   Boolean            @default(false)
+  accountActivated Boolean            @default(false)
+  deleted          Boolean            @default(false)
+  usersTenants     UserTenant[]
+  usersPermissions UsersPermissions[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+}
+
+model UserTenant {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  user         User      @relation(fields: [userId], references: [id])
+  tenantId     Int
+  tenant       Tenant    @relation(fields: [tenantId], references: [id])
+  userTenantId Int?
+  userTenant   Tenant?   @relation(fields: [userTenantId], references: [id], name: "userTenantOnAttribution")
+  role         Role      @relation(fields: [roleId], references: [id])
+  roleId       Int
+  manager      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+
+  @@unique([userId, tenantId, roleId])
+}
+
+model Role {
+  id                 Int               @id @default(autoincrement())
+  name               String
+  description        String?
+  published          Boolean           @default(false)
+  tenant             Tenant?           @relation(fields: [owner], references: [id])
+  owner              Int
+  accountsTypesRoles AccountTypeRole[]
+  usersTenants       UserTenant[]
+  permissionRole     PermissionRole[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime?         @updatedAt
+  Invitation         Invitation[]
+  // InvitationRole     InvitationRole[]
+}
+
+model Permission {
+  id                       Int                     @id @default(autoincrement())
+  name                     String
+  description              String?
+  codename                 String
+  accountsTypesPermissions AccountTypePermission[]
+  permissionRole           PermissionRole[]
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime?               @updatedAt
+  usersPermissions         UsersPermissions[]
+}
+
+model PermissionRole {
+  id           Int        @id @default(autoincrement())
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  roleId       Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime?  @updatedAt
+
+  @@unique([permissionId, roleId])
+}
+
+model AccountTypeRole {
+  id            Int         @id @default(autoincrement())
+  roleId        Int
+  role          Role        @relation(fields: [roleId], references: [id])
+  accountTypeId Int
+  accountType   AccountType @relation(fields: [accountTypeId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+
+  @@unique([accountTypeId, roleId])
+}
+
+model AccountTypePermission {
+  id            Int         @id @default(autoincrement())
+  permissionId  Int
+  permission    Permission  @relation(fields: [permissionId], references: [id])
+  accountTypeId Int
+  accountType   AccountType @relation(fields: [accountTypeId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+
+  @@unique([accountTypeId, permissionId])
+}
+
+model UsersPermissions {
+  id           Int        @id @default(autoincrement())
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime?  @updatedAt
+
+  @@unique([userId, permissionId])
+}
+
+model Project {
+  id          Int          @id @default(autoincrement())
+  title       String
+  tenant      Tenant       @relation(fields: [owner], references: [id])
+  owner       Int
+  investments Investment[]
+  disabled    Boolean      @default(true)
+  treat       Boolean      @default(false)
+  deleted     Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+}
+
+model Investment {
+  id             Int            @id @default(autoincrement())
+  amount         Float
+  Project        Project        @relation(fields: [projectId], references: [id])
+  projectId      Int
+  tenant         Tenant         @relation(fields: [funder], references: [id])
+  funder         Int
+  investmentTerm InvestmentTerm @relation(fields: [term], references: [id])
+  term           Int
+  dueAmount      Float
+  dueGain        Float
+  collectionDate DateTime
+  gainCollected  Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime?      @updatedAt
+}
+
+model InvestmentTerm {
+  id          Int          @id @default(autoincrement())
+  term        Int
+  benefit     Int
+  name        String?
+  description String?
+  investment  Investment[]
+  disabled    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+}
+
+model Wallet {
+  id            Int             @id @default(autoincrement())
+  balance       Float           @default(0.0)
+  tenant        Tenant          @relation(fields: [owner], references: [id])
+  owner         Int             @unique
+  paymentMethod PaymentMethod[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime?       @updatedAt
+}
+
+model PaymentMethod {
+  id                  Int               @id @default(autoincrement())
+  paymentMethodType   PaymentMethodType @relation(fields: [paymentMethodTypeId], references: [id])
+  paymentMethodTypeId Int
+  bank                String?
+  iban                String?
+  rib                 String?
+  phone               String?
+  disabled            Boolean           @default(false)
+  deleted             Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime?         @updatedAt
+  Wallet              Wallet?           @relation(fields: [walletId], references: [id])
+  walletId            Int?
+}
+
+model PaymentMethodType {
+  id            Int             @id @default(autoincrement())
+  name          String
+  codename      String          @unique // CLFW: Cool Lion Finance Wallet | MM: Mobile Money | CrC: Credit Card | CC: Crypto Currency
+  PaymentMethod PaymentMethod[]
+  disabled      Boolean         @default(false)
+  deleted       Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime?       @updatedAt
+  Transaction   Transaction[]
+}
+
+// model AcceptedCurrencies {
+//   id            Int             @id @default(autoincrement())
+//   name          String?
+//   codename      String
+//   PaymentMethod PaymentMethod[]
+//   Transaction   Transaction[]
+//   disabled      Boolean         @default(false)
+//   deleted       Boolean         @default(false)
+//   createdAt     DateTime        @default(now())
+//   updatedAt     DateTime?       @updatedAt
+// }
+
+model Transaction {
+  id                        Int               @id @default(autoincrement())
+  paymentMethodTypeCodename String
+  paymentMethodType         PaymentMethodType @relation(fields: [paymentMethodTypeCodename], references: [codename])
+  amount                    Float
+  // acceptedCurrencies AcceptedCurrencies @relation(fields: [currencyId], references: [id])
+  // currencyId         Int
+  recipientTenant           Tenant            @relation(fields: [recipient], references: [id], name: "receivedTransaction")
+  recipient                 Int
+  senderTenant              Tenant            @relation(fields: [sender], references: [id], name: "transactionSent")
+  sender                    Int
+  reason                    String?
+  currency                  String
+  transactionId             String
+  status                    Int
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime?         @updatedAt
+  // MM Cinetpay
+  operator                  String?
+  phone                     String?
+  // CrC Cinetpay
+  customerName              String?
+  customerSurname           String?
+  customerEmail             String?
+  customerPhoneNumber       String?
+  customerAddress           String?
+  customerCity              String?
+  customerCountry           String?
+  customerState             String?
+  customerZipCode           String?
+  // CC
+  address                   String?
+}
+
+model Invitation {
+  id            Int       @id @default(autoincrement())
+  senderTenant  Tenant    @relation(fields: [sender], references: [id], name: "invitationSent")
+  sender        Int
+  receiverEmail String
+  role          Role      @relation(fields: [roleId], references: [id])
+  roleId        Int
+  confirm       Boolean   @default(false)
+  deleted       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  // InvitationRole InvitationRole[]
+}
+
+// model InvitationRole {
+//   id           Int        @id @default(autoincrement())
+//   roleId       Int
+//   role         Role       @relation(fields: [roleId], references: [id])
+//   invitationId Int
+//   invitation   Invitation @relation(fields: [invitationId], references: [id])
+//   createdAt    DateTime   @default(now())
+//   updatedAt    DateTime?  @updatedAt
+
+//   @@unique([invitationId, roleId])
+// }
+
+// model Message {
+//   id        Int       @id @default(autoincrement())
+//   sender    Int?
+//   type      String // info | chat
+//   chatId  Str
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime? @updatedAt
+// }
