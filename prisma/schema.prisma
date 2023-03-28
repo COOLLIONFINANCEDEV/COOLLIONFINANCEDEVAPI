@@ -98,7 +98,7 @@ model Permission {
   id                       Int                     @id @default(autoincrement())
   name                     String
   description              String?
-  codename                 String
+  codename                 String                  @unique
   accountsTypesPermissions AccountTypePermission[]
   permissionRole           PermissionRole[]
   createdAt                DateTime                @default(now())
@@ -207,15 +207,15 @@ model Wallet {
 }
 
 model PaymentMethod {
-  id                  Int               @id @default(autoincrement())
-  paymentMethodType   PaymentMethodType @relation(fields: [paymentMethodTypeCodename], references: [codename])
+  id                        Int               @id @default(autoincrement())
+  paymentMethodType         PaymentMethodType @relation(fields: [paymentMethodTypeCodename], references: [codename])
   paymentMethodTypeCodename String
-  disabled            Boolean           @default(false)
-  deleted             Boolean           @default(false)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime?         @updatedAt
-  Wallet              Wallet?           @relation(fields: [walletId], references: [id])
-  walletId            Int?
+  disabled                  Boolean           @default(false)
+  deleted                   Boolean           @default(false)
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime?         @updatedAt
+  Wallet                    Wallet?           @relation(fields: [walletId], references: [id])
+  walletId                  Int?
   // CrC Cinetpay
   customerName              String?
   customerSurname           String?

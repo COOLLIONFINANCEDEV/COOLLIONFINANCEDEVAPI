@@ -209,17 +209,23 @@ Table Wallet {
 Table PaymentMethod {
   id Int [pk, increment]
   paymentMethodType PaymentMethodType [not null]
-  paymentMethodTypeId Int [not null]
-  bank String
-  iban String
-  rib String
-  phone String
+  paymentMethodTypeCodename String [not null]
   disabled Boolean [not null, default: false]
   deleted Boolean [not null, default: false]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime
   Wallet Wallet
   walletId Int
+  customerName String
+  customerSurname String
+  customerEmail String
+  customerPhoneNumber String
+  customerAddress String
+  customerCity String
+  customerCountry String
+  customerState String
+  customerZipCode String
+  address String
 }
 
 Table PaymentMethodType {
@@ -244,6 +250,8 @@ Table Transaction {
   senderTenant Tenant [not null]
   sender Int [not null]
   reason String
+  currency String [not null]
+  transactionId String [not null]
   status Int [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime
@@ -311,7 +319,7 @@ Ref: Investment.term > InvestmentTerm.id
 
 Ref: Wallet.owner > Tenant.id
 
-Ref: PaymentMethod.paymentMethodTypeId > PaymentMethodType.id
+Ref: PaymentMethod.paymentMethodTypeCodename > PaymentMethodType.codename
 
 Ref: PaymentMethod.walletId > Wallet.id
 

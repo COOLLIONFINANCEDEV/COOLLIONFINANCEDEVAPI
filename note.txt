@@ -35,6 +35,7 @@ transaction:
     make deposit on wallet (crypto -USDC-)
     make transaction from tenant(wallet) to tenant(wallet)
     review balance updated method
+    notify the user when the transaction status changes
 
 invitation:
     warn the user when they receive a new invitation (socket)

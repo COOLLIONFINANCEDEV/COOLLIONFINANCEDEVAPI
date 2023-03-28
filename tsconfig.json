@@ -11,5 +11,5 @@
     },
     "include": [
         "src/**/*"
-    ]
+, "__tests__/quokka.ts"    ]
 }
