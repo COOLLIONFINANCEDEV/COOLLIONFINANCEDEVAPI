@@ -3,7 +3,7 @@ import debug from "debug";
 import { Response } from 'express';
 import jwt from "jsonwebtoken";
 import { app as appConfig } from "../configs/app.conf";
-import { hasher as hasherConfig, twilio as twilioConfig } from '../configs/utils.conf';
+import { hasher as hasherConfig } from '../configs/utils.conf';
 import { updateUser } from "../models/user.model";
 import { getAllPermissionRoles } from "../services/permission-role.service";
 import { getRoleByName } from "../services/role.service";
@@ -16,7 +16,6 @@ import { jwtErrorHandler } from "../utils/jwt-error.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import { redisClient } from "../utils/redis-client.helper";
 import CustomResponse from '../utils/response.helper';
-import sgSendEmail from '../utils/send-email.helper';
 import { sendMagicLink } from "../utils/send-magic-link.helper";
 
 const constants = appConfig.constants;
@@ -213,7 +212,7 @@ export const login = async (req: ICustomRequest, res: Response) => {
                 if (!checkPassword) {
                     response[401]({
                         message: 'Incorrect credentials!',
-                        errors: [{ field: 'password', message: 'Invalid password!' }]
+                        errors: [{ field: 'address', message: 'Invalid address!' }]
                     });
                     return;
                 }

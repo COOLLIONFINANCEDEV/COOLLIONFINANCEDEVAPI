@@ -24,7 +24,7 @@ export const getAccess = async (req: ICustomRequest, userId: number) => {
     /**
      * UsersPermissions
      * 
-     * [permissionId, ...]
+     * [permissionCodename, ...]
      */
     const appPermissions = usersPermissions.map(({ permission }) => permission.codename);
     const sessionId = hasher.hashToken(`${JSON.stringify(req.clientInfo)}${userId}`);

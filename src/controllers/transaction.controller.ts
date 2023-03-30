@@ -20,16 +20,25 @@ export const list = async (req: ICustomRequest, res: Response) => {
     try {
         const { tenantId } = req.auth!;
         const { otherId, page, perPage } = req.params;
+        let status = undefined;
 
-        if (otherId && isNaN(Number(otherId)))
-            return response[400]({ message: 'Invalid query parameter otherId.' });
+        if (otherId) {
+            if (isNaN(Number(otherId)))
+                return response[400]({ message: 'Invalid query parameter otherId.' });
+            else status = {
+                status: {
+                    gte: appConfig.transaction.status.ACCEPTED
+                }
+            };
+        }
 
         const transactions = await getAllTransactions({
             where: {
                 OR: [
                     { sender: Number(otherId) || tenantId },
                     { recipient: Number(otherId) || tenantId },
-                ]
+                ],
+                ...status
             },
             page: Number(page), perPage: Number(perPage)
         });

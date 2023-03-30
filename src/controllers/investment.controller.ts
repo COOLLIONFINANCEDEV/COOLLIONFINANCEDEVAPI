@@ -15,6 +15,7 @@ import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import CustomResponse from "../utils/response.helper";
 import { randomUUID } from "crypto";
+import { getProjectByParam } from "../services/project.service";
 
 // export const listForOther = async (req: ICustomRequest, res: Response) => {
 //     const response = new CustomResponse(res);
@@ -72,13 +73,22 @@ export const list = async (req: ICustomRequest, res: Response) => {
             });
 
         const otherOrSelf = projectId ? Boolean(Number(selfOrOther)) : false;
-
+        let project = undefined;
+        let funder = undefined;
+        
         if (otherOrSelf)
             if (isNaN(Number(projectId)))
                 return response[400]({ message: 'Invalid query parameter projectId.' });
+            else {
+                project = await getProjectByParam({ owner: tenantId, id: Number(projectId) });
+                
+                if (!project)
+                    return response[403]({ message: "You do not have permission to read information about a project that is not yours."})
+                
+                project = { projectId: Number(projectId) };
+            }
+        else funder = { funder: tenantId };
 
-        const project = isNaN(Number(projectId)) ? undefined : { projectId: Number(projectId) };
-        const funder = otherOrSelf ? undefined : { funder: tenantId };
         const investments = await getAllInvestments({
             where: {
                 ...project,
@@ -93,7 +103,7 @@ export const list = async (req: ICustomRequest, res: Response) => {
             selfInput: !otherOrSelf
         });
         const finalInvestments = await outItemFromList(filteredInvestments);
-        
+
         response[200]({ data: finalInvestments });
     } catch (err) {
         logger(err);
@@ -142,15 +152,15 @@ export const invest = async (req: ICustomRequest, res: Response) => {
         const masterWalletId = appConfig.masterWalletId;
 
         if (isNaN(masterWalletId)) {
-            logger("Master wallet ID is not specified!");
-            return response[500]();
+            logger("Master wallet is not set!");
+            return response[500]({message: "Unable to make investment now!"});
         }
 
         const masterWallet = await getWalletById(masterWalletId);
 
         if (!masterWallet) {
             logger("Master wallet is not registered!");
-            return response[500]();
+            return response[500]({ message: "Unable to make investment now!" });
         }
 
         const { amount, projectId, term } = req.body;
@@ -165,7 +175,7 @@ export const invest = async (req: ICustomRequest, res: Response) => {
 
         if (!respectMaximumToInvest)
             return response[400]({ message: `You exceed the maximum amount you can invest, $${appConfig.maximumToInvest}` });
-        
+
         if (!project)
             return response[404]({ message: "The selected project is unavailable." });
 

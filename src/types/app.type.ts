@@ -61,14 +61,14 @@ export interface ICustomRequest extends Request {
         /**
          * TenantsPermissions
          * 
-         * [permissionCodename, read_project, ...]
+         * [[tenantId, [permissionCodename, ...]], ...]
          */
         tenantPermissions: string[];
 
         /**
          * AppPermissions
          * 
-         * [permissionCodename, read_user, ...]
+         * [permissionCodename, read__user, ...]
         */
         userPermissions: string[];
     }

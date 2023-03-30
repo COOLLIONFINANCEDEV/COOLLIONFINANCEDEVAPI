@@ -66,7 +66,7 @@ export const authenticate = async (req: ICustomRequest, res: Response, next: Nex
         else {
             const parsedSession = JSON.parse(session);
             const tenantsPermissions: (number | string[])[][] = parsedSession[1];
-            const userPermissions: string[] = ["delete__Transaction", "create__Transaction", "update__Transaction", "read__Transaction__nameOther", ...parsedSession[2]];
+            const userPermissions: string[] = parsedSession[2];
             const actualTenantPermissions = tenantsPermissions.filter(([tenant,]) => tenant === tenantId);
             const tenantPermissions = new Set<string>();
 

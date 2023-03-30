@@ -1,36 +1,13 @@
 // npx nodemon --watch ./init -e js,ts,json --exec \"ts-node init/generate-permission.init.ts\"
+/**
+ * GENERATE PERMISSIONS
+ *
+ * @format action__Subject__field
+ */
 
-
-
-
-import chalk from 'chalk';
-import logSymbols from 'log-symbols';
-
-const processLog = (message: any = "\n", line: number = 0) => {
-    message = `${message}${"\n".repeat(line)}`;
-    process.stdout.write(message);
-}
-
-
-const progressBar = (progress: number, lastLogLength: number, label: string = "Progress") => { // Définition d'une fonction qui prend en paramètre la progression du script
-    if (progress > 1) progress = 1;
-
-    const filled = Math.floor(progress * 20); // Calcul du nombre de caractères à remplir dans la barre de progression
-    const empty = 20 - filled; // Calcul du nombre de caractères vides dans la barre de progression
-    const progressStr = `${'#'.repeat(filled)}${'.'.repeat(empty)}`; // Création de la chaîne de caractères représentant la barre de progression
-
-    const progressText = chalk`{bold ${label}:} ${progressStr} {green.bold ${Math.floor(progress * 100)}%}`; // Création du texte à afficher dans la console, avec la barre de progression, le pourcentage de progression, et des couleurs
-    const statusIcon = progress === 1 ? logSymbols.success : logSymbols.info; // Définition du symbole à afficher en fonction de l'état de progression
-
-    // Effacer la dernière ligne de la console avant d'écrire la nouvelle
-    process.stdout.write('\r' + ' '.repeat(lastLogLength) + '\r');
-
-    lastLogLength = progressText.length;
-    process.stdout.write(progressText);
-
-    return lastLogLength;
-};
-
+import { Permission, Prisma, PrismaClient } from "@prisma/client";
+import chalk from "chalk";
+import { getSubjectFields, processLog, progressBar } from "./helpers.init";
 
 const buildPermissionName = (action: string, subject: string, field: string) => {
     let name = "";
@@ -60,69 +37,68 @@ const buildPermissionName = (action: string, subject: string, field: string) => 
 
 
 
+export const generatePermissions = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        processLog(chalk`{bold \n\t\t\t*** BUILD PERMISSIONS ***}`);
 
-// /**
-//  * GENERATE PERMISSIONS
-//  *
-//  * @format action__Subject__field
-//  */
+        const actions = ["create", "read", "update", "delete", "manage"];
 
-import { Permission, Prisma, PrismaClient } from "@prisma/client";
+        processLog();
+        processLog(chalk`{bold Getting prisma model name... }`);
 
-processLog(chalk`{bold \t\t\t***BUILD PERMISSIONS ***}`);
+        const subjects = Object.keys(Prisma.ModelName);
 
-const actions = ["create", "read", "update", "delete", "manage"];
+        processLog(chalk`{bold.green OK}`, 1);
 
-processLog();
-processLog(chalk`{bold Getting prisma model name... }`);
+        // ## BUILDING PERMISSIONS
+        const permissions = new Set<Partial<Permission>>();
+        let progressLabel = "Building permissions";
+        let lastLogLength = progressBar(0, 0, progressLabel);
 
-const subjects = Object.keys(Prisma.ModelName);
+        for (const index in subjects) {
+            const subject = subjects[index];
+            const fields = getSubjectFields(subject);
 
-processLog(chalk`{bold.green OK}`, 1);
+            for (const field of fields) {
+                for (const action of actions) {
+                    const permission = `${action}__${subject}__${field}`;
+                    const permissionForOther = `${action}__${subject}__${field}Other`;
+                    permissions.add({
+                        name: buildPermissionName(action, subject, field),
+                        codename: permission,
+                    });
+                    permissions.add({
+                        name: buildPermissionName(action, subject, `${field}Other`),
+                        codename: permissionForOther,
+                    });
+                }
+            }
 
-// ## BUILDING PERMISSIONS
-const permissions = new Set<Partial<Permission>>();
-let progressLabel = "Building permissions";
-let lastLogLength = progressBar(0, 0, progressLabel);
-
-for (const index in subjects) {
-    const subject = subjects[index];
-    const dmmf = Prisma.dmmf.datamodel.models.find(value => value.name === subject);
-
-    if (!dmmf) continue;
-
-    let fields: string[] = dmmf.fields.map((field: any) => { if (field.kind == "scalar") return field.name });
-    fields = fields.filter((field: string) => field !== undefined);
-
-    for (const field of fields) {
-        for (const action of actions) {
-            const permission = `${action}__${subject}__${field}`;
-            permissions.add({
-                name: buildPermissionName(action, subject, field),
-                codename: permission,
-            });
+            // log progress
+            const progress = (Number(index) + 1) / subjects.length;
+            lastLogLength = progressBar(progress, lastLogLength, progressLabel);
         }
-    }
+        processLog("", 1);
 
-    // log progress
-    const progress = (Number(index) + 1) / subjects.length;
-    lastLogLength = progressBar(progress, lastLogLength, progressLabel);
+        processLog(chalk`{bold Adding specific permissions... }`);
+        permissions.add({ name: "create a lender account", codename: "create__Tenant__withAccountTypeLENDER" });
+        permissions.add({ name: "create a borrower account", codename: "create__Tenant__withAccountTypeBORROWER" });
+        permissions.add({ name: "create an admin account", codename: "create__Tenant__withAccountTypeADMIN" });
+        permissions.add({ name: "create a account of community of lender", codename: "create__Tenant__withAccountTypeLENDER_COMMUNITY" });
+        processLog(chalk`{bold.green OK}`, 2);
+
+        const prismaClient = new PrismaClient();
+
+        processLog(chalk`{blue.bold Registering permissions... }`);
+        prismaClient.permission.createMany({
+            data: [...(permissions as Set<Required<Permission>>)],
+            skipDuplicates: true
+        }).then((result) => processLog(chalk`{green.bold OK}`, 2))
+            .catch((err) => {
+                processLog(chalk`{red.bold FAILED}`, 2);
+                console.log(err);
+                processLog("", 2);
+            });
+    });
 }
-processLog("", 2);
-
-const prismaClient = new PrismaClient();
-
-processLog(chalk`{blue.bold Registering permissions... }`);
-(async () => {
-    prismaClient.permission.createMany({
-        data: [...(permissions as Set<Required<Permission>>)],
-        skipDuplicates: true
-    }).then(() => processLog(chalk`{green.bold OK}`, 2))
-        .catch((err) => {
-            processLog(chalk`{red.bold FAILED}`, 2);
-            console.log(err);
-            processLog("", 2);
-        });
-})();
-
 

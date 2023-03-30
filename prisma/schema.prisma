@@ -33,8 +33,9 @@ model Tenant {
 model AccountType {
   id                       Int                     @id @default(autoincrement())
   name                     String
-  codename                 String
+  codename                 String                  @unique
   description              String?
+  restricted               Boolean                 @default(false) // if true, the associated account will only be accessible by invitation
   tenants                  Tenant[]
   accountsTypesRoles       AccountTypeRole[]
   accountsTypesPermissions AccountTypePermission[]
@@ -84,7 +85,7 @@ model Role {
   description        String?
   published          Boolean           @default(false)
   tenant             Tenant?           @relation(fields: [owner], references: [id])
-  owner              Int
+  owner              Int?
   accountsTypesRoles AccountTypeRole[]
   usersTenants       UserTenant[]
   permissionRole     PermissionRole[]
@@ -92,6 +93,8 @@ model Role {
   updatedAt          DateTime?         @updatedAt
   Invitation         Invitation[]
   // InvitationRole     InvitationRole[]
+
+  @@unique([name, owner])
 }
 
 model Permission {

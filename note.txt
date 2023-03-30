@@ -4,9 +4,10 @@ ________________________________________________________________________________
 genaral:
     review all controller to detect action that can overide the user session
     review all controller to detect action that can be save in redis for early requests
+    set COMMUNITY_MEMBER_ROLE_ID in env file
+    set MASTER_WALLET_ID in env file
 
 initialization script:
-    generate permission (don't forget permission for other ressource)
     create user role
     special manage role for admin
     create every account type manager role
@@ -117,6 +118,9 @@ user:
     delete
     read -> retrive
     read -> list
+
+initialization script:
+    generate permission (don't forget permission for other ressource)
 
 ______________________________________________________________________________________________
 [FEATURES]

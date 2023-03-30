@@ -18,6 +18,7 @@ export const app = {
     /** 4 */
     walletMaxPaymentMethods: 4,
     masterWalletId: Number(process.env.MASTER_WALLET_ID),
+    communityMemberRoleId: Number(process.env.COMMUNITY_MEMBER_ROLE_ID),
 
     /** 300 */
     minimumToInvest: 300,

@@ -184,6 +184,7 @@ export const accountTypes: TEndpoint = {
         path: '/account-type/',
         schema: Joi.object({
             name: Joi.string().lowercase().trim().required(),
+            codename: Joi.string().uppercase().trim().required(),
             description: Joi.string().lowercase().trim(),
             roles: Joi.array().items(Joi.number().integer().required()).required(),
             permissions: Joi.array().items(Joi.number().integer())
