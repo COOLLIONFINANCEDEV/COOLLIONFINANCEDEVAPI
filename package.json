@@ -26,6 +26,8 @@
     "morgan": "^1.10.0",
     "npm": "^9.5.1",
     "redis": "^4.6.5",
+    "socket.io": "^4.6.1",
+    "socketio-jwt": "^4.6.2",
     "ua-parser-js": "^1.0.33"
   },
   "devDependencies": {

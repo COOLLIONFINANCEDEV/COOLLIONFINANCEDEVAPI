@@ -533,7 +533,6 @@
             }
         ```
 
-
 ## Wallet APIs
 
 1. retrieve balance
@@ -657,7 +656,7 @@
             }
         ```
 
-5. Register tenant
+5. Register project
     - Endpoint: POST /tenant/:tenantId/project/
     - Request Body Schema:
 
@@ -673,6 +672,110 @@
             {
                 "success":true,
                 "message": "Project registered successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+## Chat APIs
+
+1. List projects
+
+   - Endpoint: GET /chat/room/list
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "name": "Cool Lion Finance",
+                        "uuid": "f7896c8f-1fd6-414f-b982-06dcbe73e242",
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+2. Retrieve project
+    - Endpoint: GET /chat/room/:roomId
+    - Response:
+
+        ```json
+            {
+                "success": true,
+                "message": "Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "name": "Cool Lion Finance",
+                        "uuid": "f7896c8f-1fd6-414f-b982-06dcbe73e242",
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    }
+                ],
+                "errors":[]
+            }
+        ```
+
+3. Message history
+
+   - Endpoint: GET /chat/room/:roomId/list/message/:page?/:perPage?
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"OK",
+                "data":[
+                    {
+                        "id": 1,
+                        "content": "Hello, there!",
+                        "userId": 1,
+                        "roomId": 1,
+                        "replyTo": 5,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+4. Remove a message
+   - Endpoint: DELETE /chat/message/:messageId
+   - Response:
+  
+        ```json
+            {
+                "success":true,
+                "message":"Successfully deleted.",
+                "data":[],
+                "errors":[]
+            }
+        ```
+
+5. Post a message
+    - Endpoint: POST /chat/
+    - Request Body Schema:
+
+        ```javascript
+            {
+                roomId: number // integer
+                message: string
+                replyTo?: number // integer
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Message posted successfully.",
                 "data": [],
                 "errors": []
             }

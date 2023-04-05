@@ -81,5 +81,6 @@ export const app = {
         ERR_AUTH_RULES: "Invalid authorization rules",
         ACCESS_DENIED: "Access denied",
         ANY_FIELD: "any field",
+        LOGGED: "logged"
     }
 }

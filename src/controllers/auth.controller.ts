@@ -9,7 +9,7 @@ import { getAllPermissionRoles } from "../services/permission-role.service";
 import { getRoleByName } from "../services/role.service";
 import { getUserByEmailOrPhone, getUserById, registerUser } from '../services/user.service';
 import { registerUsersPermission } from "../services/users-permissions.service";
-import { ICustomRequest } from "../types/app.type";
+import { ICustomRequest, TAccountTypesCodename } from "../types/app.type";
 import { getAccess } from "../utils/get-access.helper";
 import Hasher from '../utils/hasher.helper';
 import { jwtErrorHandler } from "../utils/jwt-error.helper";
@@ -17,6 +17,9 @@ import { handlePrismaError } from "../utils/prisma-error.helper";
 import { redisClient } from "../utils/redis-client.helper";
 import CustomResponse from '../utils/response.helper';
 import { sendMagicLink } from "../utils/send-magic-link.helper";
+import { getTenantByParam } from "../services/tenant.service";
+import { registerRoom } from "../services/room.service";
+import { registerUserRoom } from "../services/user-room.service";
 
 const constants = appConfig.constants;
 
@@ -25,7 +28,7 @@ export const changePassword = async (req: ICustomRequest, res: Response) => {
     const logger = debug('coollionfi:auth:changePassword');
 
     try {
-        const { oldPassword, newPassword } = req.body; 5
+        const { oldPassword, newPassword } = req.body;
         const hasher = new Hasher(hasherConfig.hashSecretKey);
         const auth = req.auth!;
         const user = await getUserById(auth.userId);
@@ -313,11 +316,20 @@ export const register = async (req: ICustomRequest, res: Response) => {
             await registerUsersPermission({ permissionId, userId: newUser.id });
 
         logger("Basic access granted for the user!")
-        
+
         await sendMagicLink(newUser.id, email);
         logger("Activation account email sent");
 
-        response[201]({message: "Account created successfully! Please check the magic link in your email box to actvate your account."});
+        const codename: TAccountTypesCodename = "ADMIN";
+        const admin = await getTenantByParam({ accountType: { codename } });
+
+        if (admin) {
+            const room = await registerRoom({ name: admin.name, uuid: randomUUID() });
+
+            await registerUserRoom({ userId: newUser.id, roomId: room.id });
+        }
+
+        response[201]({ message: "Account created successfully! Please check the magic link in your email box to actvate your account." });
     } catch (err) {
         const errors = handlePrismaError(err, logger);
 

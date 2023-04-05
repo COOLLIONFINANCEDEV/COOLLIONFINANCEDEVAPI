@@ -67,6 +67,7 @@ export const authenticate = async (req: ICustomRequest, res: Response, next: Nex
             const parsedSession = JSON.parse(session);
             const tenantsPermissions: (number | string[])[][] = parsedSession[1];
             const userPermissions: string[] = parsedSession[2];
+            const rooms: string[] = parsedSession[3];
             const actualTenantPermissions = tenantsPermissions.filter(([tenant,]) => tenant === tenantId);
             const tenantPermissions = new Set<string>();
 
@@ -81,6 +82,7 @@ export const authenticate = async (req: ICustomRequest, res: Response, next: Nex
                 sessionId: decodedToken.sessionId,
                 tenantPermissions: [...tenantPermissions],
                 userPermissions,
+                rooms
             };
 
             await redisClient.set(authKey, JSON.stringify(req.auth), "EX", 2.5 * 60);
@@ -175,3 +177,7 @@ export const authorize = (authorizationRules?: ICASL.CustomRawRule[]) => {
     };
 };
 
+
+// export const socketAuthenticate = async(socket: So, next) => {
+    
+// }

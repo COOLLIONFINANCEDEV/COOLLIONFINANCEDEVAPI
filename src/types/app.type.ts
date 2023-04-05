@@ -71,6 +71,7 @@ export interface ICustomRequest extends Request {
          * [permissionCodename, read__user, ...]
         */
         userPermissions: string[];
+        rooms: string[];
     }
 
 
@@ -81,5 +82,5 @@ export interface ICustomRequest extends Request {
     }
 }
 
-
+export type TAccountTypesCodename = "ZERO" | "LENDER" | "LENDER_COMMUNITY" | "BORROWER" | "ADMIN";
 

@@ -11,5 +11,5 @@
     },
     "include": [
         "src/**/*"
-, "__tests__/quokka.ts"    ]
+, "__tests__/quokka.ts", "src/services/room.service.ts"    ]
 }

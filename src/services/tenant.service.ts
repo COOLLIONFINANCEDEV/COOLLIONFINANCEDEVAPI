@@ -14,6 +14,10 @@ export const getTenantById = async (id: number): Promise<Tenant | null> => {
     return await model.getTenantById(id);
 }
 
+export const getTenantByParam = async (where: Prisma.TenantWhereInput): Promise<Tenant | null> => {
+    return await model.getTenantByParam(where);
+}
+
 export const updateTenant = async (id: number, tenant: Partial<Tenant>): Promise<Tenant> => {
     return await model.updateTenant(id, tenant);
 }

@@ -42,6 +42,10 @@ invitation:
     warn the user when they receive a new invitation (socket)
     warn invitation sender when the invitation is accepted (socket)
 
+chat:
+    read chat messages (socket)
+    new message warning (socket)
+
 ______________________________________________________________________________________________
 [DONE]
 
@@ -121,6 +125,15 @@ user:
 
 initialization script:
     generate permission (don't forget permission for other ressource)
+
+chat:
+    authenticate
+    create room
+    post message
+    delete message
+    read chat messages
+    list chat room
+    retrive chat room
 
 ______________________________________________________________________________________________
 [FEATURES]

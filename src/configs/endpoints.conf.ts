@@ -688,3 +688,57 @@ export const invitation: TEndpoint = {
         }]
     }
 };
+
+
+export const chat: TEndpoint = {
+    listRoom: {
+        method: 'get',
+        path: '/chat/room/list',
+        authorizationRules: [{
+            action: 'read',
+            subject: 'Room',
+            mainRule: true
+        }]
+    },
+    retriveRoom: {
+        method: 'get',
+        path: '/chat/room/:roomId',
+        authorizationRules: [{
+            action: 'read',
+            subject: 'Room',
+            mainRule: true
+        }]
+    },
+    history: { // message history
+        method: 'get',
+        path: '/chat/room/:roomId/list/message/:page?/:perPage?',
+        authorizationRules: [{
+            action: 'read',
+            subject: 'Message',
+            mainRule: true
+        }]
+    },
+    remove: { // remove message
+        method: 'delete',
+        path: '/chat/message/:messageId',
+        authorizationRules: [{
+            action: 'delete',
+            subject: 'Message',
+            mainRule: true
+        }]
+    },
+    post: { // post message
+        method: 'post',
+        path: '/chat',
+        schema: Joi.object({
+            roomId: Joi.number().integer().required(),
+            message: Joi.string().required(),
+            replyTo: Joi.number().integer()
+        }),
+        authorizationRules: [{
+            action: 'create',
+            subject: 'Message',
+            mainRule: true
+        }]
+    }
+}

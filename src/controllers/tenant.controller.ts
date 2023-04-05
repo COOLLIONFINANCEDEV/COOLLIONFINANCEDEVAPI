@@ -9,6 +9,9 @@ import { ICustomRequest } from "../types/app.type";
 import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import CustomResponse from "../utils/response.helper";
+import { registerRoom } from "../services/room.service";
+import { randomUUID } from "crypto";
+import { registerUserRoom } from "../services/user-room.service";
 
 export const list = async (req: ICustomRequest, res: Response) => {
     const response = new CustomResponse(res);
@@ -179,6 +182,9 @@ export const register = async (req: ICustomRequest, res: Response) => {
             });
 
         logger("User set as tenant manager");
+
+        await registerRoom({ name: newTenant.name, uuid: randomUUID() });
+
         response[201]({ message: "Tenant registered successfully." });
     } catch (err) {
         const errors = handlePrismaError(err, logger);

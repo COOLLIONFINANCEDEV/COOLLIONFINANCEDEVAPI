@@ -121,37 +121,15 @@ const roles: {
             name: 'community',
             public: false,
             accountType: "LENDER_COMMUNITY",
-            subjects: ["Tenant", "UserTenant", "Role", "Wallet",
-                "PaymentMethod", "Investment", "Transaction", "Invitation"],
+            subjects: ["Tenant", "UserTenant", "Role", "Invitation"],
             exclude: [
                 { actions: ["read", "delete"], fields: ["deleted", "updatedAt"] },
                 { actions: ["update"], subject: "UserTenant" },
-                { actions: ["update", "delete"], subject: "Wallet" },
-                { actions: ["update"], subject: "PaymentMethod" },
-                { actions: ["update", "delete"], subject: "Investment" },
-                { actions: ["update", "delete"], subject: "Transaction" },
             ],
             nonSelfRessourcePerms: [
                 { actions: ["read"], subject: "User", excludeFields: ["emailVerified", "phoneVerified", "phone2Verified", "accountActivated", "deleted", "updatedAt"] },
                 { actions: ["read"], subject: "Role", excludeFields: ["updatedAt"] },
-                { actions: ["read"], subject: "Project", excludeFields: ["deleted", "treat", "disabled", "updatedAt"] },
                 { actions: ["read"], subject: "Tenant", excludeFields: ["accountTypeId", "deleted", "updatedAt"] },
-                {
-                    actions: ["read"], subject: "Transaction", excludeFields: [
-                        "updatedAt",
-                        "operator",
-                        "customerName",
-                        "customerSurname",
-                        "customerEmail",
-                        "customerPhoneNumber",
-                        "customerAddress",
-                        "customerCity",
-                        "customerCountry",
-                        "customerState",
-                        "customerZipCode",
-                        "address",
-                    ]
-                },
             ]
         },
         {
