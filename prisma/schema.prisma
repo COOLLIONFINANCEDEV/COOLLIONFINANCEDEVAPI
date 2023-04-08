@@ -33,7 +33,7 @@ model Tenant {
 
 model AccountType {
   id                       Int                     @id @default(autoincrement())
-  name                     String
+  name                     String                  @unique
   codename                 String                  @unique
   description              String?
   restricted               Boolean                 @default(false) // if true, the associated account will only be accessible by invitation
@@ -200,6 +200,8 @@ model InvestmentTerm {
   disabled    Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @updatedAt
+
+  @@unique([term, benefit])
 }
 
 model Wallet {
@@ -329,39 +331,39 @@ model Invitation {
 // }
 
 model Room {
-  id       Int        @id @default(autoincrement())
-  name     String
-  tenant   Tenant     @relation(fields: [name], references: [name], onUpdate: Cascade)
-  uuid     String     @unique
+  id        Int        @id @default(autoincrement())
+  name      String
+  tenant    Tenant     @relation(fields: [name], references: [name], onUpdate: Cascade)
+  uuid      String     @unique
   // owner    Int?
   // tenant   Tenant?    @relation(fields: [owner], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  messages Message[]
-  userRoom UserRoom[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?  @updatedAt
+  messages  Message[]
+  userRoom  UserRoom[]
 }
 
 model UserRoom {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-  roomId Int
-  room   Room @relation(fields: [roomId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  roomId    Int
+  room      Room      @relation(fields: [roomId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Message {
-  id       Int       @id @default(autoincrement())
-  content  String
-  user     User      @relation(fields: [userId], references: [id])
-  userId   Int
-  room     Room      @relation(fields: [roomId], references: [id])
-  roomId   Int
-  replyTo  Int?
-  message  Message?  @relation(fields: [replyTo], references: [id], name: "replyTo")
-  deleted  Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  messages Message[] @relation(name: "replyTo")
+  id        Int       @id @default(autoincrement())
+  content   String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  room      Room      @relation(fields: [roomId], references: [id])
+  roomId    Int
+  replyTo   Int?
+  message   Message?  @relation(fields: [replyTo], references: [id], name: "replyTo")
+  deleted   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  messages  Message[] @relation(name: "replyTo")
 }

@@ -3,9 +3,7 @@ import { Prisma, PrismaClient, AccountTypeRole } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const getAllAccountTypeRole = async (where?: Prisma.AccountTypeRoleWhereInput): Promise<AccountTypeRole[]> => {
-    return await prisma.accountTypeRole.findMany({
-        where
-    });
+    return await prisma.accountTypeRole.findMany({ where });
 }
 
 export const getAccountTypeRoleById = async (id: number): Promise<AccountTypeRole | null> => {
@@ -19,6 +17,17 @@ export const getAccountTypeRoleByParam = async (params: Prisma.AccountTypeRoleWh
 export const createAccountTypeRole = async (accountTypeRole: AccountTypeRole): Promise<AccountTypeRole> => {
     return await prisma.accountTypeRole.create({
         data: accountTypeRole,
+    });
+}
+
+export const deleteAccountTypeRole = async (accountTypeId: number, roleId: number): Promise<AccountTypeRole> => {
+    return await prisma.accountTypeRole.delete({
+        where: {
+            accountTypeId_roleId: {
+                roleId: accountTypeId,
+                accountTypeId: roleId
+            }
+        },
     });
 }
 

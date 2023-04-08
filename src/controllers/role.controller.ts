@@ -9,7 +9,6 @@ import { ICustomRequest } from "../types/app.type";
 import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import CustomResponse from "../utils/response.helper";
-import { getUserTenantByParam, getUserTenantByUserId } from "../services/users-tenants.service";
 
 export const list = async (req: ICustomRequest, res: Response) => {
     const response = new CustomResponse(res);

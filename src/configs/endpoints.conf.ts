@@ -179,21 +179,63 @@ export const userTenant: TEndpoint = {
 };
 
 export const accountTypes: TEndpoint = {
+    list: {
+        method: 'get',
+        path: '/account-type/list',
+        authorizationRules: [
+            {
+                action: "read",
+                subject: "AccountType",
+                mainRule: true,
+            }
+        ]
+    },
+    retrive: {
+        method: 'get',
+        path: '/tenant/:tenantId/account-type/:accountTypeId',
+        authorizationRules: [
+            {
+                action: "read",
+                subject: "AccountType",
+                mainRule: true,
+            }
+        ]
+    },
+    update: {
+        method: 'put',
+        path: '/tenant/:tenantId/account-type/:accountTypeId',
+        schema: Joi.object({
+            name: Joi.string().lowercase().trim(),
+            description: Joi.string().lowercase().trim(),
+            restricted: Joi.boolean(),
+            excludeRoles: Joi.array().items(Joi.number().integer()),
+            addRoles: Joi.array().items(Joi.number().integer()),
+        }),
+        authorizationRules: [
+            {
+                action: "update",
+                subject: "AccountType",
+                fields: ["name", "description", "codename", "restricted"],
+                mainRule: true,
+            }
+        ]
+    },
     register: {
         method: 'post',
-        path: '/account-type/',
+        path: '/tenant/:tenantId/account-type/',
         schema: Joi.object({
             name: Joi.string().lowercase().trim().required(),
             codename: Joi.string().uppercase().trim().required(),
             description: Joi.string().lowercase().trim(),
+            restricted: Joi.boolean(),
             roles: Joi.array().items(Joi.number().integer().required()).required(),
-            permissions: Joi.array().items(Joi.number().integer())
+            // permissions: Joi.array().items(Joi.number().integer())
         }),
         authorizationRules: [
             {
                 action: "create",
                 subject: "AccountType",
-                fields: ["name", "description"],
+                fields: ["name", "description", "codename", "restricted"],
                 mainRule: true,
             }
         ]
@@ -265,29 +307,6 @@ export const role: TEndpoint = {
     }
 };
 
-export const permissions = {
-    getAll: {
-        method: 'get',
-        path: '/permissions'
-    },
-    getOne: {
-        method: 'get',
-        path: '/permissions/:tenantId'
-    },
-    create: {
-        method: 'post',
-        path: '/permissions'
-    },
-    update: {
-        method: 'put',
-        path: '/permissions/:tenantId'
-    },
-    delete: {
-        method: 'delete',
-        path: '/permissions/:tenantId'
-    }
-};
-
 export const auth: TEndpoint = {
     changePassword: {
         method: 'post',
@@ -321,7 +340,8 @@ export const auth: TEndpoint = {
                 .try(
                     Joi.string().lowercase().trim().email(),
                     Joi.string().lowercase().trim()
-                        .custom(isPhoneNumber, "Validate phone number"))
+                        .regex(/(^\+[1-9][0-9]{0,2}[ ]?[0-9]{8,12}$)|(^\+[1-9]{1,2}-[0-9]{3}[ ]?[0-9]{8,12}$)/))
+                // .custom(isPhoneNumber, "Validate phone number"))
                 .messages({
                     "alternatives.match": "{#label} does not match valide email address or phone number."
                 }),
@@ -666,7 +686,7 @@ export const invitation: TEndpoint = {
         authorizationRules: [{
             action: 'update',
             subject: 'Invitation',
-            fields: ['confirm', 'deleted'],
+            fields: ['confirm'],
             mainRule: true
         }]
     },
@@ -688,7 +708,6 @@ export const invitation: TEndpoint = {
         }]
     }
 };
-
 
 export const chat: TEndpoint = {
     listRoom: {
@@ -742,3 +761,55 @@ export const chat: TEndpoint = {
         }]
     }
 }
+
+export const investmentTerm: TEndpoint = {
+    list: {
+        method: 'get',
+        path: '/tenant/:tenantId/investment-term/list/:page?/:perPage?',
+        authorizationRules: [{
+            action: "read",
+            subject: 'InvestmentTerm',
+            mainRule: true,
+        }]
+    },
+    retrive: {
+        method: 'get',
+        path: '/tenant/:tenantId/investment-term/:investmentTermId',
+        authorizationRules: [{
+            action: "read",
+            subject: 'InvestmentTerm',
+            mainRule: true,
+        }]
+    },
+    update: {
+        method: 'put',
+        path: '/tenant/:tenantId/investment-term/:investmentTermId',
+        schema: Joi.object({
+            name: Joi.string().lowercase().trim().alphanum().min(3).max(30),
+            description: Joi.string().lowercase().trim(),
+            disabled: Joi.boolean(),
+        }),
+        authorizationRules: [{
+            action: "update",
+            subject: "InvestmentTerm",
+            fields: ["name", "description", "disabled"],
+            mainRule: true
+        }]
+    },
+    register: {
+        method: 'post',
+        path: '/tenant/:tenantId/investment-term',
+        schema: Joi.object({
+            term: Joi.number().required(),
+            benefit: Joi.number().required(),
+            name: Joi.string().lowercase().trim().alphanum().min(3).max(30).required(),
+            description: Joi.string().lowercase().trim(),
+        }),
+        authorizationRules: [{
+            action: "create",
+            subject: "InvestmentTerm",
+            fields: ["name", "description", "term", "benefit"],
+            mainRule: true
+        }]
+    }
+};

@@ -5,38 +5,12 @@
 
 
 import { Prisma, PrismaClient, Role } from "@prisma/client";
-import { ICASL } from "../src/types/app.type"
-import { getSubjectFields, processLog } from "./helpers.init";
 import chalk from "chalk";
+import { ICASL } from "../src/types/app.type";
+import { getSubjectFields, processLog } from "./helpers.init";
 
 type TAccountTypesCodename = "ZERO" | "LENDER" | "LENDER_COMMUNITY" | "BORROWER" | "ADMIN";
 
-const accountTypes = [
-    {
-        name: "lender",
-        codename: "LENDER",
-        description: "Lender account allows you to invest in a project and make a gain.",
-        restricted: false,
-    },
-    {
-        name: "community of lenders",
-        codename: "LENDER_COMMUNITY",
-        description: "The Lender Community Account allows you to invite other lenders to join your community, discuss a project, \"invest as a single lender\" and more.",
-        restricted: false,
-    },
-    {
-        name: "borrower",
-        codename: "BORROWER",
-        description: "Borrower account allows you to receive funds to achieve your dream project.",
-        restricted: false,
-    },
-    {
-        name: "administrator",
-        codename: "ADMIN",
-        description: "Site web administrator.",
-        restricted: true,
-    }
-];
 
 const roles: {
     name: string,
@@ -65,8 +39,13 @@ const roles: {
             name: 'user',
             public: false,
             accountType: "ZERO",
-            subjects: ["Tenant", "User", "Invitation"],
+            subjects: ["Tenant", "AccountType", "User", "Invitation", "Message", "Room"],
             exclude: [
+                { actions: ["read", "delete"], fields: ["deleted", "updatedAt"] },
+                { actions: ["update", "delete", "create"], subject: "Room" },
+                { actions: ["update"], subject: "Message" },
+                { actions: ["read"], subject: "AccountType", fields: ["restricted", "updatedAt"] },
+                { actions: ["create", "update", "delete"], subject: "AccountType" },
                 { actions: ["delete", "read"], subject: "User", fields: ["password"] },
                 { actions: ["read", "update", "delete"], subject: "User", fields: ["accountActivated", "deleted", "updatedAt"] },
                 { actions: ["create"], subject: "User" },
@@ -74,17 +53,18 @@ const roles: {
             ],
             specificPermissions: [
                 "create__Tenant__withAccountTypeLENDER",
-                "create__Tenant__withAccountTypeBORROWER",
-                "create__Tenant__withAccountTypeADMIN"
+                "create__Tenant__withAccountTypeBORROWER"
             ]
         },
         {
             name: 'lender',
             public: false,
             accountType: "LENDER",
-            subjects: ["Tenant", "UserTenant", "Role", "Wallet",
+            subjects: ["Tenant", "AccountType", "UserTenant", "Role", "Wallet",
                 "PaymentMethod", "Investment", "Transaction", "Invitation"],
             exclude: [
+                { actions: ["read"], subject: "AccountType", fields: ["restricted", "updatedAt"] },
+                { actions: ["create", "update", "delete"], subject: "AccountType" },
                 { actions: ["read", "delete"], fields: ["deleted", "updatedAt"] },
                 { actions: ["update"], subject: "UserTenant" },
                 { actions: ["update", "delete"], subject: "Wallet" },
@@ -174,7 +154,7 @@ const prismaClient = new PrismaClient();
 
 
 export const buildRoles = (): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async () => {
         processLog(chalk`{bold \n\t\t\t*** BUILD BASIC ROLE ***}`);
         processLog();
 

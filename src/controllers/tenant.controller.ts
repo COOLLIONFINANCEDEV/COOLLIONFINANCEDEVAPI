@@ -149,6 +149,11 @@ export const register = async (req: ICustomRequest, res: Response) => {
     try {
         const { name, accountTypeId } = req.body;
         const { userId, tenantId } = req.auth!;
+        const accountType = await getAccountTypeById(accountTypeId);
+
+        if (!accountType)
+            return response[404]({ message: "Account type not found" });
+
         const accountTypesRoles = await getAllAccountTypeRole({ accountTypeId });
 
         if (accountTypesRoles.length === 0) {
@@ -160,11 +165,6 @@ export const register = async (req: ICustomRequest, res: Response) => {
                 }]
             });
         }
-
-        const accountType = await getAccountTypeById(accountTypeId);
-
-        if (!accountType)
-            return response[404]({ message: "Account type not found" });
 
         if (!req.abilities?.can("create", "Tenant", `withAccountType${accountType.codename}`, { ignore: true }))
             return response[403]({ message: "You have no permission to create tenant with this account type." });

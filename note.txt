@@ -6,11 +6,7 @@ genaral:
     review all controller to detect action that can be save in redis for early requests
     set COMMUNITY_MEMBER_ROLE_ID in env file
     set MASTER_WALLET_ID in env file
-
-initialization script:
-    create user role
-    special manage role for admin
-    create every account type manager role
+    info sur les tenant, utlisateur
 
 authentication:
     register (create dynamic template id on sendgrid then update the templateId that in use)
@@ -19,22 +15,8 @@ user:
     confirm updating
     confirm deleting
 
-accountType:
-    create
-    update
-    delete
-    read -> retrive
-    read -> list
-
-investmentTerm:
-    create
-    update
-    read -> retrive
-    read -> list
-
 transaction:
     make deposit on wallet (crypto -USDC-)
-    make transaction from tenant(wallet) to tenant(wallet)
     review balance updated method
     notify the user when the transaction status changes
 
@@ -125,6 +107,9 @@ user:
 
 initialization script:
     generate permission (don't forget permission for other ressource)
+    create user role
+    special manage role for admin
+    create every account type manager role
 
 chat:
     authenticate
@@ -134,6 +119,19 @@ chat:
     read chat messages
     list chat room
     retrive chat room
+
+accountType:
+    create
+    update
+    delete
+    read -> retrive
+    read -> list
+
+investmentTerm:
+    create
+    update
+    read -> retrive
+    read -> list
 
 ______________________________________________________________________________________________
 [FEATURES]

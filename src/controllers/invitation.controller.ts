@@ -136,7 +136,7 @@ export const confirm = async (req: ICustomRequest, res: Response) => {
 
         logger(`Invitation confirmed. creator: ${userId}`);
 
-        response[201]({ message: "Invitation(s) sent successfully." });
+        response[201]({ message: "Reply sent successfully." });
     } catch (err) {
         const errors = handlePrismaError(err, logger);
 
@@ -147,7 +147,7 @@ export const confirm = async (req: ICustomRequest, res: Response) => {
             });
         else {
             logger(err);
-            response[500]({ message: "An error occurred while sending invitation(s)." });
+            response[500]({ message: "An error occurred while sending your reply." });
         }
     }
 };

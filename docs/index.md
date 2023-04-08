@@ -49,7 +49,6 @@
 1. **Changing password**
 
    - Endpoint: GET /auth/change-password
-   - Authorization: Bearer
    - Request Body Schema:
 
         ```javascript
@@ -535,7 +534,7 @@
 
 ## Wallet APIs
 
-1. retrieve balance
+1. Retrieve balance
 
    - Endpoint: GET /tenant/:tenantId/wallet
    - Response:
@@ -764,9 +763,9 @@
 
         ```javascript
             {
-                roomId: number // integer
-                message: string
-                replyTo?: number // integer
+                roomId: number, // integer
+                message: string,
+                replyTo?: number, // integer
             }
         ```
 
@@ -776,6 +775,317 @@
             {
                 "success":true,
                 "message": "Message posted successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+## Investment APIs
+
+1. List investment by projects
+
+   - Endpoint: GET /tenant/:tenantId/project/:projectId/investment/list/:selfOrOther/:page?/:perPage?
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "amount": "345.55",
+                        "projectId": 4,
+                        "funder": 45,
+                        "term": 2,
+                        "dueAmount": "345.55",
+                        "dueGain": "15.5",
+                        "collectionDate": "2023-03-27T16:11:40.479Z",
+                        "gainCollected": true,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+2. list investment
+
+   - Endpoint: GET /tenant/:tenantId/investment/list/:page?/:perPage?
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"OK",
+                "data":[
+                    {
+                        "id": 1,
+                        "amount": "345.55",
+                        "projectId": 4,
+                        "funder": 45,
+                        "term": 2,
+                        "dueAmount": "345.55",
+                        "dueGain": "15.5",
+                        "collectionDate": "2023-03-27T16:11:40.479Z",
+                        "gainCollected": true,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+3. Retrive investment information
+   - Endpoint: GET /tenant/:tenantId/investment/:investmentId
+   - Response:
+  
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "amount": "345.55",
+                        "projectId": 4,
+                        "funder": 45,
+                        "term": 2,
+                        "dueAmount": "345.55",
+                        "dueGain": "15.5",
+                        "collectionDate": "2023-03-27T16:11:40.479Z",
+                        "gainCollected": true,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    }
+                ],
+                "errors":[]
+            }
+        ```
+
+4. Make investment
+    - Endpoint: POST /tenant/:tenantId/investment/
+    - Request Body Schema:
+
+        ```javascript
+            {
+                amount: number, // float
+                projectId: number, // integer
+                term: number, // integer
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Investment registered successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+## Invitation APIs
+
+1. List invitations
+
+   - Endpoint: GET /tenant/:tenantId/invitation/list/:page?/:perPage?:page?/:perPage?
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                       "sent": [
+                            {
+                                "sender": 2,
+                                "roleId": 5,
+                                "confirm": false,
+                                "createdAt": "2023-03-27T16:11:40.479Z"
+                            },
+
+                       ],
+                       "received": [
+                            {
+                                "sender": 6,
+                                "roleId": 5,
+                                "confirm": false,
+                                "createdAt": "2023-03-27T16:11:40.479Z"
+                            },
+                            
+                       ]
+                    }
+                ],
+                "errors":[]
+            }
+       ```
+
+2. Remove invitations
+
+   - Endpoint: DELETE /tenant/:tenantId/invitation/:invitationId
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Successfully deleted.",
+                "data":[],
+                "errors":[]
+            }
+       ```
+
+3. Reply to the invitation
+    - Endpoint: POST /tenant/:tenantId/invitation/reply
+    - Request Body Schema:
+
+        ```javascript
+            {
+                confirmation: boolean,
+                invitationId: number, // integer
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Reply sent successfully",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+4. Invite
+    - Endpoint: POST /tenant/:tenantId/invitation
+    - Request Body Schema:
+
+        ```javascript
+            [
+                {
+                    email: string,
+                    roleId: number, // integer
+                },
+                {
+                    email: string,
+                    roleId: number, // integer
+                },
+                {
+                    email: string,
+                    roleId: numbe,r // integer
+                },
+
+            ]
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Invitation(s) sent successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+## Investment term APIs
+
+1. List
+
+   - Endpoint: GET /tenant/:tenantId/investment-term/list/:page?/:perPage?
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "term": 6,
+                        "benefit": 5,
+                        "name": "Rapid",
+                        "description": "Quick Reward Investment",
+                        "disabled": false,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+2. Retrive
+
+   - Endpoint: GET /tenant/:tenantId/investment-term/:investmentTermId
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "term": 6,
+                        "benefit": 5,
+                        "name": "Rapid",
+                        "description": "Quick Reward Investment",
+                        "disabled": false,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    }
+                ],
+                "errors":[]
+            }
+       ```
+
+3. Update
+    - Endpoint: PUT /tenant/:tenantId/investment-term/:investmentTermId
+    - Request Body Schema:
+
+        ```javascript
+            {
+                name: string,
+                description: string,
+                disabled: boolean
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Informations updated successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+4. Register
+    - Endpoint: POST /tenant/:tenantId/investment-term
+    - Request Body Schema:
+
+        ```javascript
+            {
+                term: number, // integer representing the duration of the investment in month
+                benefit: number, // float representing the percentage of the gain on investment
+                name?: string,
+                description?: string,
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Investment term registered successfully.",
                 "data": [],
                 "errors": []
             }
