@@ -17,17 +17,17 @@ model Tenant {
   accountType             AccountType?  @relation(fields: [accountTypeId], references: [id])
   accountTypeId           Int
   roles                   Role[]
-  receivedTransaction     Transaction[] @relation(name: "receivedTransaction")
+  receivedTransactions     Transaction[] @relation(name: "receivedTransaction")
   transactionsSent        Transaction[] @relation(name: "transactionSent")
   deleted                 Boolean       @default(false)
   createdAt               DateTime      @default(now())
   updatedAt               DateTime?     @updatedAt
-  Project                 Project[]
-  Investment              Investment[]
-  Wallet                  Wallet[]
-  invitationSent          Invitation[]  @relation(name: "invitationSent")
-  UserTenant              UserTenant[]
-  UserTenantOnAttribution UserTenant[]  @relation(name: "userTenantOnAttribution")
+  projects                Project[]
+  investments             Investment[]
+  wallet                  Wallet[]
+  invitationsSent         Invitation[]  @relation(name: "invitationSent")
+  userTenant              UserTenant[]
+  userTenantOnAttribution UserTenant[]  @relation(name: "userTenantOnAttribution")
   rooms                   Room[]
 }
 

@@ -62,6 +62,10 @@ export const user: TEndpoint = {
 };
 
 export const tenant: TEndpoint = {
+    stats: {
+        method: 'get',
+        path: 'stats',
+    },
     list: {
         method: 'get',
         path: '/tenant/:tenantId/list/:page?/:perPage?',
