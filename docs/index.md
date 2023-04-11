@@ -48,7 +48,7 @@
 
 1. **Changing password**
 
-   - Endpoint: GET /auth/change-password
+   - Endpoint: POST /auth/change-password
    - Request Body Schema:
 
         ```javascript
@@ -87,7 +87,7 @@
 
 2. **Refresh access token**
 
-   - Endpoint: GET /auth/refresh-access
+   - Endpoint: POST /auth/refresh-access
    - Request Body Schema:
 
         ```javascript
@@ -118,14 +118,14 @@
 
 3. **Login**
 
-   - Endpoint: GET /auth/login
+   - Endpoint: POST /auth/login
    - Request Body Schema:
         - Login with username and password
 
         ```javascript
             {
                 username: string // valide email address or phone number like +225 000000000,
-                userId: number, // integer
+                password: string,
             }
         ```
 
