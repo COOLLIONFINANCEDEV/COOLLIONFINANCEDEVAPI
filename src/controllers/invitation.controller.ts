@@ -1,7 +1,7 @@
 import debug from "debug";
 import { Response } from "express";
 import { abilitiesFilter } from "../abilities/filter.ability";
-import { twilio } from "../configs/utils.conf";
+import { hasher as hasherConfig, twilio as twilioConfig } from "../configs/utils.conf";
 import { getAccountTypeById } from "../models/account-type.model";
 import { confirmInvitation, deleteInvitation, getAllInvitations, getInvitationById, getInvitationByParam, registerInvitation } from "../services/invitation.service";
 import { getTenantById } from "../services/tenant.service";
@@ -13,6 +13,9 @@ import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import CustomResponse from "../utils/response.helper";
 import sgSendEmail from "../utils/send-email.helper";
+import { app as appConfig } from "../configs/app.conf";
+import Hasher from "../utils/hasher.helper";
+import jwt from "jsonwebtoken";
 
 export const list = async (req: ICustomRequest, res: Response) => {
     const response = new CustomResponse(res);
@@ -166,20 +169,32 @@ export const invite = async (req: ICustomRequest, res: Response) => {
 
         if (!tenant)
             return response[404]({ message: "No tenant!" });
+        
+        const hasher = new Hasher(hasherConfig.hashSecretKey);
 
         for (const { email, roleId } of emails) {
-            const user = await getUserByEmailOrPhone(email);
-
-            if (!user) nonRegisteredEmails.add({
-                to: email,
-                templateId: twilio.templateIDs.invitation,
-                dynamicTemplateData: { sender: tenant.name }
-            });
-
-            await registerInvitation({
+            const invitation = await registerInvitation({
                 sender: tenantId,
                 receiverEmail: email,
                 roleId
+            });
+            const hashEmail = hasher.hashToken(email + String(invitation.sender));
+            const token = jwt.sign({
+                hmac: hashEmail,
+                guest: invitation.id
+            }, appConfig.jwtSecret);
+            const tokenBase64Url = Buffer.from(token).toString("base64url");
+            const invitationLink = `${appConfig.appBaseUrl}?guest=${tokenBase64Url}`;
+
+            nonRegisteredEmails.add({
+                to: email,
+                templateId: twilioConfig.templateIDs.invitation,
+                dynamicTemplateData: {
+                    communityName: tenant.name,
+                    // communityDescription: tenant.description,
+                    appName: appConfig.appName,
+                    invitationLink
+                }
             });
         }
 

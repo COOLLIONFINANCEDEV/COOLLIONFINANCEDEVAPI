@@ -95,6 +95,8 @@ rl.question(email.question, (answer) => {
             answers["password"] = answer;
             rl.close();
 
+            console.log(chalk`{bold ...}`);
+
             const prismaClient = new PrismaClient();
 
             const hasher = new Hasher(hasherConfig.hashSecretKey);

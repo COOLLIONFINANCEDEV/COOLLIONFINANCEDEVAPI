@@ -20,6 +20,7 @@ import { sendMagicLink } from "../utils/send-magic-link.helper";
 import { getTenantByParam } from "../services/tenant.service";
 import { registerRoom } from "../services/room.service";
 import { registerUserRoom } from "../services/user-room.service";
+import { getInvitationById } from "../services/invitation.service";
 
 const constants = appConfig.constants;
 
@@ -272,7 +273,6 @@ export const login = async (req: ICustomRequest, res: Response) => {
         });
     } catch (err) {
         logger(err);
-        logger(err);
 
         const jwtError = jwtErrorHandler(err);
 
@@ -288,9 +288,9 @@ export const register = async (req: ICustomRequest, res: Response) => {
     const logger = debug('coollionfi:auth:register');
 
     try {
-        const { email, password } = req.body;
+        const { guest, password } = req.body;
+        let { email } = req.body;
         const hasher = new Hasher(hasherConfig.hashSecretKey);
-        const passwordHash = await hasher.hashPasswordBcrypt(password);
         const baseUserRole = await getRoleByName(appConfig.baseUserRoleName);
 
         if (baseUserRole === null) {
@@ -309,7 +309,46 @@ export const register = async (req: ICustomRequest, res: Response) => {
             return;
         }
 
-        const newUser = await registerUser({ email, password: passwordHash });
+        // REGISTRATION WITH GUEST TOKEN
+        if (guest) {
+            const token = Buffer.from(guest, "base64url").toString("utf8");
+            const decodedToken = jwt.verify(token, appConfig.jwtSecret);
+
+            if (typeof decodedToken === "string")
+                return response[400]({ message: constants.INVALID_TOKEN });
+
+            const invitation = await getInvitationById(decodedToken.guest);
+
+            if (!invitation)
+                return response[400]({
+                    message: "Bad registration credentials!",
+                    errors: [{
+                        field: "guest",
+                        message: constants.INVALID_TOKEN
+                    }]
+                });
+
+            const hmac = hasher.hashToken(invitation.receiverEmail + String(invitation.sender));
+
+            if (hmac !== decodedToken.hmac)
+                return response[401]({
+                    message: "Bad registration credentials!",
+                    errors: [{
+                        field: "guest",
+                        message: constants.INVALID_TOKEN
+                    }]
+                });
+
+            email = invitation.receiverEmail;
+        }
+
+        const activation = !guest ? undefined : {
+            accountActivated: true,
+            emailVerified: true
+        };
+
+        const passwordHash = await hasher.hashPasswordBcrypt(password);
+        const newUser = await registerUser({ email, password: passwordHash, ...activation });
         logger("New user registered successfully!");
 
         for (const { permissionId } of permissionsRole)
@@ -340,6 +379,10 @@ export const register = async (req: ICustomRequest, res: Response) => {
             });
         else {
             logger(err);
+            const jwtError = jwtErrorHandler(err);
+
+            if (jwtError)
+                return response[401]({ message: jwtError });
             response[500]({ message: "An error occurred while registering." });
         }
     }

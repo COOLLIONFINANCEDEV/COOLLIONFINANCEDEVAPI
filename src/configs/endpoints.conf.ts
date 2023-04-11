@@ -360,11 +360,12 @@ export const auth: TEndpoint = {
         method: 'post',
         path: '/auth/register',
         schema: Joi.object({
-            email: Joi.string().lowercase().trim().email().required(),
+            guest: Joi.string().trim(),
+            email: Joi.string().lowercase().trim().email(),
             password: Joi.string().required()
                 .regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{10,})/)
                 .messages({ "string.pattern.base": "Give a strong password for more security." }),
-        })
+        }).xor("guest", "email")
     }
 };
 
