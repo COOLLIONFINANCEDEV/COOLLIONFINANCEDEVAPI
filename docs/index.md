@@ -174,7 +174,6 @@
         ```javascript
             {
                 email: string,
-                password: string,
             }
         ```
 
