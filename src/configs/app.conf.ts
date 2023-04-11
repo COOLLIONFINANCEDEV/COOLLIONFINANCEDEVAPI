@@ -5,7 +5,9 @@ dotenv.config();
 export const app = {
     version: "v2",
     jwtSecret: String(process.env.JWT_SECRET),
+    appName: "Cool Lion Finance",
     appBaseUrl: "https://app.coollionfi.com",
+    teamContact: "contact@coollionfi.com",
 
     /** 5 minutes */
     tokenExpirationTime: 5 * 60,

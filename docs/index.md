@@ -140,7 +140,7 @@
         - Login using magic link: *only on first login*
 
         ```javascript
-            //magicLink = 'https://base-url.com?magicLink=token
+            // magicLink = 'https://base-url.com?magicLink=token
             {
                 magicLink: token // the token of magicLink
             }
@@ -174,6 +174,16 @@
         ```javascript
             {
                 email: string,
+                password: string,
+            }
+        ```
+
+     - Register with guest token and password
+
+        ```javascript
+            // guest = 'https://base-url.com?guest=token
+            {
+                guest: string,
                 password: string,
             }
         ```
