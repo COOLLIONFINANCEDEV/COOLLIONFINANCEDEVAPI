@@ -2,193 +2,333 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table users {
+Table Tenant {
   id Int [pk, increment]
-  first_name String [not null, default: 'Undefined']
-  last_name String [not null, default: 'Undefined']
+  name String [not null]
+  accountType AccountType
+  accountTypeId Int [not null]
+  roles Role [not null]
+  receivedTransaction Transaction [not null]
+  transactionsSent Transaction [not null]
+  deleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  Project Project [not null]
+  Investment Investment [not null]
+  Wallet Wallet [not null]
+  invitationSent Invitation [not null]
+  UserTenant UserTenant [not null]
+  UserTenantOnAttribution UserTenant [not null]
+}
+
+Table AccountType {
+  id Int [pk, increment]
+  name String [not null]
+  codename String [not null]
+  description String
+  tenants Tenant [not null]
+  accountsTypesRoles AccountTypeRole [not null]
+  accountsTypesPermissions AccountTypePermission [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table User {
+  id Int [pk, increment]
+  firstName String
+  lastName String
   email String [unique, not null]
-  contact String [not null, default: 'Undefined']
+  phone String [unique]
+  phone2 String [unique]
   password String [not null]
-  salt String [not null]
-  contact_verified Boolean [not null, default: false]
-  desable Boolean [not null, default: true]
-  two_fa Boolean [not null, default: false]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  role_id Int
-  user_docs users_docs [not null]
-  role role
-  companies company [not null]
-  wallet wallet
+  emailVerified Boolean [not null, default: false]
+  phoneVerified Boolean [not null, default: false]
+  phone2Verified Boolean [not null, default: false]
+  accountActivated Boolean [not null, default: false]
+  deleted Boolean [not null, default: false]
+  usersTenants UserTenant [not null]
+  usersPermissions UsersPermissions [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
 }
 
-Table users_docs {
+Table UserTenant {
   id Int [pk, increment]
-  name String [not null]
-  path String [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  user_id Int [not null]
-  user users [not null]
-}
-
-Table role {
-  id Int [pk, increment]
-  name String [unique, not null]
-  description String [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  users users [not null]
-  role_ permissions [not null]
-}
-
-Table permissions {
-  id Int [pk, increment]
-  name String [unique, not null]
-  description String [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  permission_ role [not null]
-}
-
-Table company {
-  id Int [pk, increment]
-  name String [not null]
-  description String [not null]
-  logo String [not null, default: '']
-  country String [not null, default: '']
-  city String [not null, default: '']
-  phone String [not null]
-  email String [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  manager_id Int [not null]
-  manager users [not null]
-  offers offer [not null]
+  userId Int [not null]
+  user User [not null]
+  tenantId Int [not null]
+  tenant Tenant [not null]
+  userTenantId Int
+  userTenant Tenant
+  role Role [not null]
+  roleId Int [not null]
+  manager Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
 
   indexes {
-    (name, phone) [unique]
-    (name, email) [unique]
-    (name, city) [unique]
-    (name, country) [unique]
+    (userId, tenantId, roleId) [unique]
   }
 }
 
-Table wallet {
-  id Int [pk, increment]
-  amount Float [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  user_id Int [unique, not null]
-  user users [not null]
-  investments investment [not null]
-  transactions transaction [not null]
-}
-
-Table offer {
+Table Role {
   id Int [pk, increment]
   name String [not null]
-  description String [not null]
-  image String [not null, default: '']
-  total_investment_to_raise Float [not null]
-  price_per_unit Float [not null]
-  number_of_unit Float [not null]
-  maximum_amount Float [not null]
-  minimum_amount Float [not null]
-  investment_term DateTime [not null]
-  distribution_frequency Int [not null]
-  start_payment DateTime [not null]
-  expected_return Float [not null, default: 0]
-  status String [not null, default: '']
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  company_id Int [not null]
-  company company [not null]
-  offer_docs offer_docs [not null]
-  investment investment [not null]
-  offer_repayment_plans offer_repayment_plan [not null]
+  description String
+  published Boolean [not null, default: false]
+  tenant Tenant
+  owner Int [not null]
+  accountsTypesRoles AccountTypeRole [not null]
+  usersTenants UserTenant [not null]
+  permissionRole PermissionRole [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  Invitation Invitation [not null]
 }
 
-Table offer_docs {
+Table Permission {
   id Int [pk, increment]
   name String [not null]
-  path String [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  offer_id Int [not null]
-  offer offer [not null]
+  description String
+  codename String [not null]
+  accountsTypesPermissions AccountTypePermission [not null]
+  permissionRole PermissionRole [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  usersPermissions UsersPermissions [not null]
 }
 
-Table investment {
+Table PermissionRole {
+  id Int [pk, increment]
+  permissionId Int [not null]
+  permission Permission [not null]
+  roleId Int [not null]
+  role Role [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+
+  indexes {
+    (permissionId, roleId) [unique]
+  }
+}
+
+Table AccountTypeRole {
+  id Int [pk, increment]
+  roleId Int [not null]
+  role Role [not null]
+  accountTypeId Int [not null]
+  accountType AccountType [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+
+  indexes {
+    (accountTypeId, roleId) [unique]
+  }
+}
+
+Table AccountTypePermission {
+  id Int [pk, increment]
+  permissionId Int [not null]
+  permission Permission [not null]
+  accountTypeId Int [not null]
+  accountType AccountType [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+
+  indexes {
+    (accountTypeId, permissionId) [unique]
+  }
+}
+
+Table UsersPermissions {
+  id Int [pk, increment]
+  permissionId Int [not null]
+  permission Permission [not null]
+  userId Int [not null]
+  user User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+
+  indexes {
+    (userId, permissionId) [unique]
+  }
+}
+
+Table Project {
+  id Int [pk, increment]
+  title String [not null]
+  tenant Tenant [not null]
+  owner Int [not null]
+  investments Investment [not null]
+  disabled Boolean [not null, default: true]
+  treat Boolean [not null, default: false]
+  deleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table Investment {
   id Int [pk, increment]
   amount Float [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  offer_id Int [not null]
-  offer offer
-  wallet_id Int [not null]
-  wallet wallet
+  Project Project [not null]
+  projectId Int [not null]
+  tenant Tenant [not null]
+  funder Int [not null]
+  investmentTerm InvestmentTerm [not null]
+  term Int [not null]
+  dueAmount Float [not null]
+  dueGain Float [not null]
+  collectionDate DateTime [not null]
+  gainCollected Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
 }
 
-Table transaction {
+Table InvestmentTerm {
   id Int [pk, increment]
-  amount Float [not null, default: 0]
-  type String [not null]
-  status String [not null, default: 'pending']
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
+  term Int [not null]
+  benefit Int [not null]
+  name String
+  description String
+  investment Investment [not null]
+  disabled Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table Wallet {
+  id Int [pk, increment]
+  balance Float [not null, default: 0]
+  tenant Tenant [not null]
+  owner Int [unique, not null]
+  paymentMethod PaymentMethod [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+}
+
+Table PaymentMethod {
+  id Int [pk, increment]
+  paymentMethodType PaymentMethodType [not null]
+  paymentMethodTypeCodename String [not null]
+  disabled Boolean [not null, default: false]
+  deleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  Wallet Wallet
+  walletId Int
+  customerName String
+  customerSurname String
+  customerEmail String
+  customerPhoneNumber String
+  customerAddress String
+  customerCity String
+  customerCountry String
+  customerState String
+  customerZipCode String
+  address String
+}
+
+Table PaymentMethodType {
+  id Int [pk, increment]
+  name String [not null]
+  codename String [unique, not null]
+  PaymentMethod PaymentMethod [not null]
+  disabled Boolean [not null, default: false]
+  deleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  Transaction Transaction [not null]
+}
+
+Table Transaction {
+  id Int [pk, increment]
+  paymentMethodTypeCodename String [not null]
+  paymentMethodType PaymentMethodType [not null]
+  amount Float [not null]
+  recipientTenant Tenant [not null]
+  recipient Int [not null]
+  senderTenant Tenant [not null]
+  sender Int [not null]
+  reason String
   currency String [not null]
-  service String [not null]
-  transaction_id String [unique, not null]
-  method String [not null, default: 'unknown']
-  wallet_id Int [not null]
-  wallet wallet
+  transactionId String [not null]
+  status Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  operator String
+  customerName String
+  customerSurname String
+  customerEmail String
+  customerPhoneNumber String
+  customerAddress String
+  customerCity String
+  customerCountry String
+  customerState String
+  customerZipCode String
+  address String
 }
 
-Table offer_repayment_plan {
+Table Invitation {
   id Int [pk, increment]
-  date DateTime [not null]
-  expected_amount Float [not null]
-  received_amount Float [not null]
-  status String [not null]
-  is_deleted Boolean [not null, default: false]
-  created_at DateTime [default: `now()`, not null]
-  updated_at DateTime [not null]
-  offer_id Int [not null]
-  offer offer
+  senderTenant Tenant [not null]
+  sender Int [not null]
+  receiverEmail String [not null]
+  role Role [not null]
+  roleId Int [not null]
+  confirm Boolean [not null, default: false]
+  deleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
 }
 
-Table permissionsTorole {
-  role_Id Int [ref: > permissions.id]
-  permission_Id Int [ref: > role.id]
-}
+Ref: Tenant.accountTypeId > AccountType.id
 
-Ref: users.role_id > role.id
+Ref: UserTenant.userId > User.id
 
-Ref: users_docs.user_id > users.id
+Ref: UserTenant.tenantId > Tenant.id
 
-Ref: company.manager_id > users.id
+Ref: UserTenant.userTenantId > Tenant.id
 
-Ref: wallet.user_id - users.id
+Ref: UserTenant.roleId > Role.id
 
-Ref: offer.company_id > company.id
+Ref: Role.owner > Tenant.id
 
-Ref: offer_docs.offer_id > offer.id
+Ref: PermissionRole.permissionId > Permission.id
 
-Ref: investment.offer_id > offer.id
+Ref: PermissionRole.roleId > Role.id
 
-Ref: investment.wallet_id > wallet.id
+Ref: AccountTypeRole.roleId > Role.id
 
-Ref: transaction.wallet_id > wallet.id
+Ref: AccountTypeRole.accountTypeId > AccountType.id
 
-Ref: offer_repayment_plan.offer_id > offer.id
+Ref: AccountTypePermission.permissionId > Permission.id
+
+Ref: AccountTypePermission.accountTypeId > AccountType.id
+
+Ref: UsersPermissions.permissionId > Permission.id
+
+Ref: UsersPermissions.userId > User.id
+
+Ref: Project.owner > Tenant.id
+
+Ref: Investment.projectId > Project.id
+
+Ref: Investment.funder > Tenant.id
+
+Ref: Investment.term > InvestmentTerm.id
+
+Ref: Wallet.owner > Tenant.id
+
+Ref: PaymentMethod.paymentMethodTypeCodename > PaymentMethodType.codename
+
+Ref: PaymentMethod.walletId > Wallet.id
+
+Ref: Transaction.paymentMethodTypeCodename > PaymentMethodType.codename
+
+Ref: Transaction.recipient > Tenant.id
+
+Ref: Transaction.sender > Tenant.id
+
+Ref: Invitation.sender > Tenant.id
+
+Ref: Invitation.roleId > Role.id
