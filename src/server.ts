@@ -9,4 +9,7 @@ const server = app.listen(PORT, () => {
     logger(`Server running on port ${PORT}`);
 });
 
-io.attach(server);
+const redisServer = io.attach(server);
+if (redisServer) {
+    logger("Connected to redis");
+} else logger("Redis connection error");
