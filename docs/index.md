@@ -600,7 +600,7 @@
        ```
 
 2. Retrieve project
-    - Endpoint: GET /tenant/:tenantId/ptoject/:projectId
+    - Endpoint: GET /tenant/:tenantId/project/:projectId
     - Response:
 
         ```json
