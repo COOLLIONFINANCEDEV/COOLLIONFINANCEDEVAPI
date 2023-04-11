@@ -5,7 +5,6 @@ dotenv.config();
 export const app = {
     version: "v2",
     jwtSecret: String(process.env.JWT_SECRET),
-    anonymousPwdSalt: String(process.env.ANONYMOUS_PWD_SALT),
     appBaseUrl: "https://app.coollionfi.com",
 
     /** 5 minutes */
