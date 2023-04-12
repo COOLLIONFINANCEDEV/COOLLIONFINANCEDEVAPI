@@ -23,14 +23,14 @@ export const twilio = {
     sendGridApiKey: String(process.env.SG_APIKEY),
     templateIDs: {
         accountActivation: "d-2bf39b1d1e524c299d519bff79de5cb5",
-        invitation: "d-6467621fc15440c18fb32b269b64d507",
-        communityInvitation: "d-6467621fc15440c18fb32b269b64d507",
+        invitation: "d-b882140a9bbe4e2b84f64ffbbbf93679",
     }
 }
 
 export const redis = {
-    host: String(process.env.REDIS_HOST),
-    port: Number(process.env.REDIS_PORT),
-    username: String(process.env.REDIS_USER),
-    password: String(process.env.REDIS_PASSWORD),
+    // host: String(process.env.REDIS_HOST),
+    // port: Number(process.env.REDIS_PORT),
+    // username: String(process.env.REDIS_USER),
+    // password: String(process.env.REDIS_PASSWORD),
+    connectionString: String(process.env.REDIS_URL),
 }
