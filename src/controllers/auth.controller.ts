@@ -79,7 +79,7 @@ export const refreshToken = async (req: ICustomRequest, res: Response) => {
 
         if (sessionId !== testSessionId) {
             // feat: send a message to the account owner that the session may be compromised
-            response[403]({ message: "Session possibly compromised." });
+            response[403]({ message: constants.COMPROMISED_SESSION});
             return;
         }
 

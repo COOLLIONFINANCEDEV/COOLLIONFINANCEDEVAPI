@@ -36,11 +36,11 @@ export const authenticate = async (req: ICustomRequest, res: Response, next: Nex
 
         const testSessionId = hasher.hashToken(`${JSON.stringify(req.clientInfo)}${decodedToken.userId}`);
 
-        // TODO: fix bug here
-        // if (decodedToken.sessionId !== testSessionId) {
-        //     // feat: send a message to the account owner that the session may be compromised
-        //     return response[403]({ message: constants.COMPROMISED_SESSION });
-        // }
+        // TODO: fix bug - maybe client info is variable so false testing
+        if (decodedToken.sessionId !== testSessionId) {
+            // feat: send a message to the account owner that the session may be compromised
+            return response[403]({ message: constants.COMPROMISED_SESSION });
+        }
 
         const isUserRevoked = await redisClient.sismember(appConfig.redisKeys.revokedUserSession, decodedToken.userId);
 

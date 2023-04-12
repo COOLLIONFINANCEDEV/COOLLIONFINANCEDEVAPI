@@ -371,7 +371,7 @@ export const auth: TEndpoint = {
                 }),
             password: Joi.string(),
             address: Joi.string(),
-            magicLink: Joi.string().uri(),
+            magicLink: Joi.string().trim(),
         })
             .with("username", "password")
             .xor("username", "address", "magicLink")
