@@ -372,12 +372,12 @@ export const auth: TEndpoint = {
 export const project: TEndpoint = {
     list: {
         method: 'get',
-        path: '/tenant/:tenantId/project/list/:page?/:perPage?',
-        authorizationRules: [{
-            action: "read",
-            subject: 'Project',
-            mainRule: true,
-        }]
+        path: '/project/list/:page?/:perPage?',
+        // authorizationRules: [{
+        //     action: "read",
+        //     subject: 'Project',
+        //     mainRule: true,
+        // }]
     },
     retrive: {
         method: 'get',

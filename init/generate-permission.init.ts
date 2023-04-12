@@ -93,11 +93,12 @@ export const generatePermissions = (): Promise<void> => {
         prismaClient.permission.createMany({
             data: [...(permissions as Set<Required<Permission>>)],
             skipDuplicates: true
-        }).then((result) => processLog(chalk`{green.bold OK}`, 2))
+        }).then((result) => resolve(processLog(chalk`{green.bold OK}`, 2)))
             .catch((err) => {
                 processLog(chalk`{red.bold FAILED}`, 2);
                 console.log(err);
                 processLog("", 2);
+                reject(err);
             });
     });
 }

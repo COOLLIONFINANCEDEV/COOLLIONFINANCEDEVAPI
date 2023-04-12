@@ -13,40 +13,40 @@ export const list = async (req: ICustomRequest, res: Response) => {
     const logger = debug('coollionfi:project:list');
 
     try {
-        const { tenantId } = req.auth!;
+        // const { tenantId } = req.auth!;
         const { page, perPage } = req.params;
-        const { can } = req.abilities!;
+        // const { can } = req.abilities!;
         const projects = await getAllProjects({ page: Number(page), perPage: Number(perPage) });
 
-        const filteredProjects = await abilitiesFilter({
-            subject: "Project",
-            abilities: req.abilities as Required<ICustomRequest>["abilities"],
-            input: projects,
-            // selfInput: testOwner || !can("manage", "Project") ? false : true
-        }, ({ action, subject, abilities, input, selfInput }) => {
-            const projects = [];
+        // const filteredProjects = await abilitiesFilter({
+        //     subject: "Project",
+        //     abilities: req.abilities as Required<ICustomRequest>["abilities"],
+        //     input: projects,
+        //     // selfInput: testOwner || !can("manage", "Project") ? false : true
+        // }, ({ action, subject, abilities, input, selfInput }) => {
+        //     const projects = [];
 
-            for (const project of input) {
-                const testOwner = project.owner !== tenantId;
-                selfInput = testOwner || !can("manage", "Project") ? false : true
+        //     for (const project of input) {
+        //         const testOwner = project.owner !== tenantId;
+        //         selfInput = testOwner || !can("manage", "Project") ? false : true
 
-                if (selfInput || !project.disabled) {
-                    let filteredValue: Record<string, any> = {};
+        //         if (selfInput || !project.disabled) {
+        //             let filteredValue: Record<string, any> = {};
 
-                    Object.keys(project).forEach((item) => {
-                        if (abilities.can(action!, subject, selfInput ? item : `${item}Other`))
-                            filteredValue[item] = project[item as keyof Project];
-                    });
+        //             Object.keys(project).forEach((item) => {
+        //                 if (abilities.can(action!, subject, selfInput ? item : `${item}Other`))
+        //                     filteredValue[item] = project[item as keyof Project];
+        //             });
 
-                    projects.push(filteredValue as Project);
-                }
-            }
+        //             projects.push(filteredValue as Project);
+        //         }
+        //     }
 
-            return projects;
-        });
-        const finalProjects = await outItemFromList(filteredProjects);
+        //     return projects;
+        // });
+        // const finalProjects = await outItemFromList(filteredProjects);
 
-        response[200]({ data: finalProjects });
+        response[200]({ data: projects });
     } catch (err) {
         logger(err);
         response[500]({ message: "An error occurred while reading information." });

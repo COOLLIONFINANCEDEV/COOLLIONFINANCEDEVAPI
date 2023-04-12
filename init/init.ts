@@ -4,9 +4,10 @@ import { buildRoles } from "./generate-basic-role.init";
 import { generatePermissions } from "./generate-permission.init";
 
 (async () => {
-    await generatePermissions();
-})();
-
-(async () => {
-    await buildRoles();
+    try {
+        await generatePermissions();
+        await buildRoles();
+    } catch (error) {
+        console.error('Error occurred:', error);
+    }
 })();

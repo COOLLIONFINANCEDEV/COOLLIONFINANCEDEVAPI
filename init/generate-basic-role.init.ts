@@ -6,13 +6,12 @@
 
 import { Prisma, PrismaClient, Role } from "@prisma/client";
 import chalk from "chalk";
-import { ICASL } from "../src/types/app.type";
+import { ICASL, TAccountTypesCodename } from "../src/types/app.type";
 import { getSubjectFields, processLog } from "./helpers.init";
 
-type TAccountTypesCodename = "ZERO" | "LENDER" | "LENDER_COMMUNITY" | "BORROWER" | "ADMIN";
 
 
-const roles: {
+export const roles: {
     name: string,
     public: boolean,
     accountType: TAccountTypesCodename,
@@ -154,7 +153,7 @@ const prismaClient = new PrismaClient();
 
 
 export const buildRoles = (): Promise<void> => {
-    return new Promise(async () => {
+    return new Promise(async (resolve, reject) => {
         processLog(chalk`{bold \n\t\t\t*** BUILD BASIC ROLE ***}`);
         processLog();
 
@@ -284,8 +283,13 @@ export const buildRoles = (): Promise<void> => {
             } else {
                 processLog(chalk`{bold.red FAILED}`);
                 processLog("", 1);
+                reject("FAILED")
             }
         }
+        processLog("", 1);
+        processLog(chalk`{blue.bold Role generation... }`);
+        processLog(chalk`{green.bold OK}`, 2);
+        resolve();
     });
 };
 

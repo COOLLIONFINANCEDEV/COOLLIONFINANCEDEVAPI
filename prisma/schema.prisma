@@ -14,12 +14,31 @@ datasource db {
 }
 
 model Tenant {
-  id                      Int           @id @default(autoincrement())
-  name                    String        @unique
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  email       String?
+  email2      String?
+  description String?
+  profilePhoto String? @db.Text()
+
+  // lender
+  address                 String?
+  preferredLoanCategories String?
+
+  // borrower
+  phone          String?
+  phone2         String?
+  businessSector String?
+
+  // community
+  type        String?
+  website     String?
+  socialMedia String?
+
   accountType             AccountType?  @relation(fields: [accountTypeId], references: [id])
   accountTypeId           Int
   roles                   Role[]
-  receivedTransactions     Transaction[] @relation(name: "receivedTransaction")
+  receivedTransactions    Transaction[] @relation(name: "receivedTransaction")
   transactionsSent        Transaction[] @relation(name: "transactionSent")
   deleted                 Boolean       @default(false)
   createdAt               DateTime      @default(now())

@@ -288,6 +288,18 @@
         ```javascript
             {
                 name?: string,
+                email?: String,
+                email2?: String,
+                description?: String,borrower
+                profilePhoto?: String,
+                address?: String,
+                preferredLoanCategories?: String,
+                phone?: String,
+                phone2?: String,
+                businessSector?: String,
+                type?: String,
+                website?: String,
+                socialMedia?: String
             }
         ```
 
@@ -309,6 +321,24 @@
         ```javascript
             {
                 name: string,
+                email?: String, // required for community and borrower
+                email2?: String,
+                description?: String, // required for community and borrower
+                profilePhoto?: String,
+
+                // lender
+                address?: String,
+                preferredLoanCategories?: String, // ignore
+
+                // borrower
+                phone: String,
+                phone2: String,
+                businessSector: String,
+
+                // community
+                type: String,
+                website?: String,
+                socialMedia?: String,
             }
         ```
 
@@ -588,7 +618,7 @@
 
 1. List projects
 
-   - Endpoint: GET /tenant/:tenantId/project/list/:page?/:perPage?
+   - Endpoint: GET /project/list/:page?/:perPage?
    - Response:
 
         ```json
