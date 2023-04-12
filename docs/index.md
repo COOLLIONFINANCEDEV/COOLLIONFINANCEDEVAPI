@@ -1133,3 +1133,101 @@
         ```
 
 
+## Account Type APIs
+
+1. List
+
+   - Endpoint: GET /account-type/list
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "name": "borrower",
+                        "codename": "BORROWER",
+                        "description": "...",
+                        "restricted": false,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    },
+                    
+                ],
+                "errors":[]
+            }
+       ```
+
+2. Retrive
+
+   - Endpoint: GET /tenant/:tenantId/account-type/:accountTypeId
+   - Response:
+
+        ```json
+            {
+                "success":true,
+                "message":"Ok",
+                "data":[
+                    {
+                        "id": 1,
+                        "name": "borrower",
+                        "codename": "BORROWER",
+                        "description": "...",
+                        "restricted": false,
+                        "createdAt": "2023-03-27T16:11:40.479Z"
+                    }
+                ],
+                "errors":[]
+            }
+       ```
+
+3. Update
+    - Endpoint: PUT /tenant/:tenantId/investment-term/:investmentTermId
+    - Request Body Schema:
+
+        ```javascript
+            {
+                name?: string,
+                description?: string,
+                restricted?: boolean,
+                excludeRoles?: number[], // integer[]
+                addRoles?: number[], // integer[]
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Informations updated successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
+
+4. Register
+    - Endpoint: POST /tenant/:tenantId/investment-term
+    - Request Body Schema:
+
+        ```javascript
+            {
+                name: string,
+                codename: string,
+                description: string,
+                restricted: boolean,
+                roles: number[], // integer[]
+            }
+        ```
+
+    - Response:
+
+        ```json
+            {
+                "success":true,
+                "message": "Account type registered successfully.",
+                "data": [],
+                "errors": []
+            }
+        ```
