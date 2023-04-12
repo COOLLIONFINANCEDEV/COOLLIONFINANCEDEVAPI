@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import chalk from 'chalk';
-import logSymbols from 'log-symbols';
+// import logSymbols from 'log-symbols';
 
 export const processLog = (message: any = "\n", line: number = 0) => {
     message = `${message}${"\n".repeat(line)}`;
@@ -16,7 +16,7 @@ export const progressBar = (progress: number, lastLogLength: number, label: stri
     const progressStr = `${'#'.repeat(filled)}${'.'.repeat(empty)}`; // Création de la chaîne de caractères représentant la barre de progression
 
     const progressText = chalk`{bold ${label}:} ${progressStr} {green.bold ${Math.floor(progress * 100)}%}`; // Création du texte à afficher dans la console, avec la barre de progression, le pourcentage de progression, et des couleurs
-    const statusIcon = progress === 1 ? logSymbols.success : logSymbols.info; // Définition du symbole à afficher en fonction de l'état de progression
+    // const statusIcon = progress === 1 ? logSymbols.success : logSymbols.info; // Définition du symbole à afficher en fonction de l'état de progression
 
     // Effacer la dernière ligne de la console avant d'écrire la nouvelle
     process.stdout.write('\r' + ' '.repeat(lastLogLength) + '\r');

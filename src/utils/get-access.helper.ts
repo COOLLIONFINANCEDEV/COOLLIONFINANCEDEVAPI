@@ -9,11 +9,16 @@ import { getUserTenantByUserId } from "../services/users-tenants.service";
 import { ICustomRequest } from "../types/app.type";
 import Hasher from "./hasher.helper";
 import { redisClient } from "./redis-client.helper";
+import { getAllUserRoles } from "../services/user-role.service";
 
 export const getAccess = async (req: ICustomRequest, userId: number) => {
     const hasher = new Hasher(hasherConfig.hashSecretKey);
     const usersTenants = await getUserTenantByUserId(userId);
-    const usersPermissions = await getUsersPermissionsByUserId(userId);
+    const userRole = await getAllUserRoles({ userId });
+    let usersPermissions = await getUsersPermissionsByUserId(userId);
+
+    userRole.forEach(({ roles }) => { usersPermissions.push(...roles.permissionRole) });
+
     const userRooms = await getAllUserRooms({ where: { userId } });
     const rooms = userRooms.map(({ room }) => room.uuid);
     /**

@@ -84,6 +84,7 @@ model User {
   updatedAt        DateTime?          @updatedAt
   userRoom         UserRoom[]
   messages         Message[]
+  UserRole         UserRole[]
 }
 
 model UserTenant {
@@ -117,6 +118,7 @@ model Role {
   updatedAt          DateTime?         @updatedAt
   Invitation         Invitation[]
   // InvitationRole     InvitationRole[]
+  UserRole           UserRole[]
 
   @@unique([name, owner])
 }
@@ -167,6 +169,18 @@ model AccountTypePermission {
   updatedAt     DateTime?   @updatedAt
 
   @@unique([accountTypeId, permissionId])
+}
+
+model UserRole {
+  id        Int       @id @default(autoincrement())
+  roleId    Int
+  roles     Role      @relation(fields: [roleId], references: [id])
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@unique([userId, roleId])
 }
 
 model UsersPermissions {

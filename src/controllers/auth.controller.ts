@@ -21,6 +21,7 @@ import { getTenantByParam } from "../services/tenant.service";
 import { registerRoom } from "../services/room.service";
 import { registerUserRoom } from "../services/user-room.service";
 import { getInvitationById } from "../services/invitation.service";
+import { attributeUserToRole } from "../services/user-role.service";
 
 const constants = appConfig.constants;
 
@@ -291,18 +292,9 @@ export const register = async (req: ICustomRequest, res: Response) => {
         const { guest, password } = req.body;
         let { email } = req.body;
         const hasher = new Hasher(hasherConfig.hashSecretKey);
-        const baseUserRole = await getRoleByName(appConfig.baseUserRoleName);
+        const userRole = await getRoleByName(appConfig.baseUserRoleName);
 
-        if (baseUserRole === null) {
-            response[500]({
-                message: "Can't set user permissions!",
-            });
-            return;
-        }
-
-        const permissionsRole = await getAllPermissionRoles({ roleId: baseUserRole.id });
-
-        if (permissionsRole.length === 0) {
+        if (userRole === null) {
             response[500]({
                 message: "Can't set user permissions!",
             });
@@ -351,9 +343,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
         const newUser = await registerUser({ email, password: passwordHash, ...activation });
         logger("New user registered successfully!");
 
-        for (const { permissionId } of permissionsRole)
-            await registerUsersPermission({ permissionId, userId: newUser.id });
-
+        await attributeUserToRole(newUser.id, userRole.id);
         logger("Basic access granted for the user!")
 
         await sendMagicLink(newUser.id, email);

@@ -7,6 +7,7 @@ genaral:
     set COMMUNITY_MEMBER_ROLE_ID in env file
     set MASTER_WALLET_ID in env file
     info sur les tenant, utlisateur
+    remove wallet system
 
 authentication:
     register (create dynamic template id on sendgrid then update the templateId that in use)
