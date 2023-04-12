@@ -147,7 +147,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
     const logger = debug('coollionfi:tenant:register');
 
     try {
-        const { name, accountTypeId } = req.body;
+        const { accountTypeId } = req.body;
         const { userId, tenantId } = req.auth!;
         const accountType = await getAccountTypeById(accountTypeId);
 
@@ -169,7 +169,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
         if (!req.abilities?.can("create", "Tenant", `withAccountType${accountType.codename}`, { ignore: true }))
             return response[403]({ message: "You have no permission to create tenant with this account type." });
 
-        const newTenant = await registerTenant({ name, accountTypeId });
+        const newTenant = await registerTenant(req.body);
         logger("New tenant registered successfully by user" + userId);
 
         for (const accountTypeRole of accountTypesRoles)

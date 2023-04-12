@@ -119,8 +119,28 @@ export const tenant: TEndpoint = {
         method: 'post',
         path: '/tenant',
         schema: Joi.object({
+            accountTypeId: Joi.number().integer().required(),
             name: Joi.string().lowercase().trim().required(),
-            accountType: Joi.number().integer().required(),
+            email: Joi.string().lowercase().trim().email(),
+            email2: Joi.string().lowercase().trim().email(),
+            description: Joi.string().lowercase().trim(),
+            profilePhoto: Joi.string(),
+
+            // lender
+            address: Joi.string(),
+            preferredLoanCategories: Joi.string(),
+
+            // borrower
+            phone: Joi.string().lowercase().trim()
+                .custom(isPhoneNumber, "Validate phone number"),
+            phone2: Joi.string().lowercase().trim()
+                .custom(isPhoneNumber, "Validate phone number"),
+            businessSector: Joi.string().lowercase().trim(),
+
+            // community
+            type: Joi.string(),
+            website: Joi.string().uri(),
+            socialMedia: Joi.array().items(Joi.string().uri()),
         }),
         authorizationRules: [{
             action: "create",

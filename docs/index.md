@@ -320,6 +320,7 @@
 
         ```javascript
             {
+                accountTypeId: number, // integer
                 name: string,
                 email?: String, // required for community and borrower
                 email2?: String,
