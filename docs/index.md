@@ -1183,7 +1183,7 @@
        ```
 
 3. Update
-    - Endpoint: PUT /tenant/:tenantId/investment-term/:investmentTermId
+    - Endpoint: PUT /tenant/:tenantId/account-type/:accountTypeId
     - Request Body Schema:
 
         ```javascript
@@ -1208,7 +1208,7 @@
         ```
 
 4. Register
-    - Endpoint: POST /tenant/:tenantId/investment-term
+    - Endpoint: POST /tenant/:tenantId/account-type
     - Request Body Schema:
 
         ```javascript
