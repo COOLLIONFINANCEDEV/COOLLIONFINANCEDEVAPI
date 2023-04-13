@@ -5,7 +5,7 @@ import sgSendEmail from "./send-email.helper";
 
 
 export const sendMagicLink = async (userId: number, to: string) => {
-    const token = jwt.sign({ userId: userId }, appConfig.jwtSecret, { expiresIn: appConfig.sessionExpirationTime });
+    const token = jwt.sign({ userId: userId }, appConfig.jwtSecret, { expiresIn: 2 * 24 * 60 * 60 });
     const tokenBase64Url = Buffer.from(token).toString("base64url");
     const magicLink = `${appConfig.appBaseUrl}?magicLink=${tokenBase64Url}`;
 
