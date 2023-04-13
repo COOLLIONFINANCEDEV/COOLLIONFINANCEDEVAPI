@@ -447,26 +447,26 @@ export const project: TEndpoint = {
     }
 };
 
-export const wallet: TEndpoint = {
-    retrive: {
-        method: 'get',
-        path: '/tenant/:tenantId/wallet/',
-        authorizationRules: [{
-            action: "read",
-            subject: 'Wallet',
-            mainRule: true,
-        }]
-    },
-    register: {
-        method: 'post',
-        path: '/tenant/:tenantId/wallet/',
-        authorizationRules: [{
-            action: "create",
-            subject: "Wallet",
-            mainRule: true,
-        }]
-    }
-};
+// export const wallet: TEndpoint = {
+//     retrive: {
+//         method: 'get',
+//         path: '/tenant/:tenantId/wallet/',
+//         authorizationRules: [{
+//             action: "read",
+//             subject: 'Wallet',
+//             mainRule: true,
+//         }]
+//     },
+//     register: {
+//         method: 'post',
+//         path: '/tenant/:tenantId/wallet/',
+//         authorizationRules: [{
+//             action: "create",
+//             subject: "Wallet",
+//             mainRule: true,
+//         }]
+//     }
+// };
 
 export const paymentMethod: TEndpoint = {
     listOther: {
@@ -639,11 +639,12 @@ export const transaction: TEndpoint = {
         method: 'post',
         path: '/tenant/:tenantId/transaction',
         schema: Joi.object({
+            investmentResume: Joi.string().trim().required(),
             paymentMethodTypeCodename: Joi.string().trim().valid("MM", "CrC", "CC").required()
                 .messages({
                     "any.only": "The allowed values for {#label} are \"MM\": Mobile Money, \"CrC\": Credit Card, \"CC\": Crypto Currency"
                 }),
-            amount: Joi.number().required(),
+            // amount: Joi.number().required(),
             currency: Joi.string().trim().lowercase().valid("usd", "usdc").required()
                 .messages({ "any.only": "The accepted currency are \"USD\", \"USDC\"" }),
             transactionId: Joi.string().uuid().required(),

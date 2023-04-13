@@ -32,3 +32,10 @@ export const updateInvestment = async (id: number, investment: Partial<Investmen
     });
 }
 
+export const updateInvestmentByTransactionId = async (transactionId: string, investment: Partial<Investment>): Promise<Investment> => {
+    return await prisma.investment.update({
+        where: { transactionId },
+        data: investment
+    });
+}
+

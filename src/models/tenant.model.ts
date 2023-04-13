@@ -63,7 +63,7 @@ export const projectsPerTenant = async () => await prisma.tenant.findMany({ incl
 export const investmentsPerTenant = async () => await prisma.tenant.findMany({ include: { investments: true } });
 
 // Récupérer le nombre de portefeuilles associés à chaque tenant
-export const walletPerTenant = async () => await prisma.tenant.findMany({ include: { wallet: true } });
+// export const walletPerTenant = async () => await prisma.tenant.findMany({ include: { wallet: true } });
 
 // Récupérer le nombre d'invitations envoyées par chaque tenant
 export const invitationsSentPerTenant = async () => await prisma.tenant.findMany({ include: { invitationsSent: true } });

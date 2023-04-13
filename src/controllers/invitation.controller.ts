@@ -1,21 +1,21 @@
 import debug from "debug";
 import { Response } from "express";
+import jwt from "jsonwebtoken";
 import { abilitiesFilter } from "../abilities/filter.ability";
+import { app as appConfig } from "../configs/app.conf";
 import { hasher as hasherConfig, twilio as twilioConfig } from "../configs/utils.conf";
 import { getAccountTypeById } from "../models/account-type.model";
 import { confirmInvitation, deleteInvitation, getAllInvitations, getInvitationById, getInvitationByParam, registerInvitation } from "../services/invitation.service";
 import { getTenantById } from "../services/tenant.service";
-import { getUserByEmailOrPhone, getUserById } from "../services/user.service";
+import { getUserById } from "../services/user.service";
 import { attributeUserToTenant } from "../services/users-tenants.service";
 import { ICustomRequest } from "../types/app.type";
 import { TSGMailData } from "../types/utils.type";
+import Hasher from "../utils/hasher.helper";
 import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import CustomResponse from "../utils/response.helper";
 import sgSendEmail from "../utils/send-email.helper";
-import { app as appConfig } from "../configs/app.conf";
-import Hasher from "../utils/hasher.helper";
-import jwt from "jsonwebtoken";
 
 export const list = async (req: ICustomRequest, res: Response) => {
     const response = new CustomResponse(res);
@@ -182,12 +182,16 @@ export const invite = async (req: ICustomRequest, res: Response) => {
             const token = jwt.sign({
                 hmac: hashEmail,
                 guest: invitation.id
-            }, appConfig.jwtSecret);
+            }, appConfig.jwtSecret, { expiresIn: appConfig.guestLinkExpirationTime });
             const tokenBase64Url = Buffer.from(token).toString("base64url");
             const invitationLink = `${appConfig.appBaseUrl}?guest=${tokenBase64Url}`;
 
             nonRegisteredEmails.add({
                 to: email,
+                from: {
+                    name: `${twilioConfig.defaultOptions.from.name} | ${tenant.name}`,
+                    email: appConfig.contacts.noReply
+                },
                 templateId: twilioConfig.templateIDs.invitation,
                 dynamicTemplateData: {
                     communityName: tenant.name,

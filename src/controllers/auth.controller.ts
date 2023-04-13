@@ -5,10 +5,13 @@ import jwt from "jsonwebtoken";
 import { app as appConfig } from "../configs/app.conf";
 import { hasher as hasherConfig } from '../configs/utils.conf';
 import { updateUser } from "../models/user.model";
-import { getAllPermissionRoles } from "../services/permission-role.service";
+import { getInvitationById } from "../services/invitation.service";
 import { getRoleByName } from "../services/role.service";
+import { registerRoom } from "../services/room.service";
+import { getTenantByParam } from "../services/tenant.service";
+import { attributeUserToRole } from "../services/user-role.service";
+import { registerUserRoom } from "../services/user-room.service";
 import { getUserByEmailOrPhone, getUserById, registerUser } from '../services/user.service';
-import { registerUsersPermission } from "../services/users-permissions.service";
 import { ICustomRequest, TAccountTypesCodename } from "../types/app.type";
 import { getAccess } from "../utils/get-access.helper";
 import Hasher from '../utils/hasher.helper';
@@ -17,11 +20,6 @@ import { handlePrismaError } from "../utils/prisma-error.helper";
 import { redisClient } from "../utils/redis-client.helper";
 import CustomResponse from '../utils/response.helper';
 import { sendMagicLink } from "../utils/send-magic-link.helper";
-import { getTenantByParam } from "../services/tenant.service";
-import { registerRoom } from "../services/room.service";
-import { registerUserRoom } from "../services/user-room.service";
-import { getInvitationById } from "../services/invitation.service";
-import { attributeUserToRole } from "../services/user-role.service";
 
 const constants = appConfig.constants;
 
@@ -79,7 +77,7 @@ export const refreshToken = async (req: ICustomRequest, res: Response) => {
 
         if (sessionId !== testSessionId) {
             // feat: send a message to the account owner that the session may be compromised
-            response[403]({ message: constants.COMPROMISED_SESSION});
+            response[403]({ message: constants.COMPROMISED_SESSION });
             return;
         }
 
@@ -183,6 +181,7 @@ export const login = async (req: ICustomRequest, res: Response) => {
         // LOGIN WITH MAGIC LINK
         if (magicLink) {
             const token = Buffer.from(magicLink, "base64url").toString("utf8");
+            console.log("token", token);
             const decodedToken = jwt.verify(token, appConfig.jwtSecret);
 
             if (typeof decodedToken === "string")
@@ -194,7 +193,7 @@ export const login = async (req: ICustomRequest, res: Response) => {
             refreshToken = access.refreshToken;
             accessToken = access.accessToken;
         }
-        // LOGIN WITH CRYPTO WALLET ADDRESS
+        // LOGIN OR REGISTER WITH CRYPTO WALLET ADDRESS
         else if (address) {
             const anonymousUser = {
                 email: `${(address as string).substring(0, 8)}@anonymous.com`,
@@ -203,9 +202,30 @@ export const login = async (req: ICustomRequest, res: Response) => {
             let user = await getUserByEmailOrPhone(anonymousUser.email);
 
             if (!user) {
+                const userRole = await getRoleByName(appConfig.baseUserRoleName);
+
+                if (userRole === null) {
+                    response[500]({
+                        message: "Can't set user permissions!",
+                    });
+                    return;
+                }
+
                 const hasher = new Hasher(hasherConfig.hashSecretKey);
                 const passwordHash = await hasher.hashPasswordBcrypt(anonymousUser.password);
                 user = await registerUser({ email: anonymousUser.email, password: passwordHash, accountActivated: true });
+
+                await attributeUserToRole(user.id, userRole.id);
+                logger("Basic access granted for the user!");
+
+                const codename: TAccountTypesCodename = "ADMIN";
+                const admin = await getTenantByParam({ accountType: { codename } });
+
+                if (admin) {
+                    const room = await registerRoom({ name: admin.name, uuid: randomUUID() });
+
+                    await registerUserRoom({ userId: user.id, roomId: room.id });
+                }
             } else {
                 if (!user.accountActivated)
                     return response[401]({
@@ -344,7 +364,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
         logger("New user registered successfully!");
 
         await attributeUserToRole(newUser.id, userRole.id);
-        logger("Basic access granted for the user!")
+        logger("Basic access granted for the user!");
 
         await sendMagicLink(newUser.id, email);
         logger("Activation account email sent");

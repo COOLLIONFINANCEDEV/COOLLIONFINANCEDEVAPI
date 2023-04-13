@@ -5,18 +5,21 @@ import sgSendEmail from "./send-email.helper";
 
 
 export const sendMagicLink = async (userId: number, to: string) => {
-    const token = jwt.sign({ userId: userId }, appConfig.jwtSecret, { expiresIn: appConfig.sessionExpirationTime });
+    const token = jwt.sign({ userId: userId }, appConfig.jwtSecret, { expiresIn: appConfig.magicLinkExpirationTime });
     const tokenBase64Url = Buffer.from(token).toString("base64url");
     const magicLink = `${appConfig.appBaseUrl}?magicLink=${tokenBase64Url}`;
 
     await sgSendEmail({
-        from: { ...twilioConfig.defaultOptions.from, name: "Cool Lion Finance Account Team" },
+        from: {
+            email: appConfig.contacts.noReply,
+            name: `${twilioConfig.defaultOptions.from.name} Account Team`
+        },
         to,
         templateId: twilioConfig.templateIDs.accountActivation,
         dynamicTemplateData: {
             magicLink,
             appName: appConfig.appName,
-            teamContact: appConfig.teamContact
+            teamContact: appConfig.contacts.info
         }
     });
 };

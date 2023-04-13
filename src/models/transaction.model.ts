@@ -15,8 +15,20 @@ export const getTransactionById = async (id: number): Promise<Transaction | null
     return await prisma.transaction.findFirst({ where: { id } });
 }
 
-export const getTransactionByParam = async (params: Prisma.TransactionWhereInput): Promise<Transaction | null> => {
-    return await prisma.transaction.findFirst({ where: params });
+export const getTransactionByParam = async (params: Prisma.TransactionWhereInput) => {
+    return await prisma.transaction.findFirst({
+        where: params,
+        include: {
+            senderTenant: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    email2: true
+                }
+            }
+        }
+    });
 }
 
 export const createTransaction = async (transaction: Transaction): Promise<Transaction> => {

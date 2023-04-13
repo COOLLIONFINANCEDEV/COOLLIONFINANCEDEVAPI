@@ -2,22 +2,38 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const emailAdress = (name: string) => `${name}@coollionfi.com`;
+
 export const app = {
     version: "v2",
     jwtSecret: String(process.env.JWT_SECRET),
     appName: "Cool Lion Finance",
-    appBaseUrl: "https://app.coollionfi.com",
-    teamContact: "contact@coollionfi.com",
+    appBaseUrl: "https://app.coollionfi.com/login",
+    contacts: {
+        dev: emailAdress("dev"),
+        info: emailAdress("info"),
+        business: emailAdress("business"),
+        noReply: emailAdress("noreply"),
+    },
 
     /** 5 minutes */
     tokenExpirationTime: 5 * 60,
 
+    /** 30 minutes */
+    investmentTokenExpirationTime: 30 * 60,
+
     /** 1 hours */
     sessionExpirationTime: 60 * 60,
+
+    /** 2 days */
+    magicLinkExpirationTime: 2 * 24 * 60 * 60,
+
+    /** 10 days */
+    guestLinkExpirationTime: 10 * 24 * 60 * 60,
     baseUserRoleName: String(process.env.BASE_USER_ROLE),
 
     /** 4 */
-    walletMaxPaymentMethods: 4,
+    maxPaymentMethods: 4,
     masterWalletId: Number(process.env.MASTER_WALLET_ID),
     communityMemberRoleId: Number(process.env.COMMUNITY_MEMBER_ROLE_ID),
 
@@ -48,6 +64,7 @@ export const app = {
             // Cinetpay
             // PENDING: 0,
             SUCCESS: 1,
+            REFUSED: -1,
             REFUNDED: 2,
             CANCELLED: -1,
             FAILED: -2,

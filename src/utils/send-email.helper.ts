@@ -6,7 +6,16 @@ sgMail.setApiKey(twilioConfig.sendGridApiKey);
 
 const sgSendEmail = async (...options: TSGMailData[]) => {
     try {
-        const data = options.map((option) => { return { ...twilioConfig.defaultOptions, ...option } });
+        const data = options.map((option) => {
+            return {
+                ...twilioConfig.defaultOptions,
+                ...option,
+                from: {
+                    ...twilioConfig.defaultOptions.from,
+                    ...option.from
+                }
+            }
+        });
         return await sgMail.send(data);
     } catch (error) {
         throw error;

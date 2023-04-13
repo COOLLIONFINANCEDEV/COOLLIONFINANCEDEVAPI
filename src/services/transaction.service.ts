@@ -14,7 +14,7 @@ export const getTransactionById = async (id: number): Promise<Transaction | null
     return await model.getTransactionById(id);
 }
 
-export const getTransactionByTransId = async (transactionId: string): Promise<Transaction | null> => {
+export const getTransactionByTransId = async (transactionId: string) => {
     return await model.getTransactionByParam({ transactionId });
 }
 

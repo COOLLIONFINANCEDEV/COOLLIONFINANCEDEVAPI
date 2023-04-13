@@ -35,21 +35,22 @@ model Tenant {
   website     String?
   socialMedia String?
 
-  accountType             AccountType?  @relation(fields: [accountTypeId], references: [id])
+  accountType             AccountType?    @relation(fields: [accountTypeId], references: [id])
   accountTypeId           Int
   roles                   Role[]
-  receivedTransactions    Transaction[] @relation(name: "receivedTransaction")
-  transactionsSent        Transaction[] @relation(name: "transactionSent")
-  deleted                 Boolean       @default(false)
-  createdAt               DateTime      @default(now())
-  updatedAt               DateTime?     @updatedAt
+  receivedTransactions    Transaction[]   @relation(name: "receivedTransaction")
+  transactionsSent        Transaction[]   @relation(name: "transactionSent")
+  deleted                 Boolean         @default(false)
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime?       @updatedAt
   projects                Project[]
   investments             Investment[]
-  wallet                  Wallet[]
-  invitationsSent         Invitation[]  @relation(name: "invitationSent")
+  // wallet                  Wallet[]
+  invitationsSent         Invitation[]    @relation(name: "invitationSent")
   userTenant              UserTenant[]
-  userTenantOnAttribution UserTenant[]  @relation(name: "userTenantOnAttribution")
+  userTenantOnAttribution UserTenant[]    @relation(name: "userTenantOnAttribution")
   rooms                   Room[]
+  PaymentMethod           PaymentMethod[]
 }
 
 model AccountType {
@@ -221,6 +222,9 @@ model Investment {
   dueGain        Float
   collectionDate DateTime
   gainCollected  Boolean        @default(false)
+  done           Boolean        @default(false) // the investment is done (true) when the transaction is accepted therefore in status 1
+  transactionId  String         @unique
+  transaction    Transaction    @relation(fields: [transactionId], references: [transactionId])
   createdAt      DateTime       @default(now())
   updatedAt      DateTime?      @updatedAt
 }
@@ -239,15 +243,15 @@ model InvestmentTerm {
   @@unique([term, benefit])
 }
 
-model Wallet {
-  id            Int             @id @default(autoincrement())
-  balance       Float           @default(0.0)
-  tenant        Tenant          @relation(fields: [owner], references: [id])
-  owner         Int             @unique
-  paymentMethod PaymentMethod[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime?       @updatedAt
-}
+// model Wallet {
+//   id            Int             @id @default(autoincrement())
+//   balance       Float           @default(0.0)
+//   tenant        Tenant          @relation(fields: [owner], references: [id])
+//   owner         Int             @unique
+//   paymentMethod PaymentMethod[]
+//   createdAt     DateTime        @default(now())
+//   updatedAt     DateTime?       @updatedAt
+// }
 
 model PaymentMethod {
   id                        Int               @id @default(autoincrement())
@@ -257,9 +261,11 @@ model PaymentMethod {
   deleted                   Boolean           @default(false)
   createdAt                 DateTime          @default(now())
   updatedAt                 DateTime?         @updatedAt
-  Wallet                    Wallet?           @relation(fields: [walletId], references: [id])
-  walletId                  Int?
+  // Wallet                    Wallet?           @relation(fields: [walletId], references: [id])
+  // walletId                  Int?
   // CrC Cinetpay
+  owner                     Int
+  tenants                   Tenant            @relation(fields: [owner], references: [id])
   customerName              String?
   customerSurname           String?
   customerEmail             String?
@@ -310,7 +316,7 @@ model Transaction {
   sender                    Int
   reason                    String?
   currency                  String
-  transactionId             String
+  transactionId             String            @unique
   status                    Int
   createdAt                 DateTime          @default(now())
   updatedAt                 DateTime?         @updatedAt
@@ -328,6 +334,7 @@ model Transaction {
   customerZipCode           String?
   // CC
   address                   String?
+  Investment                Investment?
 }
 
 model Invitation {

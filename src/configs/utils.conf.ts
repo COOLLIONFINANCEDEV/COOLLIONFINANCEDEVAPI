@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { app as appConfig } from './app.conf';
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ export const hasher = {
 
 export const twilio = {
     defaultOptions: {
-        from: { name: "Cool Lion Team", email: "dev@coollionfi.com" },
+        from: { name: "Cool Lion Team", email: appConfig.contacts.info },
         templateId: "d-83839b67e6d340da92ae57b79beee9bd",
     },
     serviceID: String(process.env.SERVICE_ID),
@@ -24,6 +25,8 @@ export const twilio = {
     templateIDs: {
         accountActivation: "d-2bf39b1d1e524c299d519bff79de5cb5",
         invitation: "d-b882140a9bbe4e2b84f64ffbbbf93679",
+        acceptTransaction: "d-0889c2f6d1d34b0cb88f56057d73c7e6",
+        rejectTransaction: "d-65e331c309284891a25b31f3d11d4628",
     }
 }
 

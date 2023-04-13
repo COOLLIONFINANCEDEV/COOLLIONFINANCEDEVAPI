@@ -6,7 +6,6 @@ genaral:
     review all controller to detect action that can be save in redis for early requests
     set COMMUNITY_MEMBER_ROLE_ID in env file
     set MASTER_WALLET_ID in env file
-    info sur les tenant, utlisateur
     remove wallet system
 
 authentication:

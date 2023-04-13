@@ -2,16 +2,22 @@ import { Transaction } from "@prisma/client";
 import axios from "axios";
 import debug from "debug";
 import { Response } from "express";
+import jwt from "jsonwebtoken";
 import { abilitiesFilter } from "../abilities/filter.ability";
 import { app as appConfig } from "../configs/app.conf";
-import { hasher as hasherConfig } from "../configs/utils.conf";
+import { hasher as hasherConfig, twilio as twilioConfig } from "../configs/utils.conf";
+import { registerInvestment, updateInvestment } from "../services/investment.service";
 import { getAllTransactions, getTransactionById, getTransactionByTransId, registerTransaction, updateTransaction } from "../services/transaction.service";
-import { getWalletByTenantId, updateWallet } from "../services/wallet.service";
 import { ICustomRequest } from "../types/app.type";
 import Hasher from "../utils/hasher.helper";
+import { jwtErrorHandler } from "../utils/jwt-error.helper";
 import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
 import CustomResponse from "../utils/response.helper";
+import sgSendEmail from "../utils/send-email.helper";
+
+const constants = appConfig.constants;
+
 
 export const list = async (req: ICustomRequest, res: Response) => {
     const response = new CustomResponse(res);
@@ -113,21 +119,34 @@ export const makeDeposit = async (req: ICustomRequest, res: Response) => {
 
     try {
         const { userId, tenantId } = req.auth!;
-        const wallet = await getWalletByTenantId(tenantId);
+        // const wallet = await getWalletByTenantId(tenantId);
 
-        if (!wallet)
-            return response[400]({ message: "You do not have a wallet!", });
+        // if (!wallet)
+        //     return response[400]({ message: "You do not have a wallet!", });
+        const { investmentResume } = req.body;
+        const resume = jwt.verify(investmentResume, appConfig.jwtSecret);
 
-        await registerTransaction({
+        if (typeof resume === "string")
+            return response[401]({ message: constants.INVALID_TOKEN });
+
+        delete req.body["investmentResume"];
+
+        const transaction = await registerTransaction({
             status: appConfig.transaction.status.PENDING,
             sender: tenantId,
-            recipient: tenantId,
-            reason: "Deposit on my wallet account",
+            recipient: tenantId, // TODO: Change recipiant
+            reason: "investment", // do not change the reason value
+            amount: resume.amount,
             ...req.body
         });
         logger(`New transaction registered successfully. Owner:  ${tenantId}, creator: ${userId}`);
 
-        response[201]({ message: "Transaction in treatement." });
+        await registerInvestment({ ...investmentResume, done: false, transactionId: transaction.transactionId });
+        logger(`New investment registered successfully. Owner:  ${tenantId}, creator: ${userId}`);
+
+        response[201]({
+            message: "Transaction in processing, you will receive an email once completed.",
+        });
     } catch (err) {
         const errors = handlePrismaError(err, logger);
 
@@ -138,6 +157,11 @@ export const makeDeposit = async (req: ICustomRequest, res: Response) => {
             });
         else {
             logger(err);
+            const jwtError = jwtErrorHandler(err);
+
+            if (jwtError)
+                return response[401]({ message: jwtError });
+
             response[500]({ message: "An error occurred while making deposite." });
         }
     }
@@ -175,20 +199,60 @@ export const syncCinetpayPayment = async (req: ICustomRequest, res: Response) =>
                     const { data } = responseData.data;
                     const transactionStatus = appConfig.transaction.status;
                     const statusConstant = data.status as keyof typeof transactionStatus;
-                    const statusCode = transactionStatus[statusConstant];
+                    const status = transactionStatus[statusConstant];
 
-                    if (statusCode !== transaction.status) {
+                    if (status !== transaction.status) {
                         updateTransaction(transaction.id, {
-                            status: statusCode,
+                            status: status,
                             operator: body.payment_method,
                             customerPhoneNumber: `+${body.cpm_phone_prefixe}${body.cel_phone_num}`,
                         });
 
-                        if (statusCode === transactionStatus["ACCEPTED"]) {
-                            const wallet = await getWalletByTenantId(transaction.recipient);
+                        if (status === transactionStatus["ACCEPTED"]) {
+                            // const wallet = await getWalletByTenantId(transaction.recipient);
 
-                            if (wallet)
-                                await updateWallet(wallet.id, { balance: wallet.balance + transaction.amount });
+                            // if (wallet)
+                            //     await updateWallet(wallet.id, { balance: wallet.balance + transaction.amount });
+
+                            if (transaction.reason === "investment") {
+                                await updateInvestment({ transactionId: transaction.transactionId }, { done: true });
+
+                                const funder = transaction.senderTenant;
+                                const to = funder.email || funder.email2;
+
+                                if (to)
+                                    await sgSendEmail({
+                                        to,
+                                        from: {
+                                            name: `${twilioConfig.defaultOptions.from.name} Investment Team`,
+                                            email: appConfig.contacts.business
+                                        },
+                                        templateId: twilioConfig.templateIDs.acceptTransaction,
+                                        dynamicTemplateData: {
+                                            amount: transaction.amount,
+                                            greeting: `Dear ${funder.name || "User"},`
+                                        }
+                                    });
+
+                            }
+                        } else if (status <= transactionStatus["REJECTED"]) {
+                            const funder = transaction.senderTenant;
+                            const to = funder.email || funder.email2;
+
+                            if (transaction.reason === "investment" && to)
+                                await sgSendEmail({
+                                    to,
+                                    from: {
+                                        name: `${twilioConfig.defaultOptions.from.name} Investment Team`,
+                                        email: appConfig.contacts.business
+                                    },
+                                    templateId: twilioConfig.templateIDs.rejectTransaction,
+                                    dynamicTemplateData: {
+                                        amount: transaction.amount,
+                                        greeting: funder.name || "Dear User"
+                                    }
+                                });
+
                         }
                     }
                 }

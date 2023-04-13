@@ -38,7 +38,7 @@ export const getTenantStats = async (): Promise<TenantStats> => {
     const transactionsSentPerTenant = await model.transactionsSentPerTenant();
     const projectsPerTenant = await model.projectsPerTenant();
     const investmentsPerTenant = await model.investmentsPerTenant();
-    const walletPerTenant = await model.walletPerTenant();
+    // const walletPerTenant = await model.walletPerTenant();
     const invitationsSentPerTenant = await model.invitationsSentPerTenant();
     const rolesPerTenant = await model.rolesPerTenant();
     const usersPerTenant = await model.usersPerTenant();
@@ -54,7 +54,7 @@ export const getTenantStats = async (): Promise<TenantStats> => {
         transactionsSentPerTenant: transactionsSentPerTenant.map(tenant => ({ tenantId: tenant.id, transactionCount: tenant.transactionsSent.length })),
         projectsPerTenant: projectsPerTenant.map(tenant => ({ tenantId: tenant.id, projectCount: tenant.projects.length })),
         investmentsPerTenant: investmentsPerTenant.map(tenant => ({ tenantId: tenant.id, investmentCount: tenant.investments.length })),
-        walletPerTenant: walletPerTenant.map(tenant => ({ tenantId: tenant.id, walletCount: tenant.wallet.length })),
+        // walletPerTenant: walletPerTenant.map(tenant => ({ tenantId: tenant.id, walletCount: tenant.wallet.length })),
         invitationsSentPerTenant: invitationsSentPerTenant.map(tenant => ({ tenantId: tenant.id, invitationCount: tenant.invitationsSent.length })),
         rolesPerTenant: rolesPerTenant.map(tenant => ({ tenantId: tenant.id, roleCount: tenant.roles.length })),
         usersPerTenant: usersPerTenant.map(tenant => ({ tenantId: tenant.id, userCount: tenant.userTenant.length })),

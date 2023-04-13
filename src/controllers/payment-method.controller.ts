@@ -4,7 +4,7 @@ import { Response } from "express";
 import { abilitiesFilter } from "../abilities/filter.ability";
 import { app as appConfig } from "../configs/app.conf";
 import { deletePaymentMethod, getAllPaymentMethods, getPaymentMethodById, registerPaymentMethod, updatePaymentMethod } from "../services/payment-method.service";
-import { getWalletByTenantId, registerWallet } from "../services/wallet.service";
+// import { getWalletByTenantId } from "../services/wallet.service";
 import { ICustomRequest } from "../types/app.type";
 import { outItemFromList } from "../utils/out-item-from-list.helper";
 import { handlePrismaError } from "../utils/prisma-error.helper";
@@ -20,13 +20,18 @@ export const listOther = async (req: ICustomRequest, res: Response) => {
         if (isNaN(Number(otherId)))
             return response[400]({ message: 'Invalid query parameter otherId.' });
 
-        const wallet = await getWalletByTenantId(Number(otherId));
+        // const wallet = await getWalletByTenantId(Number(otherId));
 
-        if (!wallet)
-            return response[404]({ message: "The selected tenant does not have a wallet!" });
+        // if (!wallet)
+        //     return response[404]({ message: "The selected tenant does not have a wallet!" });
 
+        // const paymentMethods = await getAllPaymentMethods({
+        //     where: { walletId: wallet.id, deleted: false },
+        //     page: Number(page), perPage: Number(perPage)
+        // });
+        
         const paymentMethods = await getAllPaymentMethods({
-            where: { walletId: wallet.id, deleted: false },
+            where: { owner: Number(otherId), deleted: false },
             page: Number(page), perPage: Number(perPage)
         });
 
@@ -67,13 +72,18 @@ export const list = async (req: ICustomRequest, res: Response) => {
         const { tenantId } = req.auth!;
         const { page, perPage } = req.params;
 
-        const wallet = await getWalletByTenantId(tenantId);
+        // const wallet = await getWalletByTenantId(tenantId);
 
-        if (!wallet)
-            return response[404]({ message: "You don’t have a wallet!" });
+        // if (!wallet)
+        //     return response[404]({ message: "You don’t have a wallet!" });
 
+        // const paymentMethods = await getAllPaymentMethods({
+        //     where: { walletId: wallet.id, deleted: false },
+        //     page: Number(page), perPage: Number(perPage)
+        // });
+        
         const paymentMethods = await getAllPaymentMethods({
-            where: { walletId: wallet.id, deleted: false },
+            where: { owner: tenantId, deleted: false },
             page: Number(page), perPage: Number(perPage)
         });
 
@@ -111,12 +121,15 @@ export const retrive = async (req: ICustomRequest, res: Response) => {
         const { can } = req.abilities!;
 
         if (!can("manage", "PaymentMethod", "disabled")) {
-            const wallet = await getWalletByTenantId(tenantId);
+            // const wallet = await getWalletByTenantId(tenantId);
 
-            if (!wallet)
-                return response[404]({ message: "You don’t have a wallet!" });
+            // if (!wallet)
+            //     return response[404]({ message: "You don’t have a wallet!" });
 
-            if (paymentMethod.id !== wallet.id)
+            // if (paymentMethod.walletId !== wallet.id)
+            //     return response[403]({ message: "You do not have permission to update the selected record!" })
+            
+            if (paymentMethod.owner !== tenantId)
                 return response[403]({ message: "You do not have permission to update the selected record!" })
         }
 
@@ -151,12 +164,15 @@ export const remove = async (req: ICustomRequest, res: Response) => {
         if (!paymentMethod)
             return response[404]({ message: "The record to delete not found!" });
 
-        const wallet = await getWalletByTenantId(tenantId);
+        // const wallet = await getWalletByTenantId(tenantId);
 
-        if (!wallet)
-            return response[404]({ message: "You don’t have a wallet!" });
+        // if (!wallet)
+        //     return response[404]({ message: "You don’t have a wallet!" });
 
-        if (paymentMethod.id !== wallet.id)
+        // if (paymentMethod.walletId !== wallet.id)
+        //     return response[403]({ message: "You do not have permission to delete the selected record!" })
+        
+        if (paymentMethod.owner !== tenantId)
             return response[403]({ message: "You do not have permission to delete the selected record!" })
 
         await deletePaymentMethod(Number(paymentMethodId));
@@ -192,12 +208,15 @@ export const update = async (req: ICustomRequest, res: Response) => {
             return response[404]({ message: "The record to update not found!" });
 
         if (!can("manage", "PaymentMethod", "disabled")) {
-            const wallet = await getWalletByTenantId(tenantId);
+            // const wallet = await getWalletByTenantId(tenantId);
 
-            if (!wallet)
-                return response[404]({ message: "You don’t have a wallet!" });
+            // if (!wallet)
+            //     return response[404]({ message: "You don’t have a wallet!" });
 
-            if (paymentMethod.id !== wallet.id)
+            // if (paymentMethod.walletId !== wallet.id)
+            //     return response[403]({ message: "You do not have permission to update the selected record!" })
+            
+            if (paymentMethod.owner !== tenantId)
                 return response[403]({ message: "You do not have permission to update the selected record!" })
         }
 
@@ -225,21 +244,21 @@ export const register = async (req: ICustomRequest, res: Response) => {
 
     try {
         const { userId, tenantId } = req.auth!;
-        let wallet = await getWalletByTenantId(tenantId);
-        const { can } = req.abilities!;
+        // let wallet = await getWalletByTenantId(tenantId);
 
-        if (!wallet) {
-            if (can("create", "Wallet"))
-                wallet = await registerWallet({ owner: tenantId });
-            else
-                return response[403]({ message: "You have no permission to create wallet. You must have a wallet account to add a payment method." });
-        }
+        // if (!wallet) {
+        //     if (can("create", "Wallet"))
+        //         wallet = await registerWallet({ owner: tenantId });
+        //     else
+        //         return response[403]({ message: "You have no permission to create wallet. You must have a wallet account to add a payment method." });
+        // }
 
-        const paymentMethods = await getAllPaymentMethods({ where: { walletId: wallet.id, deleted: false } });
+        // const paymentMethods = await getAllPaymentMethods({ where: { walletId: wallet.id, deleted: false } });
+        const paymentMethods = await getAllPaymentMethods({ where: { owner: tenantId, deleted: false } });
 
-        if (paymentMethods.length >= appConfig.walletMaxPaymentMethods)
+        if (paymentMethods.length >= appConfig.maxPaymentMethods)
             return response[409]({
-                message: `The max payment methods for the wallet is ${appConfig.walletMaxPaymentMethods}`
+                message: `Max payment method exceeded, you have ${appConfig.maxPaymentMethods} payment(s) method(s)`
             });
 
         let duplicateField = "";
@@ -264,7 +283,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
             })
 
         await registerPaymentMethod(req.body);
-        logger(`New paymentMethod registered successfully. Wallet:  ${wallet.id}, Owner:  ${tenantId}, creator: ${userId}`);
+        logger(`New paymentMethod registered successfully. Owner:  ${tenantId}, creator: ${userId}`);
 
         response[201]({ message: "PaymentMethod registered successfully." });
     } catch (err) {

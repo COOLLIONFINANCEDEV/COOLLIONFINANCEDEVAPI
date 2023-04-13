@@ -18,8 +18,12 @@ export const getInvestmentByParam = async (where: Prisma.InvestmentWhereInput): 
     return await model.getInvestmentByParam(where);
 }
 
-export const updateInvestment = async (id: number, project: Partial<Investment>): Promise<Investment> => {
-    return await model.updateInvestment(id, project);
+export const updateInvestment = async (unique: {id?: number, transactionId?: string}, project: Partial<Investment>): Promise<Investment | null> => {
+    if (unique.id)
+        return await model.updateInvestment(unique.id, project);
+    else if (unique.transactionId)
+        return await model.updateInvestmentByTransactionId(unique.transactionId, project);
+    else return null;
 }
 
 export const registerInvestment = async (project: Partial<Investment>): Promise<Investment> => {

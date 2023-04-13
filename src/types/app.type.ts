@@ -95,7 +95,7 @@ export interface TenantStats {
     transactionsSentPerTenant: { tenantId: number; transactionCount: number }[];
     projectsPerTenant: { tenantId: number; projectCount: number }[];
     investmentsPerTenant: { tenantId: number; investmentCount: number }[];
-    walletPerTenant: { tenantId: number; walletCount: number }[];
+    // walletPerTenant: { tenantId: number; walletCount: number }[];
     invitationsSentPerTenant: { tenantId: number; invitationCount: number }[];
     rolesPerTenant: { tenantId: number; roleCount: number }[];
     usersPerTenant: { tenantId: number; userCount: number }[];
