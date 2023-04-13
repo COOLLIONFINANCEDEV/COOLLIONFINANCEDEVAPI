@@ -535,14 +535,15 @@
             }
        ```
 
-4. Make deposit
+4. Make deposit | Step two of investment process
     - Endpoint: POST /tenant/:tenantId/transaction
     - Request Body Schema:
 
         ```javascript
             {
+                investmentResume: string,
                 paymentMethodTypeCodename: string, // MM: Mobile Money | CrC: Credit Card | CC: Crypto Currency
-                amount: number,
+                // amount: number,
                 currency: string, // USD | USDC
                 transactionId: string, // UUID V4
 
@@ -573,7 +574,7 @@
             }
         ```
 
-## Wallet APIs
+<!-- ## Wallet APIs
 
 1. Retrieve balance
 
@@ -613,7 +614,7 @@
                 "data": [],
                 "errors": []
             }
-        ```
+        ``` -->
 
 ## Project APIs
 
@@ -905,7 +906,7 @@
             }
         ```
 
-4. Make investment
+4. Make investment | Step one of investment process
     - Endpoint: POST /tenant/:tenantId/investment/
     - Request Body Schema:
 
@@ -1131,7 +1132,6 @@
                 "errors": []
             }
         ```
-
 
 ## Account Type APIs
 
