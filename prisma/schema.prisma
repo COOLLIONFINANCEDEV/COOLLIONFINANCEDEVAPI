@@ -15,7 +15,7 @@ datasource db {
 
 model Tenant {
   id           Int     @id @default(autoincrement())
-  name         String  @unique
+  name         String
   email        String?
   email2       String?
   description  String?
@@ -50,6 +50,8 @@ model Tenant {
   userTenant              UserTenant[]
   userTenantOnAttribution UserTenant[]  @relation(name: "userTenantOnAttribution")
   rooms                   Room[]
+
+  @@unique([name, email])
 }
 
 model AccountType {
