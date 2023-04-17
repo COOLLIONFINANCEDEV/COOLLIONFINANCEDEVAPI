@@ -203,9 +203,30 @@ export const login = async (req: ICustomRequest, res: Response) => {
             let user = await getUserByEmailOrPhone(anonymousUser.email);
 
             if (!user) {
+                const userRole = await getRoleByName(appConfig.baseUserRoleName);
+
+                if (userRole === null) {
+                    response[500]({
+                        message: "Can't set user permissions!",
+                    });
+                    return;
+                }
+
                 const hasher = new Hasher(hasherConfig.hashSecretKey);
                 const passwordHash = await hasher.hashPasswordBcrypt(anonymousUser.password);
                 user = await registerUser({ email: anonymousUser.email, password: passwordHash, accountActivated: true });
+
+                await attributeUserToRole(user.id, userRole.id);
+                logger("Basic access granted for the unknown user!");
+
+                const codename: TAccountTypesCodename = "ADMIN";
+                const admin = await getTenantByParam({ accountType: { codename } });
+
+                if (admin) {
+                    const room = await registerRoom({ name: admin.name, uuid: randomUUID() });
+
+                    await registerUserRoom({ userId: user.id, roomId: room.id });
+                }
             } else {
                 if (!user.accountActivated)
                     return response[401]({
@@ -344,7 +365,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
         logger("New user registered successfully!");
 
         await attributeUserToRole(newUser.id, userRole.id);
-        logger("Basic access granted for the user!")
+        logger("Basic access granted for the user!");
 
         await sendMagicLink(newUser.id, email);
         logger("Activation account email sent");
