@@ -374,9 +374,9 @@ export const register = async (req: ICustomRequest, res: Response) => {
         const admin = await getTenantByParam({ accountType: { codename } });
 
         if (admin) {
-            const room = await registerRoom({ name: admin.name, uuid: randomUUID() });
+            const room = await registerRoom({ name: admin.name, host: admin.id, uuid: randomUUID() });
 
-            await registerUserRoom({ userId: newUser.id, host: admin.id,  roomId: room.id });
+            await registerUserRoom({ userId: newUser.id,  roomId: room.id });
         }
 
         response[201]({ message: "Account created successfully! Please check the magic link in your email box to actvate your account." });

@@ -453,7 +453,7 @@ export const wallet: TEndpoint = {
         path: '/tenant/:tenantId/wallet/',
         authorizationRules: [{
             action: "read",
-            subject: 'Wallet',
+            subject: 'Room', // HACK: The goor subject is Wallet
             mainRule: true,
         }]
     },
@@ -462,7 +462,7 @@ export const wallet: TEndpoint = {
         path: '/tenant/:tenantId/wallet/',
         authorizationRules: [{
             action: "create",
-            subject: "Wallet",
+            subject: "Room",  // HACK: The goor subject is Wallet
             mainRule: true,
         }]
     }

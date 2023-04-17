@@ -370,7 +370,8 @@ model Invitation {
 model Room {
   id        Int        @id @default(autoincrement())
   name      String
-  tenant    Tenant     @relation(fields: [name], references: [name], onUpdate: Cascade)
+  host Int
+  tenant    Tenant     @relation(fields: [host], references: [id], onUpdate: Cascade)
   uuid      String     @unique
   // owner    Int?
   // tenant   Tenant?    @relation(fields: [owner], references: [id])
