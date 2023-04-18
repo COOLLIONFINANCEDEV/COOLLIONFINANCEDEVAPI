@@ -4,13 +4,6 @@ ________________________________________________________________________________
 genaral:
     review all controller to detect action that can overide the user session
     review all controller to detect action that can be save in redis for early requests
-    set COMMUNITY_MEMBER_ROLE_ID in env file
-    set MASTER_WALLET_ID in env file
-    info sur les tenant, utlisateur
-    remove wallet system
-
-authentication:
-    register (create dynamic template id on sendgrid then update the templateId that in use)
 
 user:
     confirm updating
@@ -18,15 +11,12 @@ user:
 
 transaction:
     make deposit on wallet (crypto -USDC-)
-    review balance updated method
-    notify the user when the transaction status changes
 
 invitation:
     warn the user when they receive a new invitation (socket)
     warn invitation sender when the invitation is accepted (socket)
 
 chat:
-    read chat messages (socket)
     new message warning (socket)
 
 ______________________________________________________________________________________________
@@ -85,6 +75,7 @@ transaction:
     read -> retrive
     read -> list
     make deposit on wallet (fiat -USD-)
+    notify the user when the transaction status changes
 
 invitation:
     invite user to tenant (registered user or non-registered user)
