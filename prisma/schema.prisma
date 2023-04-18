@@ -198,16 +198,25 @@ model UsersPermissions {
 }
 
 model Project {
-  id          Int          @id @default(autoincrement())
-  title       String
-  tenant      Tenant       @relation(fields: [owner], references: [id])
-  owner       Int
-  investments Investment[]
-  disabled    Boolean      @default(true)
-  treat       Boolean      @default(false)
-  deleted     Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?    @updatedAt
+  id                     Int          @id @default(autoincrement())
+  projectTitle           String
+  impactImage            String       @db.Text()
+  carouselImage          String?      @db.Text()
+  teaserTitle            String
+  amountRequested        Float
+  projectCountry         String
+  story                  String?
+  loanApplicationSpecial String
+  loanInformation        String?
+  docs                   String       @db.Text()
+  tenant                 Tenant       @relation(fields: [owner], references: [id])
+  owner                  Int
+  investments            Investment[]
+  disabled               Boolean      @default(true)
+  treat                  Boolean      @default(false)
+  deleted                Boolean      @default(false)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime?    @updatedAt
 }
 
 model Investment {
@@ -370,7 +379,7 @@ model Invitation {
 model Room {
   id        Int        @id @default(autoincrement())
   name      String
-  host Int
+  host      Int
   tenant    Tenant     @relation(fields: [host], references: [id], onUpdate: Cascade)
   uuid      String     @unique
   // owner    Int?
