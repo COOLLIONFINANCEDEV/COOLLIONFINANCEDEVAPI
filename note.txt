@@ -17,15 +17,12 @@ user:
 
 transaction:
     make deposit on wallet (crypto -USDC-)
-    review balance updated method
-    notify the user when the transaction status changes
 
 invitation:
     warn the user when they receive a new invitation (socket)
     warn invitation sender when the invitation is accepted (socket)
 
 chat:
-    read chat messages (socket)
     new message warning (socket)
 
 ______________________________________________________________________________________________
@@ -84,6 +81,7 @@ transaction:
     read -> retrive
     read -> list
     make deposit on wallet (fiat -USD-)
+    notify the user when the transaction status changes
 
 invitation:
     invite user to tenant (registered user or non-registered user)

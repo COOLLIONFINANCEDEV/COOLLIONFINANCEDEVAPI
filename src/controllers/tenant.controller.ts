@@ -183,7 +183,7 @@ export const register = async (req: ICustomRequest, res: Response) => {
 
         logger("User set as tenant manager");
 
-        await registerRoom({ name: newTenant.name, uuid: randomUUID() });
+        await registerRoom({ name: newTenant.name, host: newTenant.id, uuid: randomUUID() });
 
         response[201]({ message: "Tenant registered successfully." });
     } catch (err) {

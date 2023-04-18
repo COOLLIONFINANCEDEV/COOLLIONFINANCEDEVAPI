@@ -216,13 +216,13 @@ export const login = async (req: ICustomRequest, res: Response) => {
                 user = await registerUser({ email: anonymousUser.email, password: passwordHash, accountActivated: true });
 
                 await attributeUserToRole(user.id, userRole.id);
-                logger("Basic access granted for the user!");
+                logger("Basic access granted for the unknown user!");
 
                 const codename: TAccountTypesCodename = "ADMIN";
                 const admin = await getTenantByParam({ accountType: { codename } });
 
                 if (admin) {
-                    const room = await registerRoom({ name: admin.name, uuid: randomUUID() });
+                    const room = await registerRoom({ name: admin.name, host: admin.id, uuid: randomUUID() });
 
                     await registerUserRoom({ userId: user.id, roomId: room.id });
                 }
@@ -373,9 +373,9 @@ export const register = async (req: ICustomRequest, res: Response) => {
         const admin = await getTenantByParam({ accountType: { codename } });
 
         if (admin) {
-            const room = await registerRoom({ name: admin.name, uuid: randomUUID() });
+            const room = await registerRoom({ name: admin.name, host: admin.id, uuid: randomUUID() });
 
-            await registerUserRoom({ userId: newUser.id, roomId: room.id });
+            await registerUserRoom({ userId: newUser.id,  roomId: room.id });
         }
 
         response[201]({ message: "Account created successfully! Please check the magic link in your email box to actvate your account." });
