@@ -4,7 +4,7 @@ import * as model from '../models/project.model';
 
 const pagination = appConfig.pagination;
 
-export const getAllProjects = async ({ where, page, perPage }: { where?: Prisma.ProjectWhereInput; page?: number; perPage?: number; } = {}): Promise<Project[]> => {
+export const getAllProjects = async ({ where, page, perPage }: { where?: Prisma.ProjectWhereInput; page?: number; perPage?: number; } = {}) => {
     page = page || pagination.page;
     perPage = perPage || pagination.perPage;
     return await model.getAllProjects({ where, page, perPage });

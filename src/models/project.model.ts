@@ -2,11 +2,22 @@ import { Prisma, PrismaClient, Project } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getAllProjects = async ({ where, page, perPage }: { where?: Prisma.ProjectWhereInput; page?: number; perPage?: number; } = {}): Promise<Project[]> => {
+export const getAllProjects = async ({ where, page, perPage }: { where?: Prisma.ProjectWhereInput; page?: number; perPage?: number; } = {}) => {
     const paginate = page && perPage ? { skip: (page - 1) * perPage, take: perPage } : undefined;
 
     return await prisma.project.findMany({
         where,
+        include: {
+            tenant: {
+                select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    profilePhoto: true,
+                    businessSector: true
+                }
+            }
+        },
         ...paginate
     });
 }
