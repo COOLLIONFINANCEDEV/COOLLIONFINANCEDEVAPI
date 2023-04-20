@@ -7,7 +7,18 @@ export const getAllProjects = async ({ where, page, perPage }: { where?: Prisma.
 
     return await prisma.project.findMany({
         where,
-        include: {
+        select: {
+            id: true,
+            projectTitle: true,
+            projectCountry: true,
+            impactImage: true,
+            teaserTitle: true,
+            amountRequested: true,
+            story: true,
+            loanApplicationSpecial: true,
+            loanInformation: true,
+            owner: true,
+            treat: true,
             tenant: {
                 select: {
                     id: true,
