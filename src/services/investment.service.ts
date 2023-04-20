@@ -30,21 +30,21 @@ export const registerInvestment = async (project: Partial<Investment>): Promise<
     return await model.createInvestment(project as Required<Investment>);
 }
 
-
 // Function to get total number of investments
 export const getTotalInvestments = async () => await model.getTotalInvestments();
 
 // Function to get the number of investemnt for one tenant
-export const getTotalInvestmentsPerTenant = async (tenantId: number) => await model.getTotalInvestments({ funder: tenantId });
+export const getTotalInvestmentsPerTenant = async (tenantId: number) => await model.getTotalInvestments({ funder: tenantId, done: true });
 
 // Function to get the total amount of investemnt for one tenant
 export const getInvestmentsAmountPerProjectForOneTenant = async (tenantId: number) =>
     await model.getInvestmentsAmountPerProjectForOneTenant(tenantId);
 
-export const getTotalInvestmentPerProject = async (projectId: number) => await model.getTotalInvestments({ projectId });
+export const getTotalInvestmentPerProject = async (projectId: number) => await model.getTotalInvestments({ projectId, done: true });
 
 export const getTotalInvestmentAmountPerTenant = async (where: Prisma.InvestmentWhereInput) =>
     model.getTotalInvestmentAmountPerTenant();
 
 export const getTotalInvestmentDueCollectedPerTenant = async (where: Prisma.InvestmentWhereInput) =>
     model.getTotalInvestmentDueCollectedPerTenant();
+
