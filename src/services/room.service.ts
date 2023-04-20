@@ -33,3 +33,12 @@ export const updateRoom = async (id: number, room: Partial<Room>): Promise<Room>
 export const registerRoom = async (room: Partial<Room>): Promise<Room> => {
     return await model.createRoom(room as Required<Room>);
 }
+
+// Function to get total number of room
+export const getTotalRooms = async () => await model.getTotalRooms();
+
+// Function to get the number of room for one tenant
+export const getTotalRoomPerTenant = async (tenantId: number) => await model.getTotalRooms({ host: tenantId });
+
+// Function to get the number of room for one tenant
+export const getTotalRoomPerUser = async (userId: number) => await model.getTotalRoomPerUser(userId);

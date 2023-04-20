@@ -43,3 +43,7 @@ export const updateTransaction = async (id: number, transaction: Partial<Transac
         data: transaction,
     });
 }
+
+// Function to get total number of transaction
+export const getTotalTransactions = async (where?: Prisma.TransactionWhereInput) => await prisma.transaction.count({ where });
+

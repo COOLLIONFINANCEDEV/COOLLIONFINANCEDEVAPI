@@ -421,14 +421,28 @@ export const project: TEndpoint = {
         method: 'put',
         path: '/tenant/:tenantId/project/:projectId',
         schema: Joi.object({
-            title: Joi.string().lowercase().trim().min(3).max(95),
+            projectTitle: Joi.string().lowercase().trim().min(3).max(95).label('Project Title'),
+            impactImage: Joi.string().label('One Powerful, Single Image Showing Your Impact or Project'),
+            carouselImage: Joi.string().label('Carousel Image'),
+            teaserTitle: Joi.string().min(5).label('Teaser Title'),
+            amountRequested: Joi.number().positive().label('Amount Requested'),
+            projectCountry: Joi.string().label('Project Country'),
+            story: Joi.string().max(500).label('Tell Me Your Story'),
+            loanApplicationSpecial: Joi.string().min(200).label('Why Your Loan Application is Special'),
+            loanInformation: Joi.string().label('More Information about That Loan'),
+            docs: Joi.string().trim(),
             disabled: Joi.boolean(),
             treat: Joi.boolean(),
         }),
         authorizationRules: [{
             action: "update",
             subject: "Project",
-            fields: ["title", "disabled", "treat"],
+            fields: [
+                "projectTitle", "impactImage", "carouselImage",
+                "teaserTitle", "amountRequested", "projectCountry",
+                "story", "loanApplicationSpecial", "loanInformation",
+                "docs", "mainRule", "disabled", "treat"
+            ],
             mainRule: true
         }]
     },
@@ -436,12 +450,26 @@ export const project: TEndpoint = {
         method: 'post',
         path: '/tenant/:tenantId/project/',
         schema: Joi.object({
-            title: Joi.string().lowercase().trim().min(3).max(95).required(),
+            projectTitle: Joi.string().lowercase().trim().min(3).max(95).required().label('Project Title'), // Project title
+            impactImage: Joi.string().required().label('One Powerful, Single Image Showing Your Impact or Project'), // Impact image (file)
+            carouselImage: Joi.string().label('Carousel Image'), // Carousel images (files)
+            teaserTitle: Joi.string().min(5).required().label('Teaser Title'), // Catchy project title
+            amountRequested: Joi.number().positive().required().label('Amount Requested'), // Project budget
+            projectCountry: Joi.string().required().label('Project Country'), // The country where the project will be carried out
+            story: Joi.string().min(200).max(1500).label('Tell Me Your Story'), // Project story
+            loanApplicationSpecial: Joi.string().min(200).max(1000).required().label('Why Your Loan Application is Special'), // Why your loan application is special
+            loanInformation: Joi.string().min(200).max(1000).label('More Information about That Loan'), // Additional loan application information
+            docs: Joi.string().trim().required(), // All necessary documents
         }),
         authorizationRules: [{
             action: "create",
             subject: "Project",
-            fields: ["title"],
+            fields: [
+                "projectTitle", "impactImage", "carouselImage",
+                "teaserTitle", "amountRequested", "projectCountry",
+                "story", "loanApplicationSpecial", "loanInformation",
+                "docs", "mainRule",
+            ],
             mainRule: true,
         }]
     }

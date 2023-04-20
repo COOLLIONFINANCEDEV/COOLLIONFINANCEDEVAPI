@@ -19,7 +19,7 @@ model Tenant {
   email        String?
   email2       String?
   description  String?
-  profilePhoto String? @db.Text()
+  profilePhoto String? @db.LongText()
 
   // lender
   address                 String?
@@ -199,16 +199,25 @@ model UsersPermissions {
 }
 
 model Project {
-  id          Int          @id @default(autoincrement())
-  title       String
-  tenant      Tenant       @relation(fields: [owner], references: [id])
-  owner       Int
-  investments Investment[]
-  disabled    Boolean      @default(true)
-  treat       Boolean      @default(false)
-  deleted     Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?    @updatedAt
+  id                     Int          @id @default(autoincrement())
+  projectTitle           String
+  impactImage            String       @db.LongText()
+  carouselImage          String?      @db.LongText()
+  teaserTitle            String
+  amountRequested        Float
+  projectCountry         String
+  story                  String?      @db.Text()
+  loanApplicationSpecial String @db.Text()
+  loanInformation        String? @db.Text()
+  docs                   String       @db.LongText()
+  tenant                 Tenant       @relation(fields: [owner], references: [id])
+  owner                  Int
+  investments            Investment[]
+  disabled               Boolean      @default(true)
+  treat                  Boolean      @default(false)
+  deleted                Boolean      @default(false)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime?    @updatedAt
 }
 
 model Investment {
@@ -377,7 +386,7 @@ model Invitation {
 model Room {
   id        Int        @id @default(autoincrement())
   name      String
-  host Int
+  host      Int
   tenant    Tenant     @relation(fields: [host], references: [id], onUpdate: Cascade)
   uuid      String     @unique
   // owner    Int?
@@ -396,6 +405,8 @@ model UserRoom {
   room      Room      @relation(fields: [roomId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+
+  @@unique([userId, roomId])
 }
 
 model Message {
@@ -412,3 +423,5 @@ model Message {
   updatedAt DateTime? @updatedAt
   messages  Message[] @relation(name: "replyTo")
 }
+
+// TODO: view message notification entity

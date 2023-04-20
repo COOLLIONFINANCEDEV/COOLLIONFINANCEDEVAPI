@@ -31,3 +31,19 @@ export const updateUser = async (id: number, user: Partial<User>): Promise<User>
         data: user
     });
 }
+
+// Function to get total number of user
+export const getTotalUsers = async (where?: Prisma.UserWhereInput) => await prisma.user.count({ where });
+
+// Function to get the number of tenant  
+export const getUserNumberforOneUser = async (userId: number) => {
+    const userTenants = await prisma.userTenant.groupBy({
+        by: ['tenantId'],
+        where: { userId }
+    });
+
+    return userTenants.length;
+};
+
+// Function to get the number of room for one tenant
+export const getTotalRoomPerUser = async (userId: number) => await prisma.userRoom.count({ where: { userId } });

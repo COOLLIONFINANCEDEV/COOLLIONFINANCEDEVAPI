@@ -36,3 +36,10 @@ export const deleteUser = async (id: number): Promise<User> => {
 export const registerUser = async (user: Partial<User>): Promise<User> => {
     return await model.createUser(user as Required<User>);
 }
+
+
+// Function to get total number of user
+export const getTotalUsers = async () => await model.getTotalUsers();
+
+// Function to get the number of tenant  
+export const getUserNumberforOneUser = async (userId: number) => await model.getUserNumberforOneUser(userId);

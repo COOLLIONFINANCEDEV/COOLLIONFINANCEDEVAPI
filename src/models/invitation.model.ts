@@ -32,3 +32,8 @@ export const updateInvitation = async (id: number, invitation: Partial<Invitatio
     });
 }
 
+
+// Function to get total number of invitation
+export const getTotalInvitations = async (where?: Prisma.InvitationWhereInput) => await prisma.invitation.count({ where });
+
+

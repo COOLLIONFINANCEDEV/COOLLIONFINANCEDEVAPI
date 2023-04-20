@@ -183,21 +183,21 @@ export const register = async (req: ICustomRequest, res: Response) => {
     const logger = debug('coollionfi:project:register');
 
     try {
-        const { title } = req.body;
+        const { projectTitle } = req.body;
         const { userId, tenantId } = req.auth!;
 
-        const project = await getProjectByParam({ title, owner: tenantId, deleted: false });
+        const project = await getProjectByParam({ projectTitle, owner: tenantId, deleted: false });
 
         if (project)
             return response[400]({
                 message: "Duplicate record",
                 errors: [{
-                    field: "title",
-                    message: "You already have a project with that title.",
+                    field: "projectTitle",
+                    message: "You already have a project with that title: " + projectTitle,
                 }]
             });
 
-        await registerProject({ title, owner: tenantId });
+        await registerProject({ ...req.body, owner: tenantId });
         logger(`New project registered successfully. Owner:  ${tenantId}, creator: ${userId}`);
 
         response[201]({ message: "Project registered successfully." });

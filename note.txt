@@ -24,6 +24,7 @@ invitation:
 
 chat:
     new message warning (socket)
+    set message viewed by user
 
 ______________________________________________________________________________________________
 [DONE]

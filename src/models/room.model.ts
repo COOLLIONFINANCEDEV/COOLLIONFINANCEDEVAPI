@@ -38,3 +38,9 @@ export const deleteRoom = async (id: number): Promise<Room> => {
     });
 }
 
+// Function to get total number of room
+export const getTotalRooms = async (where?: Prisma.RoomWhereInput) => await prisma.room.count({ where });
+
+// Function to get the number of room for one tenant
+export const getTotalRoomPerUser = async (userId: number) => await prisma.userRoom.count({ where: { userId } });
+
