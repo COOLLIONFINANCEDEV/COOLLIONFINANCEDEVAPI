@@ -19,6 +19,7 @@ export const getAllProjects = async ({ where, page, perPage }: { where?: Prisma.
             loanInformation: true,
             owner: true,
             treat: true,
+            carouselImage: true,
             tenant: {
                 select: {
                     id: true,
@@ -53,4 +54,10 @@ export const updateProject = async (id: number, project: Partial<Project>): Prom
         data: project
     });
 }
+
+// Function to get total number of projects
+export const getTotalProjects = async (where?: Prisma.ProjectWhereInput) => await prisma.project.count({ where });
+
+// Function to get the number of project create by one tenant
+export const getTotalProjectsPerTenant = async (tenantId: number) => await getTotalProjects({ owner: tenantId, deleted: false });
 
