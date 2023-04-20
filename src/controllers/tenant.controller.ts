@@ -171,6 +171,8 @@ export const register = async (req: ICustomRequest, res: Response) => {
 
         const newTenant = await registerTenant(req.body);
         logger("New tenant registered successfully by user" + userId);
+        
+        response[201]({ message: "Tenant registered successfully." });
 
         for (const accountTypeRole of accountTypesRoles)
             await attributeUserToTenant({
@@ -185,7 +187,6 @@ export const register = async (req: ICustomRequest, res: Response) => {
 
         await registerRoom({ name: newTenant.name, host: newTenant.id, uuid: randomUUID() });
 
-        response[201]({ message: "Tenant registered successfully." });
     } catch (err) {
         const errors = handlePrismaError(err, logger);
 
