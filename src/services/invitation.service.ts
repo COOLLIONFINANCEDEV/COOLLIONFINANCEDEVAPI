@@ -29,3 +29,10 @@ export const confirmInvitation = async (id: number, confirmation: boolean): Prom
 export const registerInvitation = async (invitation: Partial<Invitation>): Promise<Invitation> => {
     return await model.createInvitation(invitation as Required<Invitation>);
 }
+
+export const getTotalInvitations = async () => model.getTotalInvitations();
+
+// Function to get the number of invitation sent for one tenant
+export const getTotalInvitationsSentByOneTenant = async (tenantId: number) => await model.getTotalInvitations({ sender: tenantId });
+
+

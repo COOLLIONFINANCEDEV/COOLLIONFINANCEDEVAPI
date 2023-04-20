@@ -29,3 +29,9 @@ export const updateProject = async (id: number, project: Partial<Project>): Prom
 export const registerProject = async (project: Partial<Project>): Promise<Project> => {
     return await model.createProject(project as Required<Project>);
 }
+
+// Function to get total number of projects
+export const getTotalProjects = async () => await model.getTotalProjects({ deleted: false });
+
+// Function to get the number of project create by one tenant
+export const getTotalProjectsPerTenant = async (tenantId: number) => await model.getTotalProjects({ owner: tenantId, deleted: false });

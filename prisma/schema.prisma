@@ -19,7 +19,7 @@ model Tenant {
   email        String?
   email2       String?
   description  String?
-  profilePhoto String? @db.Text()
+  profilePhoto String? @db.LongText()
 
   // lender
   address                 String?
@@ -200,15 +200,15 @@ model UsersPermissions {
 model Project {
   id                     Int          @id @default(autoincrement())
   projectTitle           String
-  impactImage            String       @db.Text()
-  carouselImage          String?      @db.Text()
+  impactImage            String       @db.LongText()
+  carouselImage          String?      @db.LongText()
   teaserTitle            String
   amountRequested        Float
   projectCountry         String
-  story                  String?
-  loanApplicationSpecial String
-  loanInformation        String?
-  docs                   String       @db.Text()
+  story                  String?      @db.Text()
+  loanApplicationSpecial String @db.Text()
+  loanInformation        String? @db.Text()
+  docs                   String       @db.LongText()
   tenant                 Tenant       @relation(fields: [owner], references: [id])
   owner                  Int
   investments            Investment[]
@@ -398,6 +398,8 @@ model UserRoom {
   room      Room      @relation(fields: [roomId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+
+  @@unique([userId, roomId])
 }
 
 model Message {
@@ -414,3 +416,5 @@ model Message {
   updatedAt DateTime? @updatedAt
   messages  Message[] @relation(name: "replyTo")
 }
+
+// TODO: view message notification entity

@@ -29,3 +29,10 @@ export const registerTransaction = async (transaction: Partial<Transaction>): Pr
 export const updateTransaction = async (id: number, transaction: Partial<Transaction>): Promise<Transaction> => {
     return await model.updateTransaction(id, transaction);
 }
+
+// Function to get total number of transaction
+export const getTotalTransactions = async () => await model.getTotalTransactions();
+
+// Function to get the number of transaction sent for one tenant
+export const getTotalTransactionsSentByOneTenant = async (tenantId: number) => await model.getTotalTransactions({ sender: tenantId });
+
