@@ -456,9 +456,9 @@ export const project: TEndpoint = {
             teaserTitle: Joi.string().min(5).required().label('Teaser Title'), // Catchy project title
             amountRequested: Joi.number().positive().required().label('Amount Requested'), // Project budget
             projectCountry: Joi.string().required().label('Project Country'), // The country where the project will be carried out
-            story: Joi.string().max(500).label('Tell Me Your Story'), // Project story
-            loanApplicationSpecial: Joi.string().min(200).required().label('Why Your Loan Application is Special'), // Why your loan application is special
-            loanInformation: Joi.string().label('More Information about That Loan'), // Additional loan application information
+            story: Joi.string().min(200).max(1500).label('Tell Me Your Story'), // Project story
+            loanApplicationSpecial: Joi.string().min(200).max(1000).required().label('Why Your Loan Application is Special'), // Why your loan application is special
+            loanInformation: Joi.string().min(200).max(1000).label('More Information about That Loan'), // Additional loan application information
             docs: Joi.string().trim().required(), // All necessary documents
         }),
         authorizationRules: [{
