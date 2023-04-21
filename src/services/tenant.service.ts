@@ -43,4 +43,4 @@ export const getTotalTenants = async () => await model.getTotalTenants();
 
 // const getTotalTenantsPerAccountType = async () => await model.getTotalTenantsPerAccountType();
 
-export const getUserCountByOneTenant = async (tenantId: number) => await model.getUserCountByOneTenant(tenantId);
+export const getUserCountsPerTenant = async (tenantId: number) => await model.getUserCountsPerTenant(tenantId);

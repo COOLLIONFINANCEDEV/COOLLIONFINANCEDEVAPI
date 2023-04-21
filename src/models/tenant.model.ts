@@ -38,7 +38,7 @@ export const updateTenant = async (id: number, tenant: Partial<Tenant>): Promise
 export const getTotalTenants = async (where?: Prisma.TenantWhereInput) => await prisma.tenant.count({ where });
 
 // Function to get the number of user for one tenant
-export const getUserCountByOneTenant = async (tenantId: number) => {
+export const getUserCountsPerTenant = async (tenantId: number) => {
     const userTenants = await prisma.userTenant.groupBy({
         by: ['userId'],
         where: { tenantId }

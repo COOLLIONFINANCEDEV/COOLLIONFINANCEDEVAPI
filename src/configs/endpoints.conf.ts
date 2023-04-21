@@ -2,7 +2,6 @@ import Joi from '@hapi/joi';
 import { TEndpoint } from '../types/app.type';
 import { isPhoneNumber } from '../utils/validators.helper';
 
-
 export const user: TEndpoint = {
     list: {
         method: 'get',
@@ -62,10 +61,6 @@ export const user: TEndpoint = {
 };
 
 export const tenant: TEndpoint = {
-    stats: {
-        method: 'get',
-        path: 'stats',
-    },
     list: {
         method: 'get',
         path: '/tenant/:tenantId/list/:page?/:perPage?',
@@ -867,3 +862,11 @@ export const investmentTerm: TEndpoint = {
         }]
     }
 };
+
+export const statistics: TEndpoint = {
+    statistics: {
+        method: 'get',
+        path: '/tenant/:tenantId/statistics/:specify',
+    },
+};
+

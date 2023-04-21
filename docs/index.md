@@ -1231,3 +1231,30 @@
                 "errors": []
             }
         ```
+
+## Statistics APIs
+
+1. Get all
+   **NB:** use specify to get the specific statistics about an entity in the database like tenant, project, investment, transaction or  leave blank to get all
+
+   - Endpoint: GET /tenant/:tenantId/statistics/:specify
+   - Response:
+
+        ```json
+            {
+                "success": true,
+                "message": "Ok",
+                "data": [{
+                    "tenantCounts": 10,
+                    "tenantUserCounts": 0,
+                    "investementCounts": 0,
+                    "totalAmountInvest": 0,
+                    "totalDueAmountInvest": 0,
+                    "totalAmountDrawn": 0,
+                    "projectsCounts": 2,
+                    "projectsCountsPerTenant": 0,
+                    "transactionsCounts": 0
+                }],
+                "errors": []
+            }
+       ```

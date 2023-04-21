@@ -62,11 +62,12 @@ export const getInvestmentsAmountPerProjectForOneTenant = async (tenantId: numbe
 export const getTotalInvestmentPerProject = async (projectId: number) => await getTotalInvestments({ projectId });
 
 
-export const getTotalInvestmentAmountPerTenant = async () => {
+export const getTotalInvestmentAmountPerTenant = async (tenantId?: number) => {
     return await prisma.investment.groupBy({
         by: ["funder"],
         where: {
-            done: true
+            done: true,
+            funder: tenantId
         },
         _sum: {
             amount: true,
@@ -75,12 +76,13 @@ export const getTotalInvestmentAmountPerTenant = async () => {
     });
 };
 
-export const getTotalInvestmentDueCollectedPerTenant = async () => {
+export const getTotalInvestmentDueCollectedPerTenant = async (tenantId?: number) => {
     return await prisma.investment.groupBy({
         by: ["funder"],
         where: {
             gainCollected: true,
-            done: true
+            done: true,
+            funder: tenantId
         },
         _sum: {
             dueAmount: true,

@@ -3,7 +3,7 @@ import { Response } from "express";
 import { abilitiesFilter } from "../abilities/filter.ability";
 import { getAccountTypeById } from "../models/account-type.model";
 import { getAllAccountTypeRole } from "../services/account-type-role.service";
-import { getAllTenants, getTenantById, registerTenant, updateTenant } from "../services/tenant.service";
+import { getAllTenants, getTenantById, getTotalTenants, getUserCountsPerTenant, registerTenant, updateTenant } from "../services/tenant.service";
 import { attributeUserToTenant } from "../services/users-tenants.service";
 import { ICustomRequest } from "../types/app.type";
 import { outItemFromList } from "../utils/out-item-from-list.helper";
@@ -12,6 +12,7 @@ import CustomResponse from "../utils/response.helper";
 import { registerRoom } from "../services/room.service";
 import { randomUUID } from "crypto";
 import { registerUserRoom } from "../services/user-room.service";
+
 
 export const list = async (req: ICustomRequest, res: Response) => {
     const response = new CustomResponse(res);
@@ -201,5 +202,4 @@ export const register = async (req: ICustomRequest, res: Response) => {
         }
     }
 };
-
 

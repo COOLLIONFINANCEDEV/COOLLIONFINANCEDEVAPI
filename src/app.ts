@@ -16,6 +16,7 @@ import tenantRouter from './routes/tenant.route';
 import transactionRouter from './routes/transaction.route';
 import userTenantRouter from './routes/user-tenant.route';
 import userRouter from './routes/user.route';
+import statisticsRouter from './routes/statistics.route';
 // import walletRouter from './routes/wallet.route';
 import { errorHandler } from './utils/error.middleware';
 import { getClientInfo } from './utils/get-client-info.middleware';
@@ -47,6 +48,7 @@ app.use(baseRoute, userTenantRouter);
 app.use(baseRoute, accountTypesRouter);
 app.use(baseRoute, chatRouter);
 app.use(baseRoute, investmentTermRouter);
+app.use(baseRoute, statisticsRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);

@@ -42,9 +42,9 @@ export const getInvestmentsAmountPerProjectForOneTenant = async (tenantId: numbe
 
 export const getTotalInvestmentPerProject = async (projectId: number) => await model.getTotalInvestments({ projectId, done: true });
 
-export const getTotalInvestmentAmountPerTenant = async (where: Prisma.InvestmentWhereInput) =>
-    model.getTotalInvestmentAmountPerTenant();
+export const getTotalInvestmentAmountPerTenant = async (tenantId?: number) =>
+    model.getTotalInvestmentAmountPerTenant(tenantId);
 
-export const getTotalInvestmentDueCollectedPerTenant = async (where: Prisma.InvestmentWhereInput) =>
-    model.getTotalInvestmentDueCollectedPerTenant();
+export const getTotalInvestmentDueCollectedPerTenant = async (tenantId?: number) =>
+    model.getTotalInvestmentDueCollectedPerTenant(tenantId);
 
