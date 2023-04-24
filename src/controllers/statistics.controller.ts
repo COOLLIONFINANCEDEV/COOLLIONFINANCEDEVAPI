@@ -23,7 +23,6 @@ export const statistics = async (req: ICustomRequest, res: Response) => {
         let totalDueAmountInvest: number | null = 0;
         let totalAmountDrawn: number | null = 0;
         let projectsCounts: number | null = 0;
-        let projectsCountsPerTenant: number | null = 0;
         let transactionsCounts: number | null = 0;
 
         if (!specify || specify === "tenant") {
@@ -76,7 +75,6 @@ export const statistics = async (req: ICustomRequest, res: Response) => {
                 totalAmountDrawn,
 
                 projectsCounts,
-                projectsCountsPerTenant,
 
                 transactionsCounts,
             }]

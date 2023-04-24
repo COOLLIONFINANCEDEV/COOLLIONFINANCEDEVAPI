@@ -126,7 +126,7 @@ export const makeDeposit = async (req: ICustomRequest, res: Response) => {
         const { investmentResume } = req.body;
         const resume = jwt.verify(investmentResume, appConfig.jwtSecret);
 
-        if (typeof resume === "string")
+        if (typeof resume === "string") 
             return response[401]({ message: constants.INVALID_TOKEN });
 
         delete req.body["investmentResume"];

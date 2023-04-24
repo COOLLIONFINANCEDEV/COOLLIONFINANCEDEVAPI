@@ -867,6 +867,7 @@ export const statistics: TEndpoint = {
     statistics: {
         method: 'get',
         path: '/tenant/:tenantId/statistics/:specify?',
+        authorizationRules: []
     },
 };
 

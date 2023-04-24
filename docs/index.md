@@ -924,7 +924,7 @@
             {
                 "success":true,
                 "message": "Investment registered successfully.",
-                "data": [],
+                "data": [{ "investmentResume": "jwt investmentToken" }],
                 "errors": []
             }
         ```
