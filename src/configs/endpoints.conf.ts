@@ -866,7 +866,7 @@ export const investmentTerm: TEndpoint = {
 export const statistics: TEndpoint = {
     statistics: {
         method: 'get',
-        path: '/tenant/:tenantId/statistics/:specify',
+        path: '/tenant/:tenantId/statistics/:specify?',
     },
 };
 
