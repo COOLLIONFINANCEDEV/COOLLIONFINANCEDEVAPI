@@ -1237,7 +1237,7 @@
 1. Get all
    **NB:** use specify to get the specific statistics about an entity in the database like tenant, project, investment, transaction or  leave blank to get all
 
-   - Endpoint: GET /tenant/:tenantId/statistics/:specify
+   - Endpoint: GET /tenant/:tenantId/statistics/:specify?
    - Response:
 
         ```json
