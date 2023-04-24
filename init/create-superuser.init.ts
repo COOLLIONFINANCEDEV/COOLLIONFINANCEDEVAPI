@@ -109,14 +109,7 @@ rl.question(email.question, (answer) => {
                 exit();
             }
 
-            const permissionsRole = await prismaClient.permissionRole.findMany({ where: { roleId: baseUserRole.id } });
-
-            if (permissionsRole.length === 0) {
-                console.log(chalk`{bold.red Base user role have no permissions!}`);
-                exit();
-            }
-
-            const perm = await prismaClient.permission.findFirst({ where: { codename: "create__Tenant__withAccountTypeADMIN" } })
+            const perm = await prismaClient.permission.findFirst({ where: { codename: "create__Tenant__withAccountTypeADMIN" } });
 
 
             if (!perm) {
@@ -134,10 +127,8 @@ rl.question(email.question, (answer) => {
                 });
 
             await prismaClient.usersPermissions.create({ data: { permissionId: perm.id, userId: user.id } });
-
-            for (const { permissionId } of permissionsRole)
-                await prismaClient.usersPermissions.create({ data: { permissionId: permissionId, userId: user.id } });
-
+            await prismaClient.userRole.create({ data: { roleId: baseUserRole.id, userId: user.id } });
+            
             processLog();
             processLog(chalk`{green.bold Superuser created successfully}`, 2);
         });
