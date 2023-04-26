@@ -204,7 +204,7 @@ export const syncCinetpayPayment = async (req: ICustomRequest, res: Response) =>
                     if (status !== transaction.status) {
                         updateTransaction(transaction.id, {
                             status: status,
-                            operator: body.payment_method,
+                            operator: data.payment_method,
                             customerPhoneNumber: `+${body.cpm_phone_prefixe}${body.cel_phone_num}`,
                         });
 
