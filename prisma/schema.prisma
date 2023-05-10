@@ -53,6 +53,7 @@ model Tenant {
   PaymentMethod           PaymentMethod[]
 
   @@unique([name, email])
+  @@map("tenant")
 }
 
 model AccountType {
@@ -66,6 +67,8 @@ model AccountType {
   accountsTypesPermissions AccountTypePermission[]
   createdAt                DateTime                @default(now())
   updatedAt                DateTime?               @updatedAt
+
+  @@map("accounttype")
 }
 
 model User {
@@ -88,6 +91,8 @@ model User {
   userRoom         UserRoom[]
   messages         Message[]
   UserRole         UserRole[]
+
+  @@map("user")
 }
 
 model UserTenant {
@@ -105,6 +110,7 @@ model UserTenant {
   updatedAt    DateTime? @updatedAt
 
   @@unique([userId, tenantId, roleId])
+  @@map("usertenant")
 }
 
 model Role {
@@ -124,6 +130,7 @@ model Role {
   UserRole           UserRole[]
 
   @@unique([name, owner])
+  @@map("role")
 }
 
 model Permission {
@@ -136,6 +143,8 @@ model Permission {
   createdAt                DateTime                @default(now())
   updatedAt                DateTime?               @updatedAt
   usersPermissions         UsersPermissions[]
+
+  @@map("permission")
 }
 
 model PermissionRole {
@@ -148,6 +157,7 @@ model PermissionRole {
   updatedAt    DateTime?  @updatedAt
 
   @@unique([permissionId, roleId])
+  @@map("permissionrole")
 }
 
 model AccountTypeRole {
@@ -160,6 +170,7 @@ model AccountTypeRole {
   updatedAt     DateTime?   @updatedAt
 
   @@unique([accountTypeId, roleId])
+  @@map("accounttyperole")
 }
 
 model AccountTypePermission {
@@ -172,6 +183,7 @@ model AccountTypePermission {
   updatedAt     DateTime?   @updatedAt
 
   @@unique([accountTypeId, permissionId])
+  @@map("accounttypepermission")
 }
 
 model UserRole {
@@ -184,6 +196,7 @@ model UserRole {
   updatedAt DateTime? @updatedAt
 
   @@unique([userId, roleId])
+  @@map("userrole")
 }
 
 model UsersPermissions {
@@ -196,6 +209,7 @@ model UsersPermissions {
   updatedAt    DateTime?  @updatedAt
 
   @@unique([userId, permissionId])
+  @@map("userspermissions")
 }
 
 model Project {
@@ -218,6 +232,8 @@ model Project {
   deleted                Boolean      @default(false)
   createdAt              DateTime     @default(now())
   updatedAt              DateTime?    @updatedAt
+
+  @@map("project")
 }
 
 model Investment {
@@ -238,6 +254,8 @@ model Investment {
   transaction    Transaction    @relation(fields: [transactionId], references: [transactionId])
   createdAt      DateTime       @default(now())
   updatedAt      DateTime?      @updatedAt
+
+  @@map("investment")
 }
 
 model InvestmentTerm {
@@ -252,6 +270,7 @@ model InvestmentTerm {
   updatedAt   DateTime?    @updatedAt
 
   @@unique([term, benefit])
+  @@map("investmentterm")
 }
 
 // model Wallet {
@@ -288,6 +307,8 @@ model PaymentMethod {
   customerZipCode           String?
   // CC
   address                   String?
+
+  @@map("paymentmethod")
 }
 
 model PaymentMethodType {
@@ -300,6 +321,8 @@ model PaymentMethodType {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime?       @updatedAt
   Transaction   Transaction[]
+
+  @@map("paymentmethodtype")
 }
 
 // model AcceptedCurrencies {
@@ -346,6 +369,8 @@ model Transaction {
   // CC
   address                   String?
   Investment                Investment?
+
+  @@map("transaction")
 }
 
 model Invitation {
@@ -360,6 +385,8 @@ model Invitation {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
   // InvitationRole InvitationRole[]
+
+  @@map("invitation")
 }
 
 // model InvitationRole {
@@ -395,6 +422,8 @@ model Room {
   updatedAt DateTime?  @updatedAt
   messages  Message[]
   userRoom  UserRoom[]
+
+  @@map("room")
 }
 
 model UserRoom {
@@ -407,6 +436,7 @@ model UserRoom {
   updatedAt DateTime? @updatedAt
 
   @@unique([userId, roomId])
+  @@map("userroom")
 }
 
 model Message {
@@ -422,6 +452,8 @@ model Message {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   messages  Message[] @relation(name: "replyTo")
+
+  @@map("message")
 }
 
 // TODO: view message notification entity

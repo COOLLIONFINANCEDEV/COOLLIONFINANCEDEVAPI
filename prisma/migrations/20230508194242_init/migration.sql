@@ -2,12 +2,24 @@
 CREATE TABLE `Tenant` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NULL,
+    `email2` VARCHAR(191) NULL,
+    `description` VARCHAR(191) NULL,
+    `profilePhoto` LONGTEXT NULL,
+    `address` VARCHAR(191) NULL,
+    `preferredLoanCategories` VARCHAR(191) NULL,
+    `phone` VARCHAR(191) NULL,
+    `phone2` VARCHAR(191) NULL,
+    `businessSector` VARCHAR(191) NULL,
+    `type` VARCHAR(191) NULL,
+    `website` VARCHAR(191) NULL,
+    `socialMedia` VARCHAR(191) NULL,
     `accountTypeId` INTEGER NOT NULL,
     `deleted` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
 
-    UNIQUE INDEX `Tenant_name_key`(`name`),
+    UNIQUE INDEX `Tenant_name_email_key`(`name`, `email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -128,6 +140,18 @@ CREATE TABLE `AccountTypePermission` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `UserRole` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `roleId` INTEGER NOT NULL,
+    `userId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NULL,
+
+    UNIQUE INDEX `UserRole_userId_roleId_key`(`userId`, `roleId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `UsersPermissions` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `permissionId` INTEGER NOT NULL,
@@ -142,7 +166,16 @@ CREATE TABLE `UsersPermissions` (
 -- CreateTable
 CREATE TABLE `Project` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(191) NOT NULL,
+    `projectTitle` VARCHAR(191) NOT NULL,
+    `impactImage` LONGTEXT NOT NULL,
+    `carouselImage` LONGTEXT NULL,
+    `teaserTitle` VARCHAR(191) NOT NULL,
+    `amountRequested` DOUBLE NOT NULL,
+    `projectCountry` VARCHAR(191) NOT NULL,
+    `story` TEXT NULL,
+    `loanApplicationSpecial` TEXT NOT NULL,
+    `loanInformation` TEXT NULL,
+    `docs` LONGTEXT NOT NULL,
     `owner` INTEGER NOT NULL,
     `disabled` BOOLEAN NOT NULL DEFAULT true,
     `treat` BOOLEAN NOT NULL DEFAULT false,
@@ -164,9 +197,12 @@ CREATE TABLE `Investment` (
     `dueGain` DOUBLE NOT NULL,
     `collectionDate` DATETIME(3) NOT NULL,
     `gainCollected` BOOLEAN NOT NULL DEFAULT false,
+    `done` BOOLEAN NOT NULL DEFAULT false,
+    `transactionId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
 
+    UNIQUE INDEX `Investment_transactionId_key`(`transactionId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -186,18 +222,6 @@ CREATE TABLE `InvestmentTerm` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Wallet` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `balance` DOUBLE NOT NULL DEFAULT 0.0,
-    `owner` INTEGER NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NULL,
-
-    UNIQUE INDEX `Wallet_owner_key`(`owner`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `PaymentMethod` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `paymentMethodTypeCodename` VARCHAR(191) NOT NULL,
@@ -205,7 +229,7 @@ CREATE TABLE `PaymentMethod` (
     `deleted` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
-    `walletId` INTEGER NULL,
+    `owner` INTEGER NOT NULL,
     `customerName` VARCHAR(191) NULL,
     `customerSurname` VARCHAR(191) NULL,
     `customerEmail` VARCHAR(191) NULL,
@@ -259,6 +283,7 @@ CREATE TABLE `Transaction` (
     `customerZipCode` VARCHAR(191) NULL,
     `address` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `Transaction_transactionId_key`(`transactionId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -280,6 +305,7 @@ CREATE TABLE `Invitation` (
 CREATE TABLE `Room` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `host` INTEGER NOT NULL,
     `uuid` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
@@ -296,6 +322,7 @@ CREATE TABLE `UserRoom` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
 
+    UNIQUE INDEX `UserRoom_userId_roomId_key`(`userId`, `roomId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -350,6 +377,12 @@ ALTER TABLE `AccountTypePermission` ADD CONSTRAINT `AccountTypePermission_permis
 ALTER TABLE `AccountTypePermission` ADD CONSTRAINT `AccountTypePermission_accountTypeId_fkey` FOREIGN KEY (`accountTypeId`) REFERENCES `AccountType`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `UsersPermissions` ADD CONSTRAINT `UsersPermissions_permissionId_fkey` FOREIGN KEY (`permissionId`) REFERENCES `Permission`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -368,13 +401,13 @@ ALTER TABLE `Investment` ADD CONSTRAINT `Investment_funder_fkey` FOREIGN KEY (`f
 ALTER TABLE `Investment` ADD CONSTRAINT `Investment_term_fkey` FOREIGN KEY (`term`) REFERENCES `InvestmentTerm`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Wallet` ADD CONSTRAINT `Wallet_owner_fkey` FOREIGN KEY (`owner`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Investment` ADD CONSTRAINT `Investment_transactionId_fkey` FOREIGN KEY (`transactionId`) REFERENCES `Transaction`(`transactionId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PaymentMethod` ADD CONSTRAINT `PaymentMethod_paymentMethodTypeCodename_fkey` FOREIGN KEY (`paymentMethodTypeCodename`) REFERENCES `PaymentMethodType`(`codename`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `PaymentMethod` ADD CONSTRAINT `PaymentMethod_walletId_fkey` FOREIGN KEY (`walletId`) REFERENCES `Wallet`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `PaymentMethod` ADD CONSTRAINT `PaymentMethod_owner_fkey` FOREIGN KEY (`owner`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_paymentMethodTypeCodename_fkey` FOREIGN KEY (`paymentMethodTypeCodename`) REFERENCES `PaymentMethodType`(`codename`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -392,7 +425,7 @@ ALTER TABLE `Invitation` ADD CONSTRAINT `Invitation_sender_fkey` FOREIGN KEY (`s
 ALTER TABLE `Invitation` ADD CONSTRAINT `Invitation_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Room` ADD CONSTRAINT `Room_name_fkey` FOREIGN KEY (`name`) REFERENCES `Tenant`(`name`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Room` ADD CONSTRAINT `Room_host_fkey` FOREIGN KEY (`host`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserRoom` ADD CONSTRAINT `UserRoom_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
