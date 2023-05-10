@@ -4,7 +4,7 @@
         "test": "nodemon --watch . -e js,ts,json --exec \"ts-node src/test/test.ts\"",
         "init-app": "ts-node init/init.ts",
         "create-superuser": "ts-node init/create-superuser.init.ts",
-        "build": "npm install --no-optional && tsup src/server.ts --format cjs --clean",
+        "build": "tsup src/server.ts --format cjs --clean",
         "start": "node dist/server.js"
     },
     "dependencies": {
