@@ -1,4 +1,7 @@
 {
+     "name": "coollionfinance_ts",
+  "version": "1.1.0",
+    "type":"module",
     "scripts": {
         "dev": "nodemon --watch . -e js,ts,json --exec \"ts-node src/server.ts\"",
         "test": "nodemon --watch . -e js,ts,json --exec \"ts-node src/test/test.ts\"",
