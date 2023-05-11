@@ -3,6 +3,9 @@
   "version": "1.1.0",
   "main": "dist/server.js",
   "license": "MIT",
+  "bin" : {
+    "execute" : "index.js"
+} 
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/cors": "^2.8.12",
