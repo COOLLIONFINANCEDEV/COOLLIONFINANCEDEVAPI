@@ -8,7 +8,7 @@
         "init-app": "ts-node init/init.ts",
         "create-superuser": "ts-node init/create-superuser.init.ts",
         "build": "tsup src/server.ts --format cjs --clean",
-        "start": "node src/server.js"
+        "start": "node src/server.ts"
     },
     "dependencies": {
         "@casl/ability": "^6.3.3",
