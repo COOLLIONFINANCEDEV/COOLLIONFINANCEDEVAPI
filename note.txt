@@ -1,0 +1,157 @@
+______________________________________________________________________________________________
+[TO DO]
+
+genaral:
+    review all controller to detect action that can overide the user session
+    review all controller to detect action that can be save in redis for early requests
+    set COMMUNITY_MEMBER_ROLE_ID in env file
+    set MASTER_WALLET_ID in env file
+    remove wallet system
+
+authentication:
+    register (create dynamic template id on sendgrid then update the templateId that in use)
+
+user:
+    confirm updating
+    confirm deleting
+
+transaction:
+    make deposit on wallet (crypto -USDC-)
+
+invitation:
+    warn the user when they receive a new invitation (socket)
+    warn invitation sender when the invitation is accepted (socket)
+
+chat:
+    new message warning (socket)
+    set message viewed by user
+
+______________________________________________________________________________________________
+[DONE]
+
+authentication:
+    change password
+    refresh access token
+    login
+    register
+    authentication middleware
+    authorization grant middleware
+    register with crypto wallet
+    login with crypto wallet
+
+tenant:
+    create
+    update
+    delete
+    read -> retrive
+    read -> retrive for other
+    read -> list
+
+role:
+    create
+    update
+    delete
+    read -> retrive
+    read -> list
+
+project:
+    create
+    update
+    delete
+    read -> retrive
+    read -> list
+
+wallet:
+    create
+    read -> retrive
+
+paymentMethod:
+    create
+    update
+    delete
+    read -> retrive
+    read -> list
+    read -> list other
+
+investment:
+    create
+    read -> retrive
+    read -> list
+
+transaction:
+    read -> retrive
+    read -> list
+    make deposit on wallet (fiat -USD-)
+    notify the user when the transaction status changes
+
+invitation:
+    invite user to tenant (registered user or non-registered user)
+    invite member to the community (registered user or non-registered user)
+    respond to an invitation
+    delete
+    read -> list (sent and received)
+
+userTenant:
+    create -> grant a role to an user of the tenant
+    delete -> remove an user from the tenant
+    delete -> remove a role from the user of the tenant
+    read -> retrive an user of the tenant with they roles
+    read -> list the users of the tenant with they roles
+
+user:
+    update
+    delete
+    read -> retrive
+    read -> list
+
+initialization script:
+    generate permission (don't forget permission for other ressource)
+    create user role
+    special manage role for admin
+    create every account type manager role
+
+chat:
+    authenticate
+    create room
+    post message
+    delete message
+    read chat messages
+    list chat room
+    retrive chat room
+
+accountType:
+    create
+    update
+    delete
+    read -> retrive
+    read -> list
+
+investmentTerm:
+    create
+    update
+    read -> retrive
+    read -> list
+
+______________________________________________________________________________________________
+[FEATURES]
+
+change forgotten password
+change password
+
+_______________________________________________________________________________________________
+[NICE TO HAVE]
+
+2fa like digitalocean
+save the user devices to know the most used device in order to detect the falsy session and 
+used these devices for reset password
+So, we can restrict password change and reset on the devices that are not widely used
+cancel the session after 15 minutes of inactivity
+delete community member
+delete community
+signal community member
+signal community
+
+_______________________________________________________________________________________________
+
+
+dop_v1_e1a8fd68752cf619491b4041ac1b472a91821116faa68eaa231985a102b22f9a
